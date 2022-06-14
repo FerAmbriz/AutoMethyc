@@ -11,6 +11,9 @@ This program ...
 * Bismark https://www.bioinformatics.babraham.ac.uk/projects/bismark/
 * Anaconda3 https://www.anaconda.com/
 
+## Format of filter
+
+
 ## Usage
 ```
 bash [PATH_DOWNLOAD]/Automate.sh -i ../example/fastq/ -o .. -r ../example/ref/ -f ../example/Filtro2.csv
