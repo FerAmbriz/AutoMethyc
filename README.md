@@ -16,6 +16,7 @@ This program ...
 
 ## Usage
 ```
-git clone 
-bash [PATH_DOWNLOAD]/Automate.sh -i ../example/fastq/ -o .. -r ../example/ref/ -f ../example/Filtro2.csv
+git clone https://github.com/FerAmbriz/AutoMet.git
+cd AutoMet/scr
+bash Automate.sh -i ../example/fastq/ -o .. -r ../example/ref/ -f ../example/Filtro2.csv
 ```
