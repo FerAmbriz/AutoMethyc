@@ -6,7 +6,7 @@ Output=sys.argv[1]
 print ('#----------------Construct Autoncoprint-------------------#')
 merge_filtrado = pd.read_csv(Output+'/FiltradoMergue.csv')
 
-merge_filtrado=merge_filtrado.drop(['Unnamed: 0', 'Unnamed: 0.1', 'Chr', 'End',  'Cyt_Met', 'Cyt_NoMet'], axis=1)
+merge_filtrado=merge_filtrado.drop(['Chr', 'End',  'Cyt_Met', 'Cyt_NoMet'], axis=1)
 
 df=merge_filtrado.pivot(index=['Start','Gen'], columns='Sample')
 

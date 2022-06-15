@@ -14,4 +14,6 @@ df_bd['Met_porcnetaje']=df['3']
 df_bd['Cyt_Met']= df['4']
 df_bd['Cyt_NoMet']=df['5']
 
+df_bd = df_bd.set_index('Sample')
+
 df_bd.to_csv(Output+'/merge.csv')

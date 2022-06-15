@@ -11,12 +11,6 @@ from tqdm import tqdm as td
 # 2 = Filtro.csv
 # 3 = [Output]
 
-# Server
-# cd /data/Lab13
-#docker run --rm -v $(pwd):/data -it continuumio/anaconda3
-#cd /data/FernandoAmbriz/FilterMigue
-# python FilterMigue.py Merge.csv Filtro.csv /data/FernandoAmbriz/FilterMigue
-
 print ('')
 print ('#-----------------Init Filter -------------------#')
 print ('')
@@ -63,7 +57,10 @@ print("Done construction df filtered")
 print("")
 
 df_filtrado =  df[df['Gen'] != 0]
-df_filtrado.to_csv(OutputFilter+"/FiltradoMergue.csv")
+
+df_filtrado_sn = df_filtrado.set_index('Sample')
+
+df_filtrado_sn.to_csv(OutputFilter+"/FiltradoMergue.csv")
 
 ID = df_filtrado['Sample'].value_counts()
 ID = pd.DataFrame(ID)
@@ -122,6 +119,7 @@ df_bd['Start'] = list3
 df_bd['Gen'] = list4
 
 df_NotLoc = df_bd[df_bd['Start'] != 0]
+df_NotLoc= df_NotLoc.set_index('ID')
 df_NotLoc.to_csv(OutputFilter+"/NotLoc.csv")
 
 print("")
