@@ -16,5 +16,6 @@ This program ...
 
 ## Usage
 ```
+git clone 
 bash [PATH_DOWNLOAD]/Automate.sh -i ../example/fastq/ -o .. -r ../example/ref/ -f ../example/Filtro2.csv
 ```
