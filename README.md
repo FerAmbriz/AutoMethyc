@@ -6,6 +6,7 @@ This program ...
 * Bismark https://www.bioinformatics.babraham.ac.uk/projects/bismark/
 * Anaconda3 https://www.anaconda.com/
 * fastqc https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
+* TrimGalore https://github.com/FelixKrueger/TrimGalore
 
 ## Docker container
 * https://hub.docker.com/r/ambrizbiotech/automet
