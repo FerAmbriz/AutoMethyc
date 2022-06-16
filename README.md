@@ -13,6 +13,8 @@ This program ...
 
 ## Usage
 ```
+docker run --rm -v $(pwd):/data -it ambrizbiotech/automet
+
 git clone https://github.com/FerAmbriz/AutoMet.git
 cd AutoMet/scr
 bash Automate.sh -i ../example/fastq/ -o .. -r ../example/ref/ -f ../example/Filtro2.csv
