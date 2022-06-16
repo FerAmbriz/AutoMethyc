@@ -5,6 +5,8 @@ This program ...
 * Bowtie2 http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#building-from-source
 * Bismark https://www.bioinformatics.babraham.ac.uk/projects/bismark/
 * Anaconda3 https://www.anaconda.com/
+* fastqc https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
+
 ## Docker container
 * https://hub.docker.com/r/ambrizbiotech/automet
 
