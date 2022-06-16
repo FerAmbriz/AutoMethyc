@@ -1,15 +1,12 @@
 # AutoMet
 This program ...
 
-## Contenedores
-* https://hub.docker.com/r/rozanskide/trim_galore
-* https://hub.docker.com/r/argrosso/bismark
-* https://hub.docker.com/r/continuumio/anaconda3
-
 ## Dependencies
 * Bowtie2 http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#building-from-source
 * Bismark https://www.bioinformatics.babraham.ac.uk/projects/bismark/
 * Anaconda3 https://www.anaconda.com/
+## Docker container
+* https://hub.docker.com/r/ambrizbiotech/automet
 
 ## Format of filter
 
