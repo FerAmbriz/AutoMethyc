@@ -16,6 +16,10 @@ This program ...
 
 ## Usage
 ```
+
+docker run -it -d -v $(pwd):/data ambrizbiotech/automet ls /data/Lab13/FernandoAmbriz/AutoMet/scr
+
+
 cd
 docker run -v $(pwd):/[home] -it ambrizbiotech/automet
 
