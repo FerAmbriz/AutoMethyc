@@ -17,7 +17,7 @@ This program ...
 ## Usage
 ```
 cd
-docker run --rm -v $(pwd):/[home] -it ambrizbiotech/automet
+docker run -v $(pwd):/[home] -it ambrizbiotech/automet
 
 git clone https://github.com/FerAmbriz/AutoMet.git
 cd AutoMet/scr
