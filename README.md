@@ -1,4 +1,4 @@
-# AutoMet
+# AutoMethyc
 This program ...
 
 ## Dependencies
