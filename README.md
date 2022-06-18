@@ -26,4 +26,9 @@ docker run -v $(pwd):/[home] -it ambrizbiotech/automet
 git clone https://github.com/FerAmbriz/AutoMet.git
 cd AutoMet/scr
 bash Automate.sh -i ../example/fastq/ -o .. -r ../example/ref/ -f ../example/Filtro2.csv
+
+docker run -it -d -v $(pwd):/data ambrizbiotech/automethyc AutoMethyc -i /data/Lab13/FernandoAmbriz/AutoMet/example/fastq -o /data/Lab13/FernandoAmbriz/AutoMet/Output -r /data/Lab13/FernandoAmbriz/AutoMet/example/ref -f /data/Lab13/FernandoAmbriz/AutoMet/example/Filtro2.csv
+
+
+
 ```
