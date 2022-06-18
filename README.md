@@ -9,7 +9,7 @@ This program ...
 * TrimGalore https://github.com/FelixKrueger/TrimGalore
 
 ## Docker container
-* https://hub.docker.com/r/ambrizbiotech/automet
+* https://hub.docker.com/r/ambrizbiotech/automethyc
 
 ## Format of filter
 
