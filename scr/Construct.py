@@ -10,7 +10,7 @@ df_bd['Sample']=df['ID']
 df_bd['Chr']=df['0']
 df_bd['Start']=df['1']
 df_bd['End']=df['2']
-df_bd['Met_porcnetaje']=df['3']
+df_bd['Met_perc']=df['3']
 df_bd['Cyt_Met']= df['4']
 df_bd['Cyt_NoMet']=df['5']
 
