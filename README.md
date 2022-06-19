@@ -16,6 +16,6 @@ This program ...
 
 ## Usage
 ```
-docker run -it -d -v $(pwd):/data ambrizbiotech/automethyc AutoMethyc \
+docker run -it -d -v [/home]:[/home] ambrizbiotech/automethyc AutoMethyc \
     -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [Filtro.csv]
 ```
