@@ -16,7 +16,6 @@ This program ...
 git clone https://github.com/FerAmbriz/AutoMethyc.git
 cd AutoMethyc/scr
 sudo mv * /usr/bin/
-
 ```
 ## Format of filter
 
