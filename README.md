@@ -7,11 +7,12 @@ This program ...
 ## Install
 
 ### Dependencies
-* Bowtie2 http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#building-from-source
-* Bismark https://www.bioinformatics.babraham.ac.uk/projects/bismark/
-* Anaconda3 https://www.anaconda.com/
-* fastqc https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
-* TrimGalore https://github.com/FelixKrueger/TrimGalore
+* Bowtie2 v2.4.5 http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#building-from-source
+* Samtools v1.15.1-12 http://www.htslib.org/
+* Bismark v0.23.0 https://www.bioinformatics.babraham.ac.uk/projects/bismark/
+* Anaconda3 v4.12.0 https://www.anaconda.com/ with python v3.9.12
+* fastqc v0.11.9 https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
+* TrimGalore v0.6.6 https://github.com/FelixKrueger/TrimGalore
 ```
 git clone https://github.com/FerAmbriz/AutoMethyc.git
 cd AutoMethyc/scr
