@@ -36,3 +36,13 @@ python /usr/bin/Filter.py $output/merge.csv $filtro $output
 # Construcción del input de ComplexHeatmap
 python /usr/bin/Oncoprint.py $output 
 
+rm -rf $output/tmp
+
+echo 'ploting ...'
+#Rscript /usr/bin/Oncoprint.R $output/OncoprintRellenado.csv $output/all_sites.png
+
+#Rscript /usr/bin/OncoprintPromedio.R $output/OncoprintPromedio.csv $output/mean.png
+
+python /usr/bin/ReportHTML.py $output/OncoprintRellenado.csv $output/OncoprintPromedio.csv $output/Count.csv $output/NotLoc.csv $output
+
+echo 'DONE'

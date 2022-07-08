@@ -19,6 +19,17 @@ mkdir $output/results/05_bismark_extractor
 mkdir $output/results/06_bedGraph
 mkdir $output/results/results_html
 
+
+ref_bisulfito=$ref/Bisulfite_Genome
+if [ -d "$ref_bisulfito"  ]
+then 
+				echo 'starting with sample processing'
+else
+				bismark_genome_preparation $ref
+fi
+
+
+
 array=($(ls $input/*.fastq.gz))
 tLen=${#array[@]}
 
