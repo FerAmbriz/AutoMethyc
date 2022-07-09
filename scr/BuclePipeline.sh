@@ -87,10 +87,14 @@ bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN}
 wait 
 genome=$ref
 
-bismark2report --alignment_report ../data/03_aligned/one_mismatch*report.txt \
-               --splitting_report ../data/05_bismark_extractor/one_mismatch*splitting_report.txt \
-               --mbias_report ../data/05_bismark_extractor/one_mismatch*.M-bias.txt \
-               --nucleotide_report ../data/04_deduplicated/one_mismatch*.nucleotide_stats.txt
+
+
+bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
+               --splitting_report $output/tmp/05_bismark_extractor/one_mismatch*splitting_report.txt \
+               --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
+               --nucleotide_report $output/tmp/04_deduplicated/one_mismatch*.nucleotide_stats.txt
+
+
 wait     
 
 mv $output/tmp/02_fastq_trimmed/* $output/results/02_fastq_trimmed
