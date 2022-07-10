@@ -43,6 +43,6 @@ echo 'ploting ...'
 
 #Rscript /usr/bin/OncoprintPromedio.R $output/OncoprintPromedio.csv $output/mean.png
 
-python /usr/bin/ReportHTML.py $output/OncoprintRellenado.csv $output/OncoprintPromedio.csv $output/Count.csv $output/NotLoc.csv $output
+python /usr/bin/Report_HTML.py $output/OncoprintRellenado.csv $output/OncoprintPromedio.csv $output/Count.csv $output/NotLoc.csv $output
 
 echo 'DONE'
