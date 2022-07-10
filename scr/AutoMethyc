@@ -45,4 +45,19 @@ echo 'ploting ...'
 
 python /usr/bin/Report_HTML.py $output/OncoprintRellenado.csv $output/OncoprintPromedio.csv $output/Count.csv $output/NotLoc.csv $output
 
+echo 'Done Report HTML' 
+
+multiqc $output/results/02_fastq_trimmed/*
+
+# Organizando el Output
+mkdir $output/CSV
+mkdir $output/HTML
+mkdir $output/HTML/Bismark_report
+
+mv $output/results/results_html/* $output/HTML/Bismark_report
+mv $output/results $output/Bismark 
+mv $output/*csv $output/CSV
+mv multiqc* $output/HTML
+mv $output/*.html $output/HTML
+
 echo 'DONE'

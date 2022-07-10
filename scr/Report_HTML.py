@@ -23,8 +23,8 @@ df = pd.read_csv(Oncoprint_All)
 df = df.drop(['Gen'], axis=1)
 df = df.set_index('Start')
 
-fig_all = px.imshow(df)
-
+fig_all = px.imshow(df, template= "plotly_dark")
+fig_all.update_layout(paper_bgcolor="#1c1f27")
 
 #--------------------------Mean-----------------------
 
@@ -32,8 +32,8 @@ df = pd.read_csv(Oncoprint_mean)
 #df = df.set_index('Unnamed: 0')
 df = df.drop(['Unnamed: 0', 'Gen'], axis=1)
 
-fig_mean= px.imshow(df)
-
+fig_mean= px.imshow(df, template= "plotly_dark")
+fig_mean.update_layout(paper_bgcolor="#1c1f27")
 #-------------------------Count-----------------------
 
 df = pd.read_csv(Count)
@@ -56,11 +56,12 @@ fig_samples.add_trace(go.Pie(labels=['<20k', '20k-25k', '>25k'], values=[30,200,
               1, 2)
 
 fig_samples.update_layout(
-    title_text="Characteristics of the samples",
+    title_text="Characteristics of the samples", template= "plotly_dark",
     # Add annotations in the center of the donut pies.
     annotations=[dict(text='CVR', x=0.20, y=0.5, font_size=20, showarrow=False),
                  dict(text='DPT', x=0.80, y=0.5, font_size=20, showarrow=False)])
 
+fig_samples.update_layout(paper_bgcolor="#1c1f27")
 
 df.columns = ['ID' , 'Count']
 df['Status'] = ['In_Loc'] * len(df)
@@ -73,25 +74,27 @@ df2['Status'] = ['NotLoc'] * len(df2)
 
 df = pd.concat([df, df2])
 
-fig_chr = px.bar(df, x="ID", y="Count", color="Status", title="Coverage Status")
+fig_chr = px.bar(df, x="ID", y="Count", color="Status", title="Coverage Status", template= "plotly_dark")
 
+fig_chr.update_layout(paper_bgcolor="#1c1f27")
 
 html_string_head = '''
 <html>
     <head>
         <style>
-        body{ margin:0; background:whitesmoke; }
+        body{ margin:0; background:#2e3444; color:white; }
          .active {
   background-color: #04AA6D;
   color: white;
 }
 
+ /* Vertical bar */
 ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
   width: 13%;
-  background-color: #f1f1f1;
+  background-color: #1c1f27;
   height: 100%; /* Full height */
   position: fixed; /* Make it stick, even on scroll */
   overflow: auto; /* Enable scrolling if the sidenav has too much content */
@@ -99,7 +102,7 @@ ul {
 
 li a {
   display: block;
-  color: #000;
+  color: #ffffff;
   padding: 8px 16px;
   text-decoration: none;
 }
@@ -145,7 +148,7 @@ html_string_spec1 = '''
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-        <style>body{ margin:0; background:whitesmoke; }</style>
+        <style>body{ margin:0; background:#2e3444; color:white; }</style>
     </head>
     <body>
         <h2 id="All"> Heatmap all sites </h2>
@@ -157,7 +160,7 @@ html_string_body = '''
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-        <style>body{ margin:0; background:whitesmoke; }</style>
+        <style>body{ margin:0; background:#2e3444; color:white; }</style>
     </head>
     <body>
         <h2 id="Mean"> Heatmap mean per Gene </h2>
@@ -170,7 +173,7 @@ html_string_fooder = '''
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-        <style>body{ margin:0; background:whitesmoke; }</style>
+        <style>body{ margin:0; background:#2e3444; color:white; }</style>
     </head>
     <body>
         <h3> Repository  </h4>
@@ -181,7 +184,7 @@ html_string_fooder = '''
 
 
 # 3. Write the html string as an HTML file
-with open('AutoMethyc_Report.html', 'w') as f:
+with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(html_string_head)
     f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_chr.to_html(full_html=False, include_plotlyjs='cdn'))
