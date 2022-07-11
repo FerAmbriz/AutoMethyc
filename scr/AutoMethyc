@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Defect values
+thr=4
+
 while [[ $# -gt 0 ]]; do
 opt="$1"
 shift;
@@ -19,10 +22,11 @@ Options
 "-o"|"--output"      ) output="$1"; shift;;
 "-r"|"--ref"      ) ref="$1"; shift;;
 "-f"|"--filtro"      ) filtro="$1"; shift;;
+"-t"|"--threads"      ) thr="$1"; shift;;
 	esac
 done
 
-BuclePipeline.sh $input $output $ref
+BuclePipeline.sh $input $output $ref $thr
 
 # descomprime y renombra los archivos por ID
 rename.sh $output/results/06_bedGraph

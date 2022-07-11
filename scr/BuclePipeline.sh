@@ -3,6 +3,7 @@
 input=$1
 output=$2
 ref=$3
+thr=$4
 
 mkdir $output/tmp
 mkdir $output/tmp/02_fastq_trimmed
@@ -28,6 +29,7 @@ else
 				bismark_genome_preparation $ref
 fi
 
+echo 'Using ...' $thr 'threads'
 
 
 array=($(ls $input/*.fastq.gz))
@@ -42,7 +44,7 @@ OUT=$output/tmp/02_fastq_trimmed
 
 trim_galore --quality 30 --gzip --paired --fastqc \
             --illumina --output_dir ${OUT} \
-            --cores 4 ${FQ1} ${FQ2}
+            --cores $thr ${FQ1} ${FQ2}
 
 wait
 
@@ -53,9 +55,11 @@ FQ1=$output/tmp/02_fastq_trimmed/*val_1.fq.gz
 FQ2=$output/tmp/02_fastq_trimmed/*val_2.fq.gz
 OUT=$output/tmp/03_aligned
 
+#change 2 por 4 -p
+# 1 por 2 en --parallel
 
 echo "bismark aligned"; date
-bismark --bowtie2 -p 2 --parallel 1 --bam --fastq \
+bismark --bowtie2 -p $thr --parallel 1 --bam --fastq \
         --output_dir ${OUT} \
         --prefix ${PREFIX} \
         --genome_folder ${genome} \
