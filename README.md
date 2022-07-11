@@ -43,4 +43,26 @@ With the version installed in the PATH it is simply executed with AutoMethyc fol
 ```
 AutoMethyc -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [bedGraph.csv]
 ```
+## Optional arguments
+```
+-t --threads    Number of threads. By default use 4
+```
 ## Output
+### Bismark folder
+Contains all Bismark values
+* 02
+* 03
+* 04
+* 05
+* 06
+### CSV folder
+* Oncoprint.csv
+* merge.csv
+* Filtrado.csv
+* 
+### HTML folder
+* Automethyc_report.html
+* multiqc
+* Bismark
+
+
