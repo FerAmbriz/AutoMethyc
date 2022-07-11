@@ -49,7 +49,6 @@ AutoMethyc -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [bedGraph.csv
 ```
 ## Output
 ### Bismark folder
-Contains all Bismark values
 * `02_fastq_trimmed`
 * `03_aligned`
 * `04_deduplicated`
