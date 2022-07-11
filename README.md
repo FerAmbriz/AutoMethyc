@@ -1,12 +1,12 @@
 # AutoMethyc
 AutoMethyc is a pipeline automated which aims for simplicity and practicality in methylation analysis.
-
-## Install with Docker
+## Install
+### Install with Docker
 We created a [docker container](https://hub.docker.com/r/ambrizbiotech/automethyc) with all the necessary dependencies to run the program in order to provide a portable and self-sufficient container. To install it you need to have [docker installed](https://docs.docker.com/engine/install/) and then download the docker image.
 ```
 docker pull ambrizbiotech/automethyc
 ```
-## Install in PATH
+### Install in PATH
 For this installation option is necessary to install all the dependencies.
 ### Dependencies
 * Bowtie2 v2.4.5 http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#building-from-source
@@ -43,3 +43,4 @@ With the version installed in the PATH it is simply executed with AutoMethyc fol
 ```
 AutoMethyc -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [bedGraph.csv]
 ```
+## Output
