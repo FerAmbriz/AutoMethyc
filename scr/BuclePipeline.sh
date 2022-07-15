@@ -59,7 +59,7 @@ OUT=$output/tmp/03_aligned
 # 1 por 2 en --parallel
 
 echo "bismark aligned"; date
-bismark --bowtie2 -p $thr --parallel 1 --bam --fastq \
+bismark --bowtie2 -p $(($thr/2)) --parallel 1 --bam --fastq \
         --output_dir ${OUT} \
         --prefix ${PREFIX} \
         --genome_folder ${genome} \

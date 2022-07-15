@@ -8,7 +8,7 @@ merge_filtrado = pd.read_csv(Output+'/Filtered.csv')
 
 merge_filtrado=merge_filtrado.drop(['Chr', 'End',  'Cyt_Met', 'Cyt_NoMet'], axis=1)
 
-df=merge_filtrado.pivot(index=['Start','Gen'], columns='Sample')
+df=merge_filtrado.pivot(index=['Start','Gen'], columns=['Sample', 'Status'])
 
 # Eliminar el multindice de las columnas
 df = df.droplevel(level=0, axis=1)

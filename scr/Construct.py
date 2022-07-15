@@ -7,6 +7,7 @@ df = pd.read_csv(Output+'/merge.csv')
 
 df_bd = pd.DataFrame()
 df_bd['Sample']=df['ID']
+df_bd['Status']=df['Status']
 df_bd['Chr']=df['0']
 df_bd['Start']=df['1']
 df_bd['End']=df['2']

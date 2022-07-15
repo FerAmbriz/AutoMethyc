@@ -2,6 +2,7 @@
 
 #Defect values
 thr=4
+norm="False"
 
 while [[ $# -gt 0 ]]; do
 opt="$1"
@@ -17,51 +18,116 @@ Options
 	-o --output		Output location
 	-r --ref		Folder with references
 	-f --filtro		File with regions of interest
+Optional arguments
+	-t --threads		Number of threads
+	-n --normal		Folder with fastq of normals
 ''';  exit 1;;
 "-i"|"--input"      ) input="$1"; shift;;
 "-o"|"--output"      ) output="$1"; shift;;
 "-r"|"--ref"      ) ref="$1"; shift;;
 "-f"|"--filtro"      ) filtro="$1"; shift;;
 "-t"|"--threads"      ) thr="$1"; shift;;
+"-n"|"--normal"      ) norm="$1"; shift;;
 	esac
 done
-
-BuclePipeline.sh $input $output $ref $thr
-
-# descomprime y renombra los archivos por ID
-rename.sh $output/results/06_bedGraph
-
-# Construcción del merge
-allmerge.sh $output/results/06_bedGraph $output
-
-# Aplicacion de filtros
-python /usr/bin/Filter.py $output/merge.csv $filtro $output
-
-# Construcción del input de ComplexHeatmap
-python /usr/bin/Oncoprint.py $output 
-
-rm -rf $output/tmp
-
-echo 'ploting ...'
-#Rscript /usr/bin/Oncoprint.R $output/OncoprintRellenado.csv $output/all_sites.png
-
-#Rscript /usr/bin/OncoprintPromedio.R $output/OncoprintPromedio.csv $output/mean.png
-
-python /usr/bin/Report_HTML.py $output/OncoprintRellenado.csv $output/OncoprintPromedio.csv $output/Count.csv $output/NotLoc.csv $output
-
-echo 'Done Report HTML' 
-
-multiqc $output/results/02_fastq_trimmed/*
 
 # Organizando el Output
 mkdir $output/CSV
 mkdir $output/HTML
+mkdir $output/Bismark
 mkdir $output/HTML/Bismark_report
 
-mv $output/results/results_html/* $output/HTML/Bismark_report
-mv $output/results $output/Bismark 
-mv $output/*csv $output/CSV
-mv multiqc* $output/HTML
-mv $output/*.html $output/HTML
+
+if [ "$norm" = "False" ]; then
+
+
+				echo 'You are not using normals'
+				BuclePipeline.sh $input $output $ref $thr
+				# descomprime y renombra los archivos por ID
+				rename.sh $output/results/06_bedGraph
+				# Construcción del merge
+				allmerge.sh $output/results/06_bedGraph $output 'Sample'
+				# Aplicacion de filtros
+				python /usr/bin/Filter.py $output/merge.csv $filtro $output
+
+				python /usr/bin/Oncoprint.py $output
+
+				multiqc $output/results/02_fastq_trimmed/*
+				mv multiqc* $output/HTML
+
+				mv $output/results $output/Bismark
+
+				
+				mv $output/results/results_html/* $output/HTML/Bismark_report
+				mv $output/*csv $output/CSV
+				rm -rf $output/tmp
+
+				python /usr/bin/Report_HTML.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML
+
+else
+				echo 'You are using normals'
+				mkdir $output/norm
+				mkdir $output/samples
+
+
+				echo '---------------Normal Samples------------------'
+				BuclePipeline.sh $norm $output/norm $ref $thr
+				# descomprime y renombra los archivos por ID
+				rename.sh $output/norm/results/06_bedGraph
+				# Construcción del merge
+				allmerge.sh $output/norm/results/06_bedGraph $output/norm 'Normal'
+				# Aplicacion de filtros
+				python /usr/bin/Filter.py $output/norm/merge.csv $filtro $output/norm
+
+				multiqc $output/norm/results/02_fastq_trimmed/*
+
+				mv multiqc_report.html $output/HTML/multiqc_report_normals.html
+				mv multiqc_data $output/HTML/multiqc_data_normals
+
+
+
+				echo '------------------Samples---------------------'
+				BuclePipeline.sh $input $output/samples $ref $thr
+				rename.sh $output/samples/results/06_bedGraph
+				allmerge.sh $output/samples/results/06_bedGraph $output/samples 'Sample'
+				python /usr/bin/Filter.py $output/samples/merge.csv $filtro $output/samples
+
+				echo 'Joining in one file the samples and normals'
+				
+				awk '(NR == 1) || (FNR > 1)' $output/norm/Filtered.csv $output/samples/Filtered.csv > $output/Filtered.csv
+
+				awk '(NR == 1) || (FNR > 1)' $output/norm/Count.csv $output/samples/Count.csv > $output/Count.csv
+
+				awk '(NR == 1) || (FNR > 1)' $output/norm/NotLoc.csv $output/samples/NotLoc.csv > $output/NotLoc.csv
+
+
+				echo 'Done merge samples and normals'
+
+
+				python /usr/bin/Oncoprint.py $output
+
+				multiqc $output/samples/results/02_fastq_trimmed/*
+				mv multiqc_report.html $output/HTML/multiqc_report_samples.html
+				mv multiqc_data $output/HTML/multiqc_data_samples
+				
+				# Organizacion Output
+				mv $output/*csv $output/CSV
+				mv $output/samples $output/Bismark
+				mv $output/norm $output/Bismark
+
+				rm -rf $output/Bismark/norm/tmp
+				rm -rf $output/Bismark/samples/tmp
+
+				python /usr/bin/Norm.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV
+
+				python /usr/bin/Report_HTML_norm.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML
+fi
+
+#Rscript /usr/bin/Oncoprint.R $output/OncoprintRellenado.csv $output/all_sites.png
+
+#Rscript /usr/bin/OncoprintPromedio.R $output/OncoprintPromedio.csv $output/mean.png
+
+
+echo 'Done Report HTML' 
 
 echo 'DONE'

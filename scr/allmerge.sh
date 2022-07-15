@@ -2,6 +2,7 @@
 
 input_cov=$1
 output=$2
+stat=$3
 
 array=($(ls $input_cov/*.cov))
 tLen=${#array[@]}
@@ -9,7 +10,7 @@ tLen=${#array[@]}
 ID=${array[0]%.*}
 ID=${ID##*/}
 
-python /usr/bin/merge1.py ${array[0]} $ID $output 
+python /usr/bin/merge1.py ${array[0]} $ID $output $stat
 
 echo 'done merge' ${array[0]}
 
@@ -19,7 +20,7 @@ do
 ID=${array[i]%.*}
 ID=${ID##*/}
 
-python /usr/bin/merge2.py ${array[$i]} $ID $output
+python /usr/bin/merge2.py ${array[$i]} $ID $output $stat
 
 echo 'done merge' ${array[$i]} 
 done
