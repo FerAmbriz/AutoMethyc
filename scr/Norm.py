@@ -89,7 +89,7 @@ arrays = [Status, columns]
 
 tuples = list(zip(*arrays))
 
-index_columns = pd.MultiIndex.from_tuples(tuples, names=["Staus", "ID"])
+index_columns = pd.MultiIndex.from_tuples(tuples, names=["Status", "ID"])
 
 oncomean = oncomean.drop(oncomean.index[[0]])
 Gen = list(oncomean.Gen)

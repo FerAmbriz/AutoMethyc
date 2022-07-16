@@ -9,13 +9,20 @@ from IPython.display import HTML
 import sys
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import re
 
 
-Oncoprint_All = sys.argv[1]
-Oncoprint_mean = sys.argv[2]
-Count = sys.argv[3]
-NotLoc = sys.argv[4]
-Output = sys.argv[5]
+intput_folder = sys.argv[1]
+Output = sys.argv[2]
+
+Oncoprint_All = intput_folder+'/CSV/OncoprintRellenado.csv'
+Oncoprint_mean = intput_folder+'/CSV/OncoprintPromedio.csv'
+Count = intput_folder+'/CSV/Count.csv'
+NotLoc = intput_folder+'/CSV/NotLoc.csv'
+OncoprintNorm = intput_folder+'/CSV/OncoprintNorm.csv'
+OncoprintMeanNorm = intput_folder+'/CSV/OncoprintMeanNorm.csv'
+PCA_data = intput_folder+'/CSV/PCA_vectors.csv'
+
 
 print('#-------------------Plotting-------------------------')
 
@@ -85,6 +92,54 @@ fig_chr = px.bar(df, x="ID", y="Count", color="Status", title="Coverage Status",
 
 fig_chr.update_layout(paper_bgcolor="#1c1f27")
 
+
+#---------------------------Norm all----------------------
+
+df = pd.read_csv(OncoprintNorm)
+df = df.drop(df.index[[0,1]])
+df = df.rename(columns = {'Unnamed: 1':'ID'})
+
+df = df.set_index('ID')
+df = df.drop(['Start'], axis=1)
+fig_norm_all = px.imshow(df.T, aspect="auto", template= "plotly_dark")
+fig_norm_all.update_layout(paper_bgcolor="#1c1f27")
+
+
+#-------------------------Norm mean-------------------
+df = pd.read_csv(OncoprintMeanNorm)
+df = df.drop(['Status'], axis=1)
+df = df.rename(columns = {'Unnamed: 1':'ID'})
+df = df.set_index('ID')
+
+fig_mean_norm= px.imshow(df.T, aspect="auto", template= "plotly_dark")
+fig_mean_norm.update_layout(paper_bgcolor="#1c1f27")
+
+#------------------------PCA----------------------
+
+finalDf = pd.read_csv(PCA_data)
+finalDf = finalDf.drop(['Unnamed: 0'], axis=1)
+
+# match columns
+ptr_norm = list(finalDf.Type)
+r = re.compile(".*normal")
+ptr_norm_m = list(filter(r.match, ptr_norm))
+
+
+ptr_sample = list(finalDf.Type)
+r = re.compile(".*sample")
+ptr_sample_m = list(filter(r.match, ptr_sample))
+
+for i in ptr_norm_m:
+    finalDf['Type'] = finalDf['Type'].replace([i],'normal')
+for i in ptr_sample:
+    finalDf['Type'] = finalDf['Type'].replace([i],'sample')
+
+fig_pca = px.scatter(finalDf, x='PCA1', y='PCA2', template= "plotly_dark",
+        color=finalDf['Type'], opacity=0.7,
+        labels={'0': 'PC 1', '1': 'PC 2'})
+fig_pca.update_layout(paper_bgcolor="#1c1f27")
+
+#-----------------------------HTML-------------------------
 html_string_head = '''
 <html>
     <head>
@@ -132,12 +187,15 @@ height 500px;
     <body>  
     
 <ul class="vertical">
-    <li><a style="background-color:#009DCF; color:white"> Report </a></li>
+    <li><a style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
     <li><a href="#Home"> Home </a></li>
     <li><a href="#Samples" > Stastics </a></li>
     <li><a href="#All">Heatmap all</a></li>
     <li><a href="#Mean">Heatmap mean</a></li>
-    <li><a href="https://github.com/FerAmbriz/AutoMethyc">GitHub</a></li>
+    <li><a href="#all_norm">All sites normalized</a></li>
+    <li><a href="#Mean_norm">Mean per gene normalized</a></li>
+    <li><a href="#pca">PCA</a></li>
+    <li><a href="#about"> About</a></li>
 </ul> 
  
  <div class="main">
@@ -175,6 +233,40 @@ html_string_body = '''
 </html>'''
 
 
+html_string_init_norm = '''
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <style>body{ margin:0; background:#2e3444; color:white; }</style>
+    </head>
+    <body>
+        <h2 id="all_norm"> Heatmap all sites normalized </h2>
+    </body>
+</html>'''
+
+html_string__mean_norm = '''
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <style>body{ margin:0; background:#2e3444; color:white; }</style>
+    </head>
+    <body>
+        <h2 id="Mean_norm"> Heatmap mean per gene normalized </h2>
+    </body>
+</html>'''
+
+html_string__PCA = '''
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <style>body{ margin:0; background:#2e3444; color:white; }</style>
+    </head>
+    <body>
+        <h2 id="pca"> PCA </h2>
+    </body>
+</html>'''
+
+
 
 html_string_fooder = '''
 <html>
@@ -183,7 +275,7 @@ html_string_fooder = '''
         <style>body{ margin:0; background:#2e3444; color:white; }</style>
     </head>
     <body>
-        <h3> Repository  </h4>
+        <h3 id="about"> Repository  </h4>
         This program is avalible in <td><a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a></td>
         
     </body>
@@ -199,6 +291,11 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_string_body)
     f.write(fig_mean.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_string_init_norm)
+    f.write(fig_norm_all.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_string__mean_norm)
+    f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_string__PCA)
+    f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_string_fooder)
-
 

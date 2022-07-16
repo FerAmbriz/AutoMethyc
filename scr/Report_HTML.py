@@ -132,12 +132,12 @@ height 500px;
     <body>  
     
 <ul class="vertical">
-    <li><a style="background-color:#009DCF; color:white"> Report </a></li>
+    <li><a style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
     <li><a href="#Home"> Home </a></li>
     <li><a href="#Samples" > Stastics </a></li>
     <li><a href="#All">Heatmap all</a></li>
     <li><a href="#Mean">Heatmap mean</a></li>
-    <li><a href="https://github.com/FerAmbriz/AutoMethyc">GitHub</a></li>
+    <li><a href="#about">About</a></li>
 </ul> 
  
  <div class="main">
@@ -183,7 +183,7 @@ html_string_fooder = '''
         <style>body{ margin:0; background:#2e3444; color:white; }</style>
     </head>
     <body>
-        <h3> Repository  </h4>
+        <h3 id="about"> Repository  </h4>
         This program is avalible in <td><a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a></td>
         
     </body>

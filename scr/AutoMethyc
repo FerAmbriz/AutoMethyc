@@ -120,7 +120,9 @@ else
 
 				python /usr/bin/Norm.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV
 
-				python /usr/bin/Report_HTML_norm.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML
+				python /usr/bin/PCA.py $output/CSV/OncoprintNorm.csv $output/CSV
+
+				python /usr/bin/Report_HTML_norm.py $output $output/HTML
 fi
 
 #Rscript /usr/bin/Oncoprint.R $output/OncoprintRellenado.csv $output/all_sites.png
