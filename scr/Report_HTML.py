@@ -143,9 +143,10 @@ height 500px;
  
  <div class="main">
            <h1 id="Home"> AutoMethyc </h1>
-        This program ...
-        <h2 id="Samples"> Characteristics of samples </h2>
-        CVR is coverage and DPT is depth
+           <h2> Version without normal samples </h2>
+        AutoMethyc is a pipeline automated which aims for simplicity and practicality in methylation analysis.
+        <h2 id="Samples"> Statistics </h2>
+        The statistics of the samples consist of classifying the coverage (CVR) of the samples given the bedGraph and the average coverage of the samples, in addition to plotting the count of regions present in the bedGraph (In_loc) and those not present (Not_loc).
         
  </div">  
 
@@ -160,6 +161,7 @@ html_string_spec1 = '''
     </head>
     <body>
         <h2 id="All"> Heatmap all sites </h2>
+        Heatmap of the percentage of methylation present at each site present in the bedGraph per sample
     </body>
 </html>'''
 
@@ -172,6 +174,7 @@ html_string_body = '''
     </head>
     <body>
         <h2 id="Mean"> Heatmap mean per Gene </h2>
+        Heatmap of the average percentage of methylation present in each site corresponding to its corresponding gene.
     </body>
 </html>'''
 
@@ -186,7 +189,6 @@ html_string_fooder = '''
     <body>
         <h3 id="about"> Repository  </h4>
         This program is avalible in <td><a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a></td>
-        
     </body>
 </html>'''
 

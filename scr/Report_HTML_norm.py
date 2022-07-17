@@ -202,10 +202,10 @@ height 500px;
  
  <div class="main">
            <h1 id="Home"> AutoMethyc </h1>
-        This program ...
-        <h2 id="Samples"> Characteristics of samples </h2>
-        CVR is coverage and DPT is depth
-        
+           <h2> Version with normal samples </h2>
+        AutoMethyc is a pipeline automated which aims for simplicity and practcality in methylation analysis.
+        <h2 id="Samples"> Statistics </h2>
+        The statistics of the samples consist of classifying the coverage (CVR) of the samples given the bedGraph and the average coverage of the samples, in addition to plotting the count of regions present in the bedGraph (In_loc) and those not present (Not_loc).
  </div">  
 
     </body>
@@ -219,6 +219,7 @@ html_string_spec1 = '''
     </head>
     <body>
         <h2 id="All"> Heatmap all sites </h2>
+        Heatmap of the percentage of methylation present at each site present in the bedGraph per sample
     </body>
 </html>'''
 
@@ -231,6 +232,7 @@ html_string_body = '''
     </head>
     <body>
         <h2 id="Mean"> Heatmap mean per Gene </h2>
+        Heatmap of the average percentage of methylation present in each site corresponding to its corresponding gene.
     </body>
 </html>'''
 
@@ -239,10 +241,37 @@ html_string_init_norm = '''
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-        <style>body{ margin:0; background:#2e3444; color:white; }</style>
+        <style>body{ margin:0; background:#2e3444; color:white; }
+
+         .fraction {
+         display: inline-block;
+         vertical-align: middle; 
+         margin: 0 0.2em 0.4ex;
+         text-align: center;
+         }
+         .fraction > span {
+         display: block;
+         padding-top: 0.15em;
+         }
+         .fraction span.fdn {border-top: thin solid white;}
+         .fraction span.bar {display: none;}
+        </style>
     </head>
     <body>
+        <h1> Normalization </h1>
+        Normalization was performed considering the mean and standard deviation of the controls, applying to each value:
+        
+        <div class style="text-align: center;">
+        <i>N<sub>i</sub></i> = 
+        <div class="fraction">
+        <span class="fup"> x<sub>i</sub> - μ </span>
+        <span class="bar">/</span>
+        <span class="fdn"> σ </span>
+        </div>
+        </div>
+
         <h2 id="all_norm"> Heatmap all sites normalized </h2>
+        Heatmap with all sites normalized based on the mean and standard deviation of the controls.
     </body>
 </html>'''
 
@@ -254,6 +283,7 @@ html_string__mean_norm = '''
     </head>
     <body>
         <h2 id="Mean_norm"> Heatmap mean per gene normalized </h2>
+        Heatmap with the mean of each normalized site belonging to each gene
     </body>
 </html>'''
 
@@ -265,6 +295,7 @@ html_string__PCA = '''
     </head>
     <body>
         <h2 id="pca"> PCA </h2>
+        Principal component analysis (PCA) applied to each site of the normals and samples. Each point represents a normalized site according to the corresponding group (normal or sample). To view which region is view the file "PCA_vectors.csv" in [Output]/CSV
     </body>
 </html>'''
 
