@@ -16,6 +16,7 @@ Oncoprint_mean = sys.argv[2]
 Count = sys.argv[3]
 NotLoc = sys.argv[4]
 Output = sys.argv[5]
+CountUF = sys.argv[6]
 
 print('#-------------------Plotting-------------------------')
 
@@ -51,6 +52,11 @@ values = df['Sample'].value_counts().to_list()
 labels= df['Sample'].value_counts()
 labels = labels.index.values
 
+df2 = pd.read_csv(CountUF)
+values2 = df2['Filter'].value_counts().to_list()
+labels2= df2['Filter'].value_counts()
+labels2=labels2.index.values
+
 # donut pie chart 2 columns
 fig_samples = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}]])
 
@@ -59,14 +65,14 @@ fig_samples = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'
 fig_samples.add_trace(go.Pie(labels=labels, values=values, hole=.3, name="Coverage"),
               1, 1)
 # Profundiad
-fig_samples.add_trace(go.Pie(labels=['<20k', '20k-25k', '>25k'], values=[30,200,70], hole=.3, name="Profundiad"),
+fig_samples.add_trace(go.Pie(labels=labels2, values=values2, hole=.3, name="Filtered"),
               1, 2)
 
 fig_samples.update_layout(
-    title_text="Characteristics of the samples", template= "plotly_dark",
+    title_text="Stastics", template= "plotly_dark",
     # Add annotations in the center of the donut pies.
     annotations=[dict(text='CVR', x=0.20, y=0.5, font_size=20, showarrow=False),
-                 dict(text='DPT', x=0.80, y=0.5, font_size=20, showarrow=False)])
+                 dict(text='FTR', x=0.80, y=0.5, font_size=20, showarrow=False)])
 
 fig_samples.update_layout(paper_bgcolor="#1c1f27")
 
@@ -146,7 +152,7 @@ height 500px;
            <h2> Version without normal samples </h2>
         AutoMethyc is a pipeline automated which aims for simplicity and practicality in methylation analysis.
         <h2 id="Samples"> Statistics </h2>
-        The statistics of the samples consist of classifying the coverage (CVR) of the samples given the bedGraph and the average coverage of the samples, in addition to plotting the count of regions present in the bedGraph (In_loc) and those not present (Not_loc).
+        The statistics of the samples consist of classifying the coverage (CVR) of the samples given the bedGraph and the average coverage of the samples, in addition to plotting the count of regions present in the bedGraph (In_loc) and those not present (Not_loc). In addition to evaluating the filter count (FTR) to visualize the number of filtered regions.
         
  </div">  
 

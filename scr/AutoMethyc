@@ -62,7 +62,9 @@ if [ "$norm" = "False" ]; then
 				mv $output/*csv $output/CSV
 				rm -rf $output/tmp
 
-				python /usr/bin/Report_HTML.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML
+				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
+
+				python /usr/bin/Report_HTML.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML $output/Count.UF.csv
 
 else
 				echo 'You are using normals'
@@ -100,6 +102,7 @@ else
 
 				awk '(NR == 1) || (FNR > 1)' $output/norm/NotLoc.csv $output/samples/NotLoc.csv > $output/NotLoc.csv
 
+				awk '(NR == 1) || (FNR > 1)' $output/norm/merge.csv $output/samples/merge.csv > $output/merge.csv
 
 				echo 'Done merge samples and normals'
 
@@ -121,6 +124,8 @@ else
 				python /usr/bin/Norm.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV
 
 				python /usr/bin/PCA.py $output/CSV/OncoprintNorm.csv $output/CSV
+
+				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 
 				python /usr/bin/Report_HTML_norm.py $output $output/HTML
 fi
