@@ -70,6 +70,7 @@ fig_samples.update_layout(
 
 fig_samples.update_layout(paper_bgcolor="#1c1f27")
 
+df = pd.read_csv(Count)
 df.columns = ['ID' , 'Count']
 df['Status'] = ['In_Loc'] * len(df)
 
