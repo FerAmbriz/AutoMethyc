@@ -33,27 +33,35 @@ chr17,41277115,41277115,BRCA1
 ## Usage
 The usage varies depending on the version used during the installation (with docker or in the $PATH)
 ### Docker version
-With the docker version is recommended to run the docker container in the background so that the execution does not break when leaving the container, in addition to linking and mounting a volume to work with the files of the machine. And finally the program is executed with AutoMethyc followed by the input parameters
+With the docker version is recommended to run the docker container in the background so that the execution does not break when leaving the container, in addition to linking and mounting a volume to work with the files of the machine, for this, the volume is mounted in the directory with the files of the user(s) (usually "/home"). And finally the program is executed with AutoMethyc followed by the input parameters.
 ```
 docker run -it -d -v [/home]:[/home] ambrizbiotech/automethyc AutoMethyc \
-    -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [bedGraph.csv]
+    -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [bedGraph.csv] [optional arguments]
+```
+The output when executing this command is the "container ID" that will be running in the background. To see the execution progress use:
+```
+docker logs "container ID"
 ```
 ### Installed version in PATH
 With the version installed in the PATH it is simply executed with AutoMethyc followed by the input parameters
 ```
-AutoMethyc -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [bedGraph.csv]
+AutoMethyc -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [bedGraph.csv] [optional arguments]
 ```
 ## Optional arguments
 ```
 -t --threads    Number of threads. By default use 4
 ```
 ## Output
+### Bisulfite_genome folder
+It converts the reference genome into bisulfite and places it in the same folder where the reference genome is located, so that this conversion is done only once.
 ### Bismark folder
-* `02_fastq_trimmed`
-* `03_aligned`
-* `04_deduplicated`
-* `05_bismark_extractor`
-* `06_bedGraph`
+* `02_fastq_trimmed` fastqc output.
+* `03_aligned` Ouput of running bismark.
+    - `*bt2.bam` All alignments plus methylation call strings.
+    - `report.txt` Alignment and methylation summary.
+* `04_deduplicated` output of deduplicate_bismark. Contain the deduplicate the Bismark alignment BAM file.
+* `05_bismark_extractor` output of bismark_methylation_extractor.
+* `06_bedGraph` output of bismark_methylation_extractor.
 ### CSV folder
 * `Count.csv` Count of regions of interest presents in the samples.
 * `Filtered.csv` Merge filtered by regions of interest.
