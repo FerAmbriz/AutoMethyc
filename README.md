@@ -70,8 +70,8 @@ It converts the reference genome into bisulfite and places it in the same folder
 * `Oncoprint.csv` Matrix of percentage of methylation present in each sample by site.
 * `OncoprintPromedio.csv` Matrix of mean percentage of methylation present in each gene.
 * `OncoprintRellenado.csv` Matrix of percentage of methylation present in each sample by site with null values replaced by 0.
-* `CountUF.csv`
-* `NotLoc.csv`
+* `CountUF.csv` Count of regions before and after filtering.
+* `NotLoc.csv` Count of regions not present in the sample, but present in the bedGraph.
 
 with normals samples
 * `OncoprintNorm.csv` Matrix of z-score of methylation present in each site per sample.
