@@ -59,7 +59,7 @@ It converts the reference genome into bisulfite and places it in the same folder
 * `02_fastq_trimmed` fastqc output.
 * `03_aligned` Ouput of running bismark.
     - `*bt2.bam` All alignments plus methylation call strings.
-    - `report.txt` Alignment and methylation summary.
+    - `*report.txt` Alignment and methylation summary.
 * `04_deduplicated` Output of deduplicate_bismark. Contain the deduplicate the Bismark alignment BAM file.
 * `05_bismark_extractor` Output of bismark_methylation_extractor.
 * `06_bedGraph` Output of bismark_methylation_extractor.
