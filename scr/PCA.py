@@ -65,33 +65,16 @@ for i in range(max(len(normals), len(samples))):
             row_i = n+s
             df_bd.loc[i]=row_i
 
-df_bd.to_csv(output+"/PCA_vectors.csv")
+def funcPCA(df):
+    df = df.T
+    df.replace(['inf', '-inf'], 0, inplace=True)
 
-def funcPCA(ubicacion):
-    df = pd.read_csv(ubicacion, header = None)
-    dfT = df.T
-    dfT = dfT.set_index(0)
-    dfT.columns = dfT.iloc[0]
-    dfT = dfT.iloc[1: , :]
-    
-    y = dfT.index.values
+    x = np.array(df)
+    x = x.astype(float)
 
-    df = pd.read_csv(ubicacion)
-    df = df.drop(['Unnamed: 0'], axis=1)
-    dfT = df.T
-    dfT = dfT.reset_index()
-    dfT = dfT.drop(['index'], axis=1)
-
-    dfT['Type'] = y
-    
-    lst = list(range(0,len(df),1))
-    features = lst
-    x = dfT.loc[:, features].values
-
-    y = dfT.loc[:,['Type']].values# Standardizing the features
-
-    x = np.nan_to_num(x)
-    x = StandardScaler().fit_transform(x)
+    typ = ['Normal'] * len(normals.T)
+    typ = typ + ['Samples'] * len(samples.T)
+    df['Type'] = typ
 
     pca = PCA()
     principalComponents = pca.fit_transform(x)
@@ -104,13 +87,12 @@ def funcPCA(ubicacion):
         lst2.append('PCA'+ str(i+1))
 
     principalDf = pd.DataFrame(data = principalComponents, columns = lst2)
-    finalDf = pd.concat([principalDf, dfT[['Type']]], axis = 1)
+    principalDf['Type'] = typ
 
-    return finalDf
+    return principalDf
 
-ubicacion_file = output+"/PCA_vectors.csv"
 
 # Make PCA
-finalDf = funcPCA(ubicacion_file)
+finalDf = funcPCA(df_bd)
 
 finalDf.to_csv(output+"/PCA_vectors.csv")
