@@ -105,19 +105,17 @@ fig_chr.update_layout(paper_bgcolor="#1c1f27")
 #---------------------------Norm all----------------------
 
 df = pd.read_csv(OncoprintNorm)
-df = df.drop(df.index[[0,1]])
-df = df.rename(columns = {'Unnamed: 1':'ID'})
 
 df = df.set_index('ID')
-df = df.drop(['Start'], axis=1)
+df = df.drop(['Type', 'Unnamed: 0'], axis=1)
+
 fig_norm_all = px.imshow(df.T, aspect="auto", template= "plotly_dark")
 fig_norm_all.update_layout(paper_bgcolor="#1c1f27")
 
 
 #-------------------------Norm mean-------------------
 df = pd.read_csv(OncoprintMeanNorm)
-df = df.drop(['Status'], axis=1)
-df = df.rename(columns = {'Unnamed: 1':'ID'})
+df = df.drop(['Type', 'Unnamed: 0'], axis=1)
 df = df.set_index('ID')
 
 fig_mean_norm= px.imshow(df.T, aspect="auto", template= "plotly_dark")

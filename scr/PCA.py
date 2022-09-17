@@ -2,19 +2,17 @@ import pandas as pd
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.express as px
 import sys
 
 input_df = sys.argv[1]
 output = sys.argv[2]
 
 df = pd.read_csv(input_df)
-df = df.drop(df.index[[0,1]])
-df = df.drop(['Unnamed: 1'], axis=1)
-df = df.rename(columns = {'Start':'Type'})
+#df = df.drop(df.index[[0,1]])
+df = df.drop(['Unnamed: 0', 'ID'], axis=1)
 df = df.fillna(0)
+df.replace(['inf', '-inf'], 0, inplace=True)
+df.replace([np.inf, -np.inf], 0, inplace=True)
 
 # Separcion por grupos
 normals = df[df['Type'] == 'Normal']
@@ -25,6 +23,7 @@ samples = samples.set_index('Type')
 
 #indexado del df original 
 df = df.set_index('Type')
+
 columns = list(df.columns.values)
 
 # lista con el nombre de las columnas
@@ -64,17 +63,18 @@ for i in range(max(len(normals), len(samples))):
             s = list(samples.iloc[i])
             row_i = n+s
             df_bd.loc[i]=row_i
+df_bd = df_bd.T
 
 def funcPCA(df):
-    df = df.T
     df.replace(['inf', '-inf'], 0, inplace=True)
+    df.replace([np.inf, -np.inf], 0, inplace=True)
 
     x = np.array(df)
     x = x.astype(float)
 
-    typ = ['Normal'] * len(normals.T)
-    typ = typ + ['Samples'] * len(samples.T)
-    df['Type'] = typ
+    #typ = ['Normal'] * len(normals.T)
+    #typ = typ + ['Sample'] * len(samples.T)
+    df['Type'] = lst
 
     pca = PCA()
     principalComponents = pca.fit_transform(x)
@@ -87,7 +87,7 @@ def funcPCA(df):
         lst2.append('PCA'+ str(i+1))
 
     principalDf = pd.DataFrame(data = principalComponents, columns = lst2)
-    principalDf['Type'] = typ
+    principalDf['Type'] = lst
 
     return principalDf
 
