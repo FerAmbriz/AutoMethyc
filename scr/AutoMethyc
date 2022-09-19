@@ -3,7 +3,9 @@
 #Defect values
 thr=4
 norm="False"
+filtro="False"
 
+# Options
 while [[ $# -gt 0 ]]; do
 opt="$1"
 shift;
@@ -37,11 +39,43 @@ mkdir $output/HTML
 mkdir $output/Bismark
 mkdir $output/HTML/Bismark_report
 
+echo '#----------------------Parameters---------------------------#'
+echo '		input: ' $input
+echo '		output: ' $output
+echo '		ref: '	$ref
+echo '		filtro: ' $filtro
+echo '		threads: ' $thr
+echo '		normal: ' $norm
+echo '#-----------------------------------------------------------#'
 
 if [ "$norm" = "False" ]; then
+	if [ "$filtro" = "False" ]; then
+		echo 'usando la version sin normales y sin filtro'
+
+		BuclePipeline.sh $input $output $ref $thr
+		# descomprime y renombra los archivos por ID
+		rename.sh $output/results/06_bedGraph
+		# Construcción del merge
+		allmerge.sh $output/results/06_bedGraph $output 'Sample'
+	
+
+		python /usr/bin/Oncoprint_wf.py $output/merge.csv $output
 
 
-				echo 'You are not using normals'
+		multiqc $output/results/02_fastq_trimmed/*
+		mv multiqc* $output/HTML
+
+		mv $output/results $output/Bismark
+
+				
+		mv $output/results/results_html/* $output/HTML/Bismark_report
+		mv $output/*csv $output/CSV
+		rm -rf $output/tmp
+
+		python /usr/bin/Report_HTML_wf.py $output/CSV/Oncoprint_wf.csv $output/Count.csv $output/HTML
+	else
+		echo 'usando la version sin normales y con filtro'
+
 				BuclePipeline.sh $input $output $ref $thr
 				# descomprime y renombra los archivos por ID
 				rename.sh $output/results/06_bedGraph
@@ -50,7 +84,7 @@ if [ "$norm" = "False" ]; then
 				# Aplicacion de filtros
 				python /usr/bin/Filter.py $output/merge.csv $filtro $output
 
-				python /usr/bin/Oncoprint.py $output
+				python /usr/bin/Oncoprint.py $output/Filtered.csv $output
 
 				multiqc $output/results/02_fastq_trimmed/*
 				mv multiqc* $output/HTML
@@ -64,9 +98,66 @@ if [ "$norm" = "False" ]; then
 
 				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 
-				python /usr/bin/Report_HTML.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML $output/Count.UF.csv
-
+				python /usr/bin/Report_HTML.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML $output/CSV/CountUF.csv
+	fi
 else
+	if [ "$filtro" = "False" ]; then
+
+		echo 'usando la version con normales y sin filtro'
+
+				mkdir $output/norm
+				mkdir $output/samples
+
+
+				echo '---------------Normal Samples------------------'
+				BuclePipeline.sh $norm $output/norm $ref $thr
+				# descomprime y renombra los archivos por ID
+				rename.sh $output/norm/results/06_bedGraph
+				# Construcción del merge
+				allmerge.sh $output/norm/results/06_bedGraph $output/norm 'Normal'
+				
+				
+				multiqc $output/norm/results/02_fastq_trimmed/*
+
+				mv multiqc_report.html $output/HTML/multiqc_report_normals.html
+				mv multiqc_data $output/HTML/multiqc_data_normals
+
+
+				echo '------------------Samples---------------------'
+				BuclePipeline.sh $input $output/samples $ref $thr
+				rename.sh $output/samples/results/06_bedGraph
+				allmerge.sh $output/samples/results/06_bedGraph $output/samples 'Sample'
+
+				echo 'Joining in one file the samples and normals'
+				
+				awk '(NR == 1) || (FNR > 1)' $output/norm/merge.csv $output/samples/merge.csv > $output/merge.csv
+
+				echo 'Done merge samples and normals'
+
+				python /usr/bin/Oncoprint_wf.py $output/merge.csv $output
+
+				multiqc $output/samples/results/02_fastq_trimmed/*
+				mv multiqc_report.html $output/HTML/multiqc_report_samples.html
+				mv multiqc_data $output/HTML/multiqc_data_samples
+				
+				# Organizacion Output
+				mv $output/*csv $output/CSV
+				mv $output/samples $output/Bismark
+				mv $output/norm $output/Bismark
+
+				rm -rf $output/Bismark/norm/tmp
+				rm -rf $output/Bismark/samples/tmp
+
+				
+				python /usr/bin/Norm_wf.py $output/CSV/Oncoprint_wf.csv $output/CSV
+
+				python /usr/bin/PCA.py $output/CSV/OncoprintNorm.csv $output/CSV
+
+
+				python /usr/bin/Report_HTML_norm_wf.py $output $output/HTML
+	else
+				echo 'usando la version con normales y con filtro'
+
 				echo 'You are using normals'
 				mkdir $output/norm
 				mkdir $output/samples
@@ -107,7 +198,7 @@ else
 				echo 'Done merge samples and normals'
 
 
-				python /usr/bin/Oncoprint.py $output
+				python /usr/bin/Oncoprint.py $output/Filtered.csv $output
 
 				multiqc $output/samples/results/02_fastq_trimmed/*
 				mv multiqc_report.html $output/HTML/multiqc_report_samples.html
@@ -128,6 +219,7 @@ else
 				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 
 				python /usr/bin/Report_HTML_norm.py $output $output/HTML
+	fi
 fi
 
 #Rscript /usr/bin/Oncoprint.R $output/OncoprintRellenado.csv $output/all_sites.png

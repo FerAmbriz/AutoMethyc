@@ -1,10 +1,11 @@
 import pandas as pd
 import sys
 
-Output=sys.argv[1]
+Input = sys.argv[1]
+Output = sys.argv[2]
 
 print ('#----------------Construct Oncoprint-------------------#')
-merge_filtrado = pd.read_csv(Output+'/Filtered.csv')
+merge_filtrado = pd.read_csv(Input)
 
 merge_filtrado=merge_filtrado.drop(['Chr', 'End',  'Cyt_Met', 'Cyt_NoMet'], axis=1)
 
@@ -24,7 +25,7 @@ df.to_csv(Output+'/OncoprintRellenado.csv')
 
 print ('''
 
-Output: 
+Output:
 	Output/Oncoprint.csv
 	Output/OncoprintRellenado.csv
 
