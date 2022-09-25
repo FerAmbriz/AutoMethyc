@@ -4,6 +4,7 @@
 thr=4
 norm="False"
 filtro="False"
+genome="hg19"
 
 # Options
 while [[ $# -gt 0 ]]; do
@@ -12,17 +13,21 @@ shift;
 current_arg="$1"
 case "$opt" in
 "-h"|"--help"      ) echo '''
-AutoMethyc version 0.0.1-beta
+AutoMethyc version 0.0.2-beta
 Usage
 	AutoMethyc [options]
 Options
 	-i --input		Folder with fastq
 	-o --output		Output location
 	-r --ref		Folder with references
-	-f --filtro		File with regions of interest
 Optional arguments
-	-t --threads		Number of threads
-	-n --normal		Folder with fastq of normals
+	-t --threads		Number of threads (default=4)
+	-n --normal		Folder with fastq of normals (default=False)
+	-g --genome		Reference genome (default=hg19)
+		other genomes:
+			{hg38, hg19, hg18, hg17, hg16, mm39, mm10, mm9, mm8, mm7}
+	-f --filtro		File with regions of interest (default=False)
+
 ''';  exit 1;;
 "-i"|"--input"      ) input="$1"; shift;;
 "-o"|"--output"      ) output="$1"; shift;;
@@ -30,6 +35,8 @@ Optional arguments
 "-f"|"--filtro"      ) filtro="$1"; shift;;
 "-t"|"--threads"      ) thr="$1"; shift;;
 "-n"|"--normal"      ) norm="$1"; shift;;
+"-g"|"--genome"       ) genome="$1"; shift;;
+
 	esac
 done
 
@@ -46,6 +53,7 @@ echo '		ref: '	$ref
 echo '		filtro: ' $filtro
 echo '		threads: ' $thr
 echo '		normal: ' $norm
+echo '		genome: ' $genome
 echo '#-----------------------------------------------------------#'
 
 if [ "$norm" = "False" ]; then
@@ -97,6 +105,7 @@ if [ "$norm" = "False" ]; then
 				rm -rf $output/tmp
 
 				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
+				python /usr/bin/WebScrapping.py $filtro $genome $output/CSV
 
 				python /usr/bin/Report_HTML.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML $output/CSV/CountUF.csv
 	fi
@@ -217,6 +226,8 @@ else
 				python /usr/bin/PCA.py $output/CSV/OncoprintNorm.csv $output/CSV
 
 				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
+
+				python /usr/bin/WebScrapping.py $filtro $genome $output/CSV
 
 				python /usr/bin/Report_HTML_norm.py $output $output/HTML
 	fi

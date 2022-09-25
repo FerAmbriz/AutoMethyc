@@ -8,15 +8,13 @@ bed_file = sys.argv[1]
 ref = sys.argv[2]
 output = sys.argv[3]
 
+# Web scrapping
 url = 'https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=1442153227_FWCo6wJtrFjEzVt07A5mEs5LeL3m'
 session = requests.Session()
 
 params = {
         'hgsid': '1442153227_FWCo6wJtrFjEzVt07A5mEs5LeL3m',
-        'jsh_pageVertPos': '0',
-        'clade': 'mammal',
-        'org': 'Human',
-        'db': ref,
+        'db': 'hg19',
         'hgta_group': 'regulation',
         'hgta_track': 'cpgIslandExt',
         'hgta_table': 'cpgIslandExt',
@@ -31,36 +29,55 @@ params = {
 }
 
 response = session.post(url, data=params)
-df = pd.read_csv(io.StringIO(response.text), sep='\t')
-
-start = list(df.chromStart)
+db = pd.read_csv(io.StringIO(response.text), sep='\t')
 
 bed = pd.read_csv(bed_file)
 
+def distance (loci, db):
+    dist = loci-db
+    return abs(dist)
+
+dist_min =  []
 df_bd = pd.DataFrame()
-lst = []
-site = []
+original = []
 typ = []
 
-for loci in list(bed.End):
-    df_i = df[df['chromStart'] == min(start, key=lambda x:abs(x-loci))]
+for crm, loci in zip(bed.Chr, bed.Start):
+    db_i = db[db['chrom'] == crm]
 
-    distance = abs(int(df_i.chromStart) - int(loci))
-    lst.append(distance)
-    site.append(loci)
+    original = [loci] * len(db_i)
+    all_dist = []
 
-    if loci in list(range(int(df_i.chromStart), int(df_i.chromEnd), 1)):
-        typ.append('cpg island')
+    for i,j in zip(db_i.chromStart, db_i.chromEnd):
+        if distance(loci, i) < distance(loci, j):
+            all_dist.append(distance(loci, i))
+        else:
+            all_dist.append(distance(loci, j))
+
+    db_i['Site'] = original
+    db_i['DistCpGIsland'] = all_dist
+
+    db_i = db_i[db_i['DistCpGIsland'] == db_i['DistCpGIsland'].min()]
+
+    df_bd = pd.concat([df_bd, db_i])
+
+typ = []
+dist = []
+for loci, start, end, distance in zip(df_bd.Site, df_bd.chromStart, df_bd.chromEnd, df_bd.DistCpGIsland):
+    if loci in list(range(start, end, 1)):
+        typ.append('CpG island')
+        dist.append('-')
     elif distance < 2000:
         typ.append('cpg shore')
+        dist.append(distance)
     elif 2000 <= distance < 4000:
         typ.append('cpg shelf')
+        dist.append(distance)
     else:
         typ.append('cpg inter CGI')
-    df_bd = pd.concat([df_bd, df_i], ignore_index=True)
+        dist.append(distance)
 
-df_bd['Original_Site'] = site
-df_bd['Distance_StartCpG'] = lst
 df_bd['Type'] = typ
+df_bd['DistCpGIsland'] = dist
 
 df_bd.to_csv(output+'/StatusCpG.csv')
