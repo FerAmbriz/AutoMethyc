@@ -5,6 +5,7 @@ thr=4
 norm="False"
 filtro="False"
 genome="hg19"
+depth=20
 
 # Options
 while [[ $# -gt 0 ]]; do
@@ -27,7 +28,7 @@ Optional arguments
 		other genomes:
 			{hg38, hg19, hg18, hg17, hg16, mm39, mm10, mm9, mm8, mm7}
 	-f --filtro		File with regions of interest (default=False)
-
+	-d --depth		Minimum depth to consider (default=20)
 ''';  exit 1;;
 "-i"|"--input"      ) input="$1"; shift;;
 "-o"|"--output"      ) output="$1"; shift;;
@@ -54,6 +55,7 @@ echo '		filtro: ' $filtro
 echo '		threads: ' $thr
 echo '		normal: ' $norm
 echo '		genome: ' $genome
+echo '		depth: ' $depth
 echo '#-----------------------------------------------------------#'
 
 if [ "$norm" = "False" ]; then
@@ -61,6 +63,10 @@ if [ "$norm" = "False" ]; then
 		echo 'usando la version sin normales y sin filtro'
 
 		BuclePipeline.sh $input $output $ref $thr
+
+		# Filtrado por profundidad
+		DepthCord.sh $output/results/06_bedGraph $output/CSV $depth
+
 		# descomprime y renombra los archivos por ID
 		rename.sh $output/results/06_bedGraph
 		# Construcción del merge
@@ -85,6 +91,8 @@ if [ "$norm" = "False" ]; then
 		echo 'usando la version sin normales y con filtro'
 
 				BuclePipeline.sh $input $output $ref $thr
+				# Filtrado por profundidad
+				DepthCord.sh $output/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
 				rename.sh $output/results/06_bedGraph
 				# Construcción del merge
@@ -120,6 +128,8 @@ else
 
 				echo '---------------Normal Samples------------------'
 				BuclePipeline.sh $norm $output/norm $ref $thr
+				# Filtrado por profundidad
+				DepthCord.sh $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
 				rename.sh $output/norm/results/06_bedGraph
 				# Construcción del merge
@@ -134,12 +144,16 @@ else
 
 				echo '------------------Samples---------------------'
 				BuclePipeline.sh $input $output/samples $ref $thr
+				# Filtrado por profundidad
+				DepthCord.sh $output/samples/results/06_bedGraph $output $depth
 				rename.sh $output/samples/results/06_bedGraph
 				allmerge.sh $output/samples/results/06_bedGraph $output/samples 'Sample'
 
 				echo 'Joining in one file the samples and normals'
 				
 				awk '(NR == 1) || (FNR > 1)' $output/norm/merge.csv $output/samples/merge.csv > $output/merge.csv
+				awk '(NR == 1) || (FNR > 1)' $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv > $output/CSV/CountUF_depth_merge.csv
+				rm -rf $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv
 
 				echo 'Done merge samples and normals'
 
@@ -174,6 +188,8 @@ else
 
 				echo '---------------Normal Samples------------------'
 				BuclePipeline.sh $norm $output/norm $ref $thr
+				# Filtrado por profundidad
+				DepthCord.sh $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
 				rename.sh $output/norm/results/06_bedGraph
 				# Construcción del merge
@@ -190,6 +206,8 @@ else
 
 				echo '------------------Samples---------------------'
 				BuclePipeline.sh $input $output/samples $ref $thr
+				# Filtrado por profundidad
+				DepthCord.sh $output/samples/results/06_bedGraph $output $depth
 				rename.sh $output/samples/results/06_bedGraph
 				allmerge.sh $output/samples/results/06_bedGraph $output/samples 'Sample'
 				python /usr/bin/Filter.py $output/samples/merge.csv $filtro $output/samples
@@ -203,6 +221,10 @@ else
 				awk '(NR == 1) || (FNR > 1)' $output/norm/NotLoc.csv $output/samples/NotLoc.csv > $output/NotLoc.csv
 
 				awk '(NR == 1) || (FNR > 1)' $output/norm/merge.csv $output/samples/merge.csv > $output/merge.csv
+
+				awk '(NR == 1) || (FNR > 1)' $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv > $output/CSV/CountUF_depth_merge.csv
+				rm -rf $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv
+
 
 				echo 'Done merge samples and normals'
 
