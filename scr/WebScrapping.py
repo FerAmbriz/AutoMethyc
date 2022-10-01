@@ -68,13 +68,13 @@ for loci, start, end, distance in zip(df_bd.Site, df_bd.chromStart, df_bd.chromE
         typ.append('CpG island')
         dist.append('-')
     elif distance < 2000:
-        typ.append('cpg shore')
+        typ.append('CpG shore')
         dist.append(distance)
     elif 2000 <= distance < 4000:
-        typ.append('cpg shelf')
+        typ.append('CpG shelf')
         dist.append(distance)
     else:
-        typ.append('cpg inter CGI')
+        typ.append('CpG inter CGI')
         dist.append(distance)
 
 df_bd['Type'] = typ

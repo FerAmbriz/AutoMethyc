@@ -4,6 +4,7 @@
 # # Rerport HTML
 
 import pandas as pd
+import numpy as np
 import plotly.express as px
 from IPython.display import HTML
 import sys
@@ -15,7 +16,7 @@ import re
 intput_folder = sys.argv[1]
 Output = sys.argv[2]
 
-Oncoprint_All = intput_folder+'/CSV/OncoprintRellenado.csv'
+Oncoprint_All = intput_folder+'/CSV/Oncoprint.csv'
 Oncoprint_mean = intput_folder+'/CSV/OncoprintPromedio.csv'
 Count = intput_folder+'/CSV/Count.csv'
 NotLoc = intput_folder+'/CSV/NotLoc.csv'
@@ -23,18 +24,183 @@ OncoprintNorm = intput_folder+'/CSV/OncoprintNorm.csv'
 OncoprintMeanNorm = intput_folder+'/CSV/OncoprintMeanNorm.csv'
 PCA_data = intput_folder+'/CSV/PCA_vectors.csv'
 CountUF=intput_folder+'/CSV/CountUF.csv'
+bed = intput_folder+ '/CSV/StatusCpG.csv'
 
 print('#-------------------Plotting-------------------------')
 
 #------------------------All_sites ------------------
+sites_bed = pd.read_csv(bed)
+
 df = pd.read_csv(Oncoprint_All)
 df = df.drop(['Unnamed: 1'], axis=1)
 df = df.drop(df.index[[0,1]])
 df = df.rename(columns = {'Sample':'Start'})
+
+lst = []
+site = []
+for j in df.Start:
+    for i,k in zip(sites_bed.Site, sites_bed.Type):
+        if int(j) == int(i):
+            lst.append(k)
+            site.append(i)
+
 df = df.set_index('Start')
 
-fig_all = px.imshow(df, aspect="auto", template= "plotly_dark")
-fig_all.update_layout(paper_bgcolor="#1c1f27")
+# Remplazar los valores
+lst = list(map(lambda x: x.replace('CpG island', '0'), lst))
+lst = list(map(lambda x: x.replace('CpG shore', '1'), lst))
+lst = list(map(lambda x: x.replace('CpG shelf', '2'), lst))
+lst = list(map(lambda x: x.replace('CpG inter CGI', '3'), lst))
+
+df_annot = pd.DataFrame({'Site': site, 'Type':lst})
+df_annot = df_annot.set_index('Site')
+
+# Make array
+z = np.array([list(df_annot.Type)]).T
+
+def discrete_colorscale(bvals, colors):
+    if len(bvals) != len(colors)+1:
+        raise ValueError('len(boundary values) should be equal to  len(colors)+1')
+    bvals = sorted(bvals)
+    nvals = [(v-bvals[0])/(bvals[-1]-bvals[0]) for v in bvals]  #normalized values
+
+    dcolorscale = [] #discrete colorscale
+    for k in range(len(colors)):
+        dcolorscale.extend([[nvals[k], colors[k]], [nvals[k+1], colors[k]]])
+    return dcolorscale
+
+if len(list(df_annot['Type'].value_counts())) == 3:
+    bvals = [0, 1, 2, 3]
+    colors = ['blue', '#3efe00', 'red']
+    dcolorsc = discrete_colorscale(bvals, colors)
+    heatmap = go.Heatmap(z=z, colorscale = dcolorsc,
+                     colorbar = dict(thickness=10,
+                                     tickvals=[0.2, 1, 1.7],
+                                     ticktext=['a', 'b', 'c']), x = ['Type'], y = list(df.index)
+                    )
+    fig1 = px.imshow(df, color_continuous_scale='RdBu_r')
+    #ff.create_annotated_heatmap(z1, x.tolist(), y.tolist(),  colorscale='matter')
+    fig2 = go.Figure(data=[heatmap])
+
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        horizontal_spacing=0.05,
+        column_widths=[0.9, 0.1], shared_yaxes=True
+    )
+
+    fig.add_trace(fig1.data[0], 1, 1)
+    fig.add_trace(fig2.data[0], 1, 2)
+
+
+    fig.add_annotation(text='CpG island                CpG shore                CpG shelf',
+                        align='left',
+                        showarrow=False,
+                        xref='paper',
+                        yref='paper',
+                        x=0.3,
+                        y=-0.13,
+                        borderwidth=1)
+
+    fig.add_annotation(text='',
+                        align='left',
+                        showarrow=False,
+                        xref='paper',
+                        yref='paper',
+                        x=0.28,
+                        y=-0.126,
+                        bgcolor=colors[0],
+                        borderwidth=7)
+    fig.add_annotation(text='',
+                        align='left',
+                        showarrow=False,
+                        xref='paper',
+                        yref='paper',
+                        x=0.41,
+                        y=-0.126,
+                        bgcolor=colors[1],
+                        borderwidth=7)
+    fig.add_annotation(text='',
+                        align='left',
+                        showarrow=False,
+                        xref='paper',
+                        yref='paper',
+                        x=0.525,
+                        y=-0.126,
+                        bgcolor=colors[2],
+                        borderwidth=7)
+else:
+    bvals = [0, 1, 2, 3 ,4]
+    colors = ['blue', '#3efe00', 'red', '#00fec0']
+    x = list(range(len(list(df_annot['Type'].value_counts()))+1))
+    dcolorsc = discrete_colorscale(x, colors[0:len(list(df_annot['Type'].value_counts()))])
+
+    heatmap = go.Heatmap(z=z, colorscale = dcolorsc,
+                     colorbar = dict(thickness=10,
+                                     tickvals=[0.2, 1, 1.7, 2.2],
+                                     ticktext=['a', 'b', 'c' ,'d']), x = ['Type'], y = list(df.index)
+                    )
+    fig1 = px.imshow(df, color_continuous_scale='RdBu_r')
+    fig2 = go.Figure(data=[heatmap])
+
+
+    fig = make_subplots(
+        rows=1, cols=2,
+        horizontal_spacing=0.05,
+        column_widths=[0.9, 0.1], shared_yaxes=True
+    )
+
+    fig.add_trace(fig1.data[0], 1, 1)
+    fig.add_trace(fig2.data[0], 1, 2)
+
+
+    fig.add_annotation(text='CpG island                CpG shore                CpG shelf                CpG inter CGI',
+                        align='left',
+                        showarrow=False,
+                        xref='paper',
+                        yref='paper',
+                        x=0.3,
+                        y=-0.13,
+                        borderwidth=1)
+
+    fig.add_annotation(text='',
+                        align='left',
+                        showarrow=False,
+                        xref='paper',
+                        yref='paper',
+                        x=0.28,
+                        y=-0.126,
+                        bgcolor=colors[0],
+                        borderwidth=7)
+    fig.add_annotation(text='',
+                        align='left',
+                        showarrow=False,
+                        xref='paper',
+                        yref='paper',
+                        x=0.41,
+                        y=-0.126,
+                        bgcolor=colors[1],
+                        borderwidth=7)
+    fig.add_annotation(text='',
+                        align='left',
+                        showarrow=False,
+                        xref='paper',
+                        yref='paper',
+                        x=0.525,
+                        y=-0.126,
+                        bgcolor=colors[2],
+                        borderwidth=7)
+    fig.add_annotation(text='',
+                        align='left',
+                        showarrow=False,
+                        xref='paper',
+                        yref='paper',
+                        x=0.64,
+                        y=-0.126,
+                        bgcolor=colors[3],
+                        borderwidth=7)
+fig_all = fig
+fig_all.update_layout(paper_bgcolor="#1c1f27", template =  "plotly_dark")
 
 #--------------------------Mean-----------------------
 

@@ -115,7 +115,7 @@ if [ "$norm" = "False" ]; then
 				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 				python /usr/bin/WebScrapping.py $filtro $genome $output/CSV
 
-				python /usr/bin/Report_HTML.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML $output/CSV/CountUF.csv
+				python /usr/bin/Report_HTML.py $output/CSV/Oncoprint.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML $output/CSV/CountUF.csv $output/CSV/StatusCpG.csv
 	fi
 else
 	if [ "$filtro" = "False" ]; then
