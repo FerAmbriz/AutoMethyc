@@ -88,7 +88,7 @@ if [ "$norm" = "False" ]; then
 
 		python /usr/bin/WebScrapping.py $output/CSV/Oncoprint_wf.csv hg19 $output/CSV True
 
-		python /usr/bin/Report_HTML_wf.py $output/CSV/Oncoprint_wf.csv $output/Count.csv $output/HTML
+		python /usr/bin/Report_HTML_wf.py $output/CSV/Oncoprint_wf.csv $output/Count.csv $output/HTML $output/CSV/StatusCpG.csv
 	else
 		echo 'usando la version sin normales y con filtro'
 
