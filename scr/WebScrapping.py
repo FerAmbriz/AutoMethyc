@@ -7,6 +7,7 @@ import pandas as pd
 bed_file = sys.argv[1]
 ref = sys.argv[2]
 output = sys.argv[3]
+status = sys.argv[4]
 
 # Web scrapping
 url = 'https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=1442153227_FWCo6wJtrFjEzVt07A5mEs5LeL3m'
@@ -33,8 +34,12 @@ db = pd.read_csv(io.StringIO(response.text), sep='\t')
 
 bed = pd.read_csv(bed_file)
 
+if status == 'True':
+    bed.rename(columns={'Unnamed: 0':'Chr', 'Unnamed: 1':'Start'}, inplace=True)
+    bed = bed.drop([0,1,2])
+
 def distance (loci, db):
-    dist = loci-db
+    dist = int(loci)-int(db)
     return abs(dist)
 
 dist_min =  []

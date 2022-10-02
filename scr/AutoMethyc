@@ -86,6 +86,8 @@ if [ "$norm" = "False" ]; then
 		mv $output/*csv $output/CSV
 		rm -rf $output/tmp
 
+		python /usr/bin/WebScrapping.py $output/CSV/Oncoprint_wf.csv hg19 $output/CSV True
+
 		python /usr/bin/Report_HTML_wf.py $output/CSV/Oncoprint_wf.csv $output/Count.csv $output/HTML
 	else
 		echo 'usando la version sin normales y con filtro'
@@ -113,7 +115,7 @@ if [ "$norm" = "False" ]; then
 				rm -rf $output/tmp
 
 				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
-				python /usr/bin/WebScrapping.py $filtro $genome $output/CSV
+				python /usr/bin/WebScrapping.py $filtro $genome $output/CSV False
 
 				python /usr/bin/Report_HTML.py $output/CSV/Oncoprint.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML $output/CSV/CountUF.csv $output/CSV/StatusCpG.csv
 	fi
@@ -175,6 +177,8 @@ else
 				python /usr/bin/Norm_wf.py $output/CSV/Oncoprint_wf.csv $output/CSV
 
 				python /usr/bin/PCA.py $output/CSV/OncoprintNorm.csv $output/CSV
+
+				python /usr/bin/WebScrapping.py $output/CSV/Oncoprint_wf.csv hg19 $output/CSV True
 
 
 				python /usr/bin/Report_HTML_norm_wf.py $output $output/HTML
@@ -249,7 +253,7 @@ else
 
 				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 
-				python /usr/bin/WebScrapping.py $filtro $genome $output/CSV
+				python /usr/bin/WebScrapping.py $filtro $genome $output/CSV False
 
 				python /usr/bin/Report_HTML_norm.py $output $output/HTML
 	fi
