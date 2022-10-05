@@ -12,5 +12,9 @@ echo $(ls $input)
 
 for i in $input/*.cov;
 do
-	python /usr/bin/Depth.py $i $output $dep 
+	x=${i%.*}
+	x=${x##*/}
+	
+	python /usr/bin/Depth.py $i $output $dep $x
+
 done
