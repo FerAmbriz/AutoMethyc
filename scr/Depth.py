@@ -16,21 +16,21 @@ cov = cov[cov['6'] > int(dep)]
 cov = cov.set_index(0)
 
 
-filtered = len(cov)
+filtered = len(cov) - unfiltered
 
 depth_mean = cov['6'].mean()
 depth_std = cov['6'].std()
 
-df_i = pd.DataFrame({'filtered': [filtered],
+df_i = pd.DataFrame({'ID' : [ID],
                      'unfiltered': [unfiltered],
+                     'filtered': [filtered],
                      'depth_mean':[depth_mean],
                      'depth_std': [depth_std],
-                     'ID' : [ID]
                      })
 
 db = pd.read_csv(output + '/CountUF_depth.csv')
 db_i = pd.concat([df_i, db])
-db_i = db_i.set_index('filtered')
+db_i = db_i.set_index('ID')
 
 cov.to_csv(inp,  header = None, sep='\t')
 db_i.to_csv(output + '/CountUF_depth.csv')

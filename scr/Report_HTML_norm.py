@@ -13,20 +13,51 @@ from plotly.subplots import make_subplots
 import re
 
 
-intput_folder = sys.argv[1]
+input_folder = sys.argv[1]
 Output = sys.argv[2]
 
-Oncoprint_All = intput_folder+'/CSV/Oncoprint.csv'
-Oncoprint_mean = intput_folder+'/CSV/OncoprintPromedio.csv'
-Count = intput_folder+'/CSV/Count.csv'
-NotLoc = intput_folder+'/CSV/NotLoc.csv'
-OncoprintNorm = intput_folder+'/CSV/OncoprintNorm.csv'
-OncoprintMeanNorm = intput_folder+'/CSV/OncoprintMeanNorm.csv'
-PCA_data = intput_folder+'/CSV/PCA_vectors.csv'
-CountUF=intput_folder+'/CSV/CountUF.csv'
-bed = intput_folder+ '/CSV/StatusCpG.csv'
+Oncoprint_All = input_folder+'/CSV/Oncoprint.csv'
+Oncoprint_mean = input_folder+'/CSV/OncoprintPromedio.csv'
+Count = input_folder+'/CSV/Count.csv'
+NotLoc = input_folder+'/CSV/NotLoc.csv'
+OncoprintNorm = input_folder+'/CSV/OncoprintNorm.csv'
+OncoprintMeanNorm = input_folder+'/CSV/OncoprintMeanNorm.csv'
+PCA_data = input_folder+'/CSV/PCA_vectors.csv'
+CountUF=input_folder+'/CSV/CountUF.csv'
+bed = input_folder+ '/CSV/StatusCpG.csv'
+depth = input_folder + '/CSV/CountUF_depth_merge.csv'
 
 print('#-------------------Plotting-------------------------')
+#----------------------------Depth--------------------------
+df = pd.read_csv(depth)
+longitud_inicial = len(df)
+longitud_final = longitud_inicial * 2
+
+lst =[]
+typ = []
+ID = []
+
+for i, j, z in zip(df.filtered, df.unfiltered, df.ID):
+    lst.append(i)
+    typ.append('filtered')
+    lst.append(j)
+    typ.append('unfiltered')
+    lI = [z] * 2
+    ID = ID + lI
+
+while longitud_inicial < longitud_final:
+    df.loc[len(df.index)] = ['NaN'] * len (df.columns)
+
+    longitud_inicial = longitud_inicial + 1
+
+df['Count'] = lst
+df['Type'] = typ
+df['ID'] = ID
+
+fig_depth = px.bar(df, x="ID", y="Count", color="Type", title="Filter Depth", template= "plotly_dark")
+
+fig_depth.update_layout(paper_bgcolor="#1c1f27")
+
 
 #------------------------All_sites ------------------
 sites_bed = pd.read_csv(bed)
@@ -250,7 +281,7 @@ fig_samples.update_layout(
 
 fig_samples.update_layout(paper_bgcolor="#1c1f27")
 
-
+#------------------------barplot----------------------#
 df = pd.read_csv(Count)
 df.columns = ['ID' , 'Count']
 df['Status'] = ['In_Loc'] * len(df)
@@ -489,6 +520,7 @@ html_string_fooder = '''
 # 3. Write the html string as an HTML file
 with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(html_string_head)
+    f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_chr.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_string_spec1)
