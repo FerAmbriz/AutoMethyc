@@ -520,7 +520,7 @@ html_string_fooder = '''
 # 3. Write the html string as an HTML file
 with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(html_string_head)
-    f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(fig_depth.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_chr.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_string_spec1)

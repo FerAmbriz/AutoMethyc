@@ -12,9 +12,11 @@ echo $(ls $input)
 
 for i in $input/*.cov;
 do
-	x=${i%.*}
+	x=${i%_S*}
 	x=${x##*/}
-	
-	python /usr/bin/Depth.py $i $output $dep $x
+	prefix='one_mismatch.'
+	ID=${x/#$prefix}
+
+	python /usr/bin/Depth.py $i $output $dep $ID
 
 done

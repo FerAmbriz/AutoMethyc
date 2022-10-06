@@ -16,7 +16,7 @@ cov = cov[cov['6'] > int(dep)]
 cov = cov.set_index(0)
 
 
-filtered = len(cov) - unfiltered
+filtered = unfiltered - len(cov)
 
 depth_mean = cov['6'].mean()
 depth_std = cov['6'].std()
