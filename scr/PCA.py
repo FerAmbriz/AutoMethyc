@@ -64,6 +64,7 @@ for i in range(max(len(normals), len(samples))):
             row_i = n+s
             df_bd.loc[i]=row_i
 df_bd = df_bd.T
+df_bd.replace(['NaN'], 0, inplace=True)
 
 def funcPCA(df):
     df.replace(['inf', '-inf'], 0, inplace=True)

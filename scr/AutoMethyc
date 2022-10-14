@@ -47,15 +47,17 @@ mkdir $output/HTML
 mkdir $output/Bismark
 mkdir $output/HTML/Bismark_report
 
+figlet AutoMethyc
+
 echo '#----------------------Parameters---------------------------#'
-echo '		input: ' $input
-echo '		output: ' $output
-echo '		ref: '	$ref
-echo '		filtro: ' $filtro
-echo '		threads: ' $thr
-echo '		normal: ' $norm
-echo '		genome: ' $genome
-echo '		depth: ' $depth
+echo '	input: ' $input
+echo '	output: ' $output
+echo '	ref: '	$ref
+echo '	filtro: ' $filtro
+echo '	threads: ' $thr
+echo '	normal: ' $norm
+echo '	genome: ' $genome
+echo '	depth: ' $depth
 echo '#-----------------------------------------------------------#'
 
 if [ "$norm" = "False" ]; then
@@ -71,9 +73,13 @@ if [ "$norm" = "False" ]; then
 		rename.sh $output/results/06_bedGraph
 		# Construcción del merge
 		allmerge.sh $output/results/06_bedGraph $output 'Sample'
-	
+
+
+
+		####################REVISAR#######################
 
 		python /usr/bin/Oncoprint_wf.py $output/merge.csv $output
+
 
 
 		multiqc $output/results/02_fastq_trimmed/*
@@ -99,6 +105,11 @@ if [ "$norm" = "False" ]; then
 				rename.sh $output/results/06_bedGraph
 				# Construcción del merge
 				allmerge.sh $output/results/06_bedGraph $output 'Sample'
+
+
+
+				####################REVISAR#######################
+
 				# Aplicacion de filtros
 				python /usr/bin/Filter.py $output/merge.csv $filtro $output
 
@@ -159,6 +170,10 @@ else
 
 				echo 'Done merge samples and normals'
 
+
+
+				####################REVISAR#######################
+
 				python /usr/bin/Oncoprint_wf.py $output/merge.csv $output
 
 				multiqc $output/samples/results/02_fastq_trimmed/*
@@ -198,6 +213,11 @@ else
 				rename.sh $output/norm/results/06_bedGraph
 				# Construcción del merge
 				allmerge.sh $output/norm/results/06_bedGraph $output/norm 'Normal'
+
+
+
+				####################REVISAR#######################
+
 				# Aplicacion de filtros
 				python /usr/bin/Filter.py $output/norm/merge.csv $filtro $output/norm
 
@@ -214,6 +234,11 @@ else
 				DepthCord.sh $output/samples/results/06_bedGraph $output $depth
 				rename.sh $output/samples/results/06_bedGraph
 				allmerge.sh $output/samples/results/06_bedGraph $output/samples 'Sample'
+
+
+
+				####################REVISAR#######################
+
 				python /usr/bin/Filter.py $output/samples/merge.csv $filtro $output/samples
 
 				echo 'Joining in one file the samples and normals'

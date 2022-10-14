@@ -32,7 +32,7 @@ fi
 echo 'Using ...' $thr 'threads'
 
 
-array=($(ls $input/*.fastq.gz))
+array=($(ls $input/*.f*))
 tLen=${#array[@]}
 
 for (( i=0; i<${tLen}; i=i+2));
