@@ -6,6 +6,7 @@ norm="False"
 filtro="False"
 genome="hg19"
 depth=20
+quality=30
 
 # Options
 while [[ $# -gt 0 ]]; do
@@ -37,15 +38,9 @@ Optional arguments
 "-t"|"--threads"      ) thr="$1"; shift;;
 "-n"|"--normal"      ) norm="$1"; shift;;
 "-g"|"--genome"       ) genome="$1"; shift;;
-
+"-q"|"--quality"       ) quality="$1"; shift;;
 	esac
 done
-
-# Organizando el Output
-mkdir $output/CSV
-mkdir $output/HTML
-mkdir $output/Bismark
-mkdir $output/HTML/Bismark_report
 
 figlet AutoMethyc
 
@@ -58,27 +53,35 @@ echo '	threads: ' $thr
 echo '	normal: ' $norm
 echo '	genome: ' $genome
 echo '	depth: ' $depth
+echo '	quality: ' $quality
 echo '#-----------------------------------------------------------#'
+
+# Organizando el Output
+mkdir $output/CSV
+mkdir $output/HTML
+mkdir $output/Bismark
+mkdir $output/HTML/Bismark_report
+
 
 if [ "$norm" = "False" ]; then
 	if [ "$filtro" = "False" ]; then
 		echo 'usando la version sin normales y sin filtro'
 
-		BuclePipeline.sh $input $output $ref $thr
+		BuclePipeline $input $output $ref $thr $quality
 
 		# Filtrado por profundidad
-		DepthCord.sh $output/results/06_bedGraph $output/CSV $depth
+		DepthCord $output/results/06_bedGraph $output/CSV $depth
 
 		# descomprime y renombra los archivos por ID
-		rename.sh $output/results/06_bedGraph
+		rename $output/results/06_bedGraph
 		# Construcción del merge
-		allmerge.sh $output/results/06_bedGraph $output 'Sample'
+		allmerge $output/results/06_bedGraph $output 'Sample'
 
 
 
 		####################REVISAR#######################
 
-		python /usr/bin/Oncoprint_wf.py $output/merge.csv $output
+		Oncoprint_wf $output/merge.csv $output
 
 
 
@@ -92,28 +95,28 @@ if [ "$norm" = "False" ]; then
 		mv $output/*csv $output/CSV
 		rm -rf $output/tmp
 
-		python /usr/bin/WebScrapping.py $output/CSV/Oncoprint_wf.csv hg19 $output/CSV True
+		WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
 
-		python /usr/bin/Report_HTML_wf.py $output/CSV/Oncoprint_wf.csv $output/Count.csv $output/HTML $output/CSV/StatusCpG.csv
+		Report_HTML_wf $output $output/HTML
 	else
 		echo 'usando la version sin normales y con filtro'
 
-				BuclePipeline.sh $input $output $ref $thr
+				BuclePipeline $input $output $ref $thr $quality
 				# Filtrado por profundidad
-				DepthCord.sh $output/results/06_bedGraph $output/CSV $depth
+				DepthCord $output/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
-				rename.sh $output/results/06_bedGraph
+				rename $output/results/06_bedGraph
 				# Construcción del merge
-				allmerge.sh $output/results/06_bedGraph $output 'Sample'
+				allmerge $output/results/06_bedGraph $output 'Sample'
 
 
 
 				####################REVISAR#######################
 
 				# Aplicacion de filtros
-				python /usr/bin/Filter.py $output/merge.csv $filtro $output
+				Filter $output/merge.csv $filtro $output
 
-				python /usr/bin/Oncoprint.py $output/Filtered.csv $output
+				Oncoprint $output/Filtered.csv $output
 
 				multiqc $output/results/02_fastq_trimmed/*
 				mv multiqc* $output/HTML
@@ -125,10 +128,9 @@ if [ "$norm" = "False" ]; then
 				mv $output/*csv $output/CSV
 				rm -rf $output/tmp
 
-				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
-				python /usr/bin/WebScrapping.py $filtro $genome $output/CSV False
-
-				python /usr/bin/Report_HTML.py $output/CSV/Oncoprint.csv $output/CSV/OncoprintPromedio.csv $output/CSV/Count.csv $output/CSV/NotLoc.csv $output/HTML $output/CSV/CountUF.csv $output/CSV/StatusCpG.csv
+				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
+				WebScrapping $filtro $genome $output/CSV False
+				Report_HTML $output $output/HTML 
 	fi
 else
 	if [ "$filtro" = "False" ]; then
@@ -140,13 +142,13 @@ else
 
 
 				echo '---------------Normal Samples------------------'
-				BuclePipeline.sh $norm $output/norm $ref $thr
+				BuclePipeline $norm $output/norm $ref $thr $quality
 				# Filtrado por profundidad
-				DepthCord.sh $output/norm/results/06_bedGraph $output/CSV $depth
+				DepthCord $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
-				rename.sh $output/norm/results/06_bedGraph
+				rename $output/norm/results/06_bedGraph
 				# Construcción del merge
-				allmerge.sh $output/norm/results/06_bedGraph $output/norm 'Normal'
+				allmerge $output/norm/results/06_bedGraph $output/norm 'Normal'
 				
 				
 				multiqc $output/norm/results/02_fastq_trimmed/*
@@ -156,11 +158,11 @@ else
 
 
 				echo '------------------Samples---------------------'
-				BuclePipeline.sh $input $output/samples $ref $thr
+				BuclePipeline $input $output/samples $ref $thr $quality
 				# Filtrado por profundidad
-				DepthCord.sh $output/samples/results/06_bedGraph $output $depth
-				rename.sh $output/samples/results/06_bedGraph
-				allmerge.sh $output/samples/results/06_bedGraph $output/samples 'Sample'
+				DepthCord $output/samples/results/06_bedGraph $output $depth
+				rename $output/samples/results/06_bedGraph
+				allmerge $output/samples/results/06_bedGraph $output/samples 'Sample'
 
 				echo 'Joining in one file the samples and normals'
 				
@@ -174,7 +176,7 @@ else
 
 				####################REVISAR#######################
 
-				python /usr/bin/Oncoprint_wf.py $output/merge.csv $output
+				Oncoprint_wf $output/merge.csv $output
 
 				multiqc $output/samples/results/02_fastq_trimmed/*
 				mv multiqc_report.html $output/HTML/multiqc_report_samples.html
@@ -189,14 +191,10 @@ else
 				rm -rf $output/Bismark/samples/tmp
 
 				
-				python /usr/bin/Norm_wf.py $output/CSV/Oncoprint_wf.csv $output/CSV
-
-				python /usr/bin/PCA.py $output/CSV/OncoprintNorm.csv $output/CSV
-
-				python /usr/bin/WebScrapping.py $output/CSV/Oncoprint_wf.csv hg19 $output/CSV True
-
-
-				python /usr/bin/Report_HTML_norm_wf.py $output $output/HTML
+				Norm_wf $output/CSV/Oncoprint_wf.csv $output/CSV
+				PCA $output/CSV/OncoprintNorm.csv $output/CSV
+				WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
+				Report_HTML_norm_wf $output $output/HTML
 	else
 				echo 'usando la version con normales y con filtro'
 
@@ -206,20 +204,20 @@ else
 
 
 				echo '---------------Normal Samples------------------'
-				BuclePipeline.sh $norm $output/norm $ref $thr
+				BuclePipeline $norm $output/norm $ref $thr $quality
 				# Filtrado por profundidad
-				DepthCord.sh $output/norm/results/06_bedGraph $output/CSV $depth
+				DepthCord $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
-				rename.sh $output/norm/results/06_bedGraph
+				rename $output/norm/results/06_bedGraph
 				# Construcción del merge
-				allmerge.sh $output/norm/results/06_bedGraph $output/norm 'Normal'
+				allmerge $output/norm/results/06_bedGraph $output/norm 'Normal'
 
 
 
 				####################REVISAR#######################
 
 				# Aplicacion de filtros
-				python /usr/bin/Filter.py $output/norm/merge.csv $filtro $output/norm
+				python /usr/bin/Filter $output/norm/merge.csv $filtro $output/norm
 
 				multiqc $output/norm/results/02_fastq_trimmed/*
 
@@ -229,17 +227,17 @@ else
 
 
 				echo '------------------Samples---------------------'
-				BuclePipeline.sh $input $output/samples $ref $thr
+				BuclePipeline $input $output/samples $ref $thr $quality
 				# Filtrado por profundidad
-				DepthCord.sh $output/samples/results/06_bedGraph $output $depth
-				rename.sh $output/samples/results/06_bedGraph
-				allmerge.sh $output/samples/results/06_bedGraph $output/samples 'Sample'
+				DepthCord $output/samples/results/06_bedGraph $output $depth
+				rename $output/samples/results/06_bedGraph
+				allmerge $output/samples/results/06_bedGraph $output/samples 'Sample'
 
 
 
 				####################REVISAR#######################
 
-				python /usr/bin/Filter.py $output/samples/merge.csv $filtro $output/samples
+				Filter $output/samples/merge.csv $filtro $output/samples
 
 				echo 'Joining in one file the samples and normals'
 				
@@ -258,7 +256,7 @@ else
 				echo 'Done merge samples and normals'
 
 
-				python /usr/bin/Oncoprint.py $output/Filtered.csv $output
+				Oncoprint $output/Filtered.csv $output
 
 				multiqc $output/samples/results/02_fastq_trimmed/*
 				mv multiqc_report.html $output/HTML/multiqc_report_samples.html
@@ -272,15 +270,11 @@ else
 				rm -rf $output/Bismark/norm/tmp
 				rm -rf $output/Bismark/samples/tmp
 
-				python /usr/bin/Norm.py $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV
-
-				python /usr/bin/PCA.py $output/CSV/OncoprintNorm.csv $output/CSV
-
-				python /usr/bin/CountUF.py $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
-
-				python /usr/bin/WebScrapping.py $filtro $genome $output/CSV False
-
-				python /usr/bin/Report_HTML_norm.py $output $output/HTML
+				Norm $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV
+				PCA $output/CSV/OncoprintNorm.csv $output/CSV
+				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
+				WebScrapping $filtro $genome $output/CSV False
+				Report_HTML_norm $output $output/HTML
 	fi
 fi
 

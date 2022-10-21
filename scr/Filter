@@ -1,0 +1,67 @@
+#!/usr/bin/python
+import sys
+import pandas as pd
+import numpy as np
+from tqdm import trange as tr
+from tqdm import tqdm as td
+
+# 1 = Merge.csv
+# 2 = Filtro.csv
+# 3 = [Output]
+
+print ('')
+print ('#-----------------Init Filter -------------------#')
+print ('')
+#----------------------------Data------------------------------
+df = pd.read_csv(sys.argv[1])
+dfF = pd.read_csv(sys.argv[2])
+OutputFilter = sys.argv[3]
+
+print("Done read csv")
+#----------------------------InLoc------------------------------
+df_bd = pd.DataFrame()
+lst = []
+for c,s,ID in zip(df.Chr, df.Start, df.Sample):
+    dF_i = dfF[dfF['Chr'] == c]
+    for sF,eF,Gene in zip(dF_i.Start, dF_i.End, dF_i.Gene):
+        if s in range(sF, eF+1, 1):
+            db_i = df[(df['Start'] == s) & (df['Sample'] == ID)]
+            lst.append(Gene)
+            df_bd = pd.concat([df_bd, db_i])
+df_bd['Gene'] = lst
+df_filtrado = df_bd
+
+ID = df_filtrado['Sample'].value_counts()
+
+df_filtrado = df_filtrado.set_index('Sample')
+
+df_filtrado.to_csv(OutputFilter+"/Filtered.csv")
+
+ID = pd.DataFrame(ID)
+ID.to_csv(OutputFilter+"/Count.csv")
+
+#-----------------------NotLoc--------------------------
+
+df_bd = pd.DataFrame()
+for ID in df.Sample.unique():
+    df_id = df[df['Sample'] == ID]
+    for c,s,e in zip(dfF.Chr, dfF.Start, dfF.End):
+        df_i = df_id[df_id['Chr']== c]
+        for site in range(s, e+1, 1):
+            if site not in list(df_i.Start):
+                db_i = dfF[dfF['Start'] == site]
+                db_i['ID'] = ID
+                df_bd = pd.concat([df_bd, db_i])
+
+df_NotLoc = df_bd.drop_duplicates(keep=False)
+
+df_NotLoc = df_NotLoc.set_index('ID')
+df_NotLoc.to_csv(OutputFilter+"/NotLoc.csv")
+
+print("")
+print("Output: " + OutputFilter)
+print("""
+		(1) Filtered.csv
+		(2) Count.csv
+		(3) NotLoc.csv
+		""")

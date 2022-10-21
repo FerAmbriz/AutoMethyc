@@ -1,30 +1,24 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # coding: utf-8
 
 # # Rerport HTML
 
 import pandas as pd
-import numpy as np
 import plotly.express as px
 from IPython.display import HTML
 import sys
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import re
-
+import numpy as np
 
 input_folder = sys.argv[1]
 Output = sys.argv[2]
 
-Oncoprint_All = input_folder+'/CSV/Oncoprint.csv'
-Oncoprint_mean = input_folder+'/CSV/OncoprintPromedio.csv'
-Count = input_folder+'/CSV/Count.csv'
-NotLoc = input_folder+'/CSV/NotLoc.csv'
+Oncoprint_All = input_folder+'/CSV/Oncoprint_wf.csv'
 OncoprintNorm = input_folder+'/CSV/OncoprintNorm.csv'
-OncoprintMeanNorm = input_folder+'/CSV/OncoprintMeanNorm.csv'
 PCA_data = input_folder+'/CSV/PCA_vectors.csv'
-CountUF=input_folder+'/CSV/CountUF.csv'
-bed = input_folder+ '/CSV/StatusCpG.csv'
+bed = input_folder+'/CSV/StatusCpG.csv'
 depth = input_folder + '/CSV/CountUF_depth_merge.csv'
 
 print('#-------------------Plotting-------------------------')
@@ -56,16 +50,14 @@ df['ID'] = ID
 
 fig_depth = px.bar(df, x="ID", y="Count", color="Type")
 
-#fig_depth.update_layout(paper_bgcolor="#1c1f27")
-
-
 #------------------------All_sites ------------------
 sites_bed = pd.read_csv(bed)
 
 df = pd.read_csv(Oncoprint_All)
-df = df.drop(['Unnamed: 1'], axis=1)
-df = df.drop(df.index[[0,1]])
-df = df.rename(columns = {'Sample':'Start'})
+df.columns = df.loc[0]
+df = df.drop(['Sample'], axis=1)
+df = df.drop(df.index[[0,1,2]])
+df = df.rename(columns = {np.nan:'Start'})
 
 lst = []
 site = []
@@ -231,72 +223,7 @@ else:
                         bgcolor=colors[3],
                         borderwidth=7)
 fig_all = fig
-#fig_all.update_layout(paper_bgcolor="#1c1f27", template =  "plotly")
-
-#--------------------------Mean-----------------------
-
-df = pd.read_csv(Oncoprint_mean)
-df = df.set_index('Gen')
-df = df.drop(['Sample'], axis=1)
-df = df.drop(df.index[[0]])
-
-fig_mean= px.imshow(df, aspect="auto", template= "plotly")
-#fig_mean.update_layout(paper_bgcolor="#1c1f27")
-#-------------------------Count-----------------------
-
-df = pd.read_csv(Count)
-up = max(df.Sample)
-rng = up-7
-
-for i in range(rng):
-    df = df.replace({i : '<'+str(rng)})
-
-values = df['Sample'].value_counts().to_list()
-labels= df['Sample'].value_counts()
-labels = labels.index.values
-
-
-df2 = pd.read_csv(CountUF)
-values2 = df2['Filter'].value_counts().to_list()
-labels2= df2['Filter'].value_counts()
-labels2=labels2.index.values
-
-
-# donut pie chart 2 columns
-fig_samples = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}]])
-
-
-# Cobertura
-fig_samples.add_trace(go.Pie(labels=labels, values=values, hole=.3, name="Coverage"),
-              1, 1)
-# Profundiad
-fig_samples.add_trace(go.Pie(labels=labels2, values=values2, hole=.3, name="Filtered"),
-              1, 2)
-
-fig_samples.update_layout(
-    title_text="Statistics", template= "plotly",
-    # Add annotations in the center of the donut pies.
-    annotations=[dict(text='CVR', x=0.20, y=0.5, font_size=20, showarrow=False),
-                 dict(text='FTR', x=0.80, y=0.5, font_size=20, showarrow=False)])
-
-#fig_samples.update_layout(paper_bgcolor="#1c1f27")
-
-#------------------------barplot----------------------#
-df = pd.read_csv(Count)
-df.columns = ['ID' , 'Count']
-df['Status'] = ['In_Loc'] * len(df)
-
-
-df2 = pd.read_csv(NotLoc)
-df2 = pd.DataFrame(df2['ID'].value_counts()).reset_index()
-df2.columns = ['ID' , 'Count']
-df2['Status'] = ['NotLoc'] * len(df2)
-
-df = pd.concat([df, df2])
-
-fig_chr = px.bar(df, x="ID", y="Count", color="Status", title="Coverage Status")
-#fig_chr.update_layout(paper_bgcolor="#1c1f27")
-
+#fig_all.update_layout(paper_bgcolor="#1c1f27", template =  "plotly_dark")
 
 #---------------------------Norm all----------------------
 
@@ -308,14 +235,6 @@ df = df.drop(['Type', 'Unnamed: 0'], axis=1)
 fig_norm_all = px.imshow(df.T, aspect="auto")
 #fig_norm_all.update_layout(paper_bgcolor="#1c1f27")
 
-
-#-------------------------Norm mean-------------------
-df = pd.read_csv(OncoprintMeanNorm)
-df = df.drop(['Type', 'Unnamed: 0'], axis=1)
-df = df.set_index('ID')
-
-fig_mean_norm= px.imshow(df.T, aspect="auto")
-#fig_mean_norm.update_layout(paper_bgcolor="#1c1f27")
 
 #------------------------PCA----------------------
 
@@ -341,9 +260,6 @@ fig_pca = px.scatter(finalDf, x='PCA1', y='PCA2',
         color=finalDf['Type'], opacity=0.7,
         labels={'0': 'PC 1', '1': 'PC 2'})
 #fig_pca.update_layout(paper_bgcolor="#1c1f27")
-
-# Backgrund HTML anterior
-##2e3444;
 
 #-----------------------------HTML-------------------------
 html_head = '''
@@ -409,11 +325,8 @@ html_head = '''
             <li><a style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
             <li><a href="#Home"> Home </a></li>
             <li><a href="#Depth"> Depth </a></li>
-            <li><a href="#Samples" > Coverage </a></li>
             <li><a href="#All"> Heatmap all</a></li>
-            <li><a href="#Mean"> Heatmap mean</a></li>
             <li><a href="#all_norm"> All sites normalized</a></li>
-            <li><a href="#Mean_norm"> Mean per gene normalized</a></li>
             <li><a href="#pca"> PCA </a></li>
             <li><a href="#about"> About </a></li>
         </ul>
@@ -428,28 +341,12 @@ html_head = '''
     </body>
 '''
 
-html_spec0 = '''
-    <body>
-        <h2 id="Samples" > Coverage </h2>
-            The statistics of the samples consist of classifying the coverage (CVR) of the samples given the bedGraph and the average coverage of the samples, in addition to plotting the count of regions present in the bedGraph (In_loc) and those not present (Not_loc). In addition to evaluating the filter count (FTR) to visualize the number of filtered regions.
-    </body>
-'''
-
 html_spec1 = '''
     <body>
         <h2 id="All"> Heatmap all sites </h2>
             Heatmap of the percentage of methylation present at each site present in the bedGraph per sample
     </body>
 '''
-
-
-html_spec2= '''
-    <body>
-        <h2 id="Mean"> Heatmap mean per Gene </h2>
-            Heatmap of the average percentage of methylation present in each site corresponding to its corresponding gene.
-    </body>
-'''
-
 
 html_spec3 = '''
     <body>
@@ -470,13 +367,6 @@ html_spec3 = '''
     </body>
 '''
 
-html_spec4 = '''
-    <body>
-        <h2 id="Mean_norm"> Heatmap mean per gene normalized </h2>
-            Heatmap with the mean of each normalized site belonging to each gene
-    </body>
-'''
-
 html_spec5 = '''
     <body>
         <h2 id="pca"> PCA </h2>
@@ -491,23 +381,14 @@ html_fooder = '''
     </body>
 </html>'''
 
-
 # 3. Write the html string as an HTML file
 with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(html_head)
     f.write(fig_depth.to_html(full_html=False, include_plotlyjs='cdn'))
-    f.write(html_spec0)
-    f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
-    f.write(fig_chr.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_spec1)
     f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))
-    f.write(html_spec2)
-    f.write(fig_mean.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_spec3)
     f.write(fig_norm_all.to_html(full_html=False, include_plotlyjs='cdn'))
-    f.write(html_spec4)
-    f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_spec5)
     f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_fooder)
-

@@ -4,6 +4,7 @@ input=$1
 output=$2
 ref=$3
 thr=$4
+quality=$5
 
 mkdir $output/tmp
 mkdir $output/tmp/02_fastq_trimmed
@@ -42,7 +43,7 @@ FQ1=${array[$i]}
 FQ2=${array[$i+1]}
 OUT=$output/tmp/02_fastq_trimmed
 
-trim_galore --quality 30 --gzip --paired --fastqc \
+trim_galore --quality $quality --gzip --paired --fastqc \
             --illumina --output_dir ${OUT} \
             --cores $thr ${FQ1} ${FQ2}
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # coding: utf-8
 
 # # Rerport HTML
@@ -236,7 +236,7 @@ fig_all = fig
 #--------------------------Mean-----------------------
 
 df = pd.read_csv(Oncoprint_mean)
-df = df.set_index('Gen')
+df = df.set_index('Gene')
 df = df.drop(['Sample'], axis=1)
 df = df.drop(df.index[[0]])
 
