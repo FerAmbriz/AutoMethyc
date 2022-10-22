@@ -329,6 +329,7 @@ html_head = '''
             <li><a href="#all_norm"> All sites normalized</a></li>
             <li><a href="#pca"> PCA </a></li>
             <li><a href="#about"> About </a></li>
+            <img src="/home/fer/Documents/Code/AutoMethyc/img/logo-unam-corto.png" ="250" ="400">
         </ul>
 
         <div class="main">
