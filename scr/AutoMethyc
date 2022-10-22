@@ -270,7 +270,7 @@ else
 				rm -rf $output/Bismark/norm/tmp
 				rm -rf $output/Bismark/samples/tmp
 
-				Norm $output/CSV/OncoprintRellenado.csv $output/CSV/OncoprintPromedio.csv $output/CSV
+				Norm $output/CSV/Oncoprint.csv $output/CSV/OncoprintPromedio.csv $output/CSV
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 				WebScrapping $filtro $genome $output/CSV False

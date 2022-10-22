@@ -8,9 +8,9 @@ Output = sys.argv[2]
 print ('#----------------Construct Oncoprint-------------------#')
 merge_filtrado = pd.read_csv(Input)
 
-merge_filtrado=merge_filtrado.drop(['Chr', 'End',  'Cyt_Met', 'Cyt_NoMet'], axis=1)
+merge_filtrado=merge_filtrado.drop(['End',  'Cyt_Met', 'Cyt_NoMet'], axis=1)
 
-df=merge_filtrado.pivot(index=['Start','Gene'], columns=['Sample', 'Status'])
+df = merge_filtrado.pivot(index=['Chr','Start','Gene'], columns=['Sample', 'Status'])
 
 # Eliminar el multindice de las columnas
 df = df.droplevel(level=0, axis=1)
@@ -18,18 +18,14 @@ df = df.droplevel(level=0, axis=1)
 df.to_csv(Output+'/Oncoprint.csv')
 
 #Remplazar los valores numericos por 0
-df = df.fillna(0)
-
-
-df.to_csv(Output+'/OncoprintRellenado.csv')
+#df = df.fillna(0)
+#df.to_csv(Output+'/OncoprintRellenado.csv')
 
 
 print ('''
 
 Output:
 	Output/Oncoprint.csv
-	Output/OncoprintRellenado.csv
-
 ''')
 
 print ('#----------------- Done Oncoprint--------------------#')
@@ -42,14 +38,15 @@ print('#------------Init Construct Oncoprint Promedio -----------#')
 # Eliminar el multindice
 df = df.droplevel(level=0)
 # Eliminar los indices
-df_reset=df.reset_index()
+df_reset = df.reset_index()
+df_reset = df_reset.drop(['Start'], axis = 1)
 
 # Determinar los genes a graficar
-gen = pd.DataFrame(df_reset['Gene'].value_counts())
-gen = gen.index
+gen = list(df_reset['Gene'].unique())
 
 # Construcción de un df con las columnas anteriores
 df_bd = pd.DataFrame(columns = df.columns)
+
 for i in range(len(gen)):
 	# Filtrar el df por gen
 	df_reset_i = df_reset[df_reset['Gene'] == gen[i] ]
