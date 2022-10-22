@@ -58,7 +58,7 @@ for i in range(len(gen)):
 
 # Insertat la columna de genes
 df_bd.insert(0, 'Gene', gen)
-
+df_bd = df_bd.set_index('Gene')
 df_bd.to_csv(Output+'/OncoprintPromedio.csv')
 
 print ('')

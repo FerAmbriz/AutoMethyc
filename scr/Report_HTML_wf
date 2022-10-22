@@ -20,7 +20,7 @@ bed = input_folder+ '/CSV/StatusCpG.csv'
 depth = input_folder + '/CSV/CountUF_depth.csv'
 
 print('#-------------------Plotting-------------------------')
-#------------------------|----Depth--------------------------
+#---------------------------Depth--------------------------
 df = pd.read_csv(depth)
 longitud_inicial = len(df)
 longitud_final = longitud_inicial * 2
@@ -50,22 +50,20 @@ fig_depth = px.bar(df, x="ID", y="Count", color="Type")
 
 #------------------------All_sites----------------------
 sites_bed = pd.read_csv(bed)
-
 df = pd.read_csv(Oncoprint_All)
-df.columns = df.loc[0]
-df = df.drop(['Sample'], axis=1)
-df = df.drop(df.index[[0,1,2]])
-df = df.rename(columns = {np.nan:'Start'})
+
+df.columns = list(df.loc[0, :])
+df = df.drop(df.index[[0, 1, 2]])
+df = df.rename(columns = {'Sample':'Chr', np.nan:'Start'})
 
 lst = []
 site = []
+
 for j in df.Start:
-    for i,k in zip(sites_bed.Site, sites_bed.Type):
+    for i,k,c in zip(sites_bed.Site, sites_bed.Type, sites_bed.chrom):
         if int(j) == int(i):
             lst.append(k)
-            site.append(i)
-
-df = df.set_index('Start')
+            site.append(str(c) + ':' + str(i))
 
 # Remplazar los valores
 lst = list(map(lambda x: x.replace('CpG island', '0'), lst))
@@ -73,8 +71,15 @@ lst = list(map(lambda x: x.replace('CpG shore', '1'), lst))
 lst = list(map(lambda x: x.replace('CpG shelf', '2'), lst))
 lst = list(map(lambda x: x.replace('CpG inter CGI', '3'), lst))
 
-df_annot = pd.DataFrame({'Site': site, 'Type':lst})
-df_annot = df_annot.set_index('Site')
+merge = []
+for i,j in zip(df.Chr, df.Start):
+    merge.append(str(i) + ':' + str(j))
+df['SiteCpG'] = merge
+df = df.set_index('SiteCpG')
+df = df.drop(['Chr', 'Start'], axis=1)
+
+df_annot = pd.DataFrame({'SiteCpG': site, 'Type':lst})
+df_annot = df_annot.set_index('SiteCpG')
 
 # Make array
 z = np.array([list(df_annot.Type)]).T
@@ -97,7 +102,7 @@ if len(list(df_annot['Type'].value_counts())) == 3:
     heatmap = go.Heatmap(z=z, colorscale = dcolorsc,
                      colorbar = dict(thickness=10,
                                      tickvals=[0.2, 1, 1.7],
-                                     ticktext=['a', 'b', 'c']), x = ['Type'], y = list(df.index)
+                                     ticktext=['a', 'b', 'c']), x = ['CGI'], y = list(df.index)
                     )
     fig1 = px.imshow(df, color_continuous_scale='RdBu_r')
     #ff.create_annotated_heatmap(z1, x.tolist(), y.tolist(),  colorscale='matter')
@@ -159,7 +164,7 @@ else:
     heatmap = go.Heatmap(z=z, colorscale = dcolorsc,
                      colorbar = dict(thickness=10,
                                      tickvals=[0.2, 1, 1.7, 2.2],
-                                     ticktext=['a', 'b', 'c' ,'d']), x = ['Type'], y = list(df.index)
+                                     ticktext=['a', 'b', 'c' ,'d']), x = ['CGI'], y = list(df.index)
                     )
     fig1 = px.imshow(df, color_continuous_scale='RdBu_r')
     fig2 = go.Figure(data=[heatmap])

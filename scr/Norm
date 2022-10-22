@@ -4,43 +4,48 @@ import pandas as pd
 import numpy as np
 import sys
 
-all_sites = pd.read_csv(sys.argv[1])
+all_sites = pd.read_csv(sys.argv[1], header = None)
 onco_mean = pd.read_csv(sys.argv[2])
 output = sys.argv[3]
 
-def normalizado (df,columna):
-    site = list(df[columna])
-    site.pop(0)
-    site.pop(0)
+all_sites = all_sites.drop([2], axis = 1)
+all_sites.columns = list(all_sites.loc[0, :])
+all_sites = all_sites.drop(all_sites.index[[0]])
+all_sites = all_sites.rename(columns = {'Sample':'Chr', np.nan:'Start'})
 
-    df_controles = df.T
-    df_controles = df_controles[df_controles[0]== 'Normal']
-    df_controles = df_controles.drop([0,1], axis=1)
+lst = ['Status', 'Chr']
 
-    #Cambiar a valores numericos con lo que se va a hacer la media y std
-    columns = df_controles.columns.values
-    df_controles[columns] = df_controles[columns].apply(pd.to_numeric, errors='coerce', axis=1)
+for i in range(3,len(all_sites) + 1):
+    lst.append(all_sites['Chr'][i] + ':' + all_sites['Start'][i])
+all_sites['Site'] = lst
+all_sites = all_sites.set_index('Site')
 
-    df = df.T
-    # Delete rows
-    df = df.drop(df.index[[0,1]])
-    typ = list(df[0])
+df_controles = all_sites.T
+df_controles = df_controles[df_controles['Status'] == 'Normal']
+df_controles = df_controles.drop(['Status', 'Chr'], axis=1)
+
+#Cambiar a valores numericos con lo que se va a hacer la media y std
+columns = df_controles.columns.values
+df_controles[columns] = df_controles[columns].apply(pd.to_numeric, errors='coerce', axis=1)
+
+all_sites = all_sites.T
+# Delete rows
+all_sites = all_sites.drop(all_sites.index[[0,1]])
+typ = list(all_sites['Status'])
 
     # Delete columns
-    df = df.drop([0,1], axis=1)
-    columns = df.columns.values
-    df[columns] = df[columns].apply(pd.to_numeric, errors='coerce', axis=1)
-    ID = df.index.values
+all_sites = all_sites.drop(['Status','Chr'], axis=1)
+columns = all_sites.columns.values
+all_sites[columns] = all_sites[columns].apply(pd.to_numeric, errors='coerce', axis=1)
+ID = all_sites.index.values
 
+def normalizado (df, df_cont, colum, ID, typ):
     df_norm = pd.DataFrame()
-    j = 2
-    n_col = len(columns) + 2
 
-    while j < n_col:
-        x = list(df_controles[j])
+    for j in colum:
+        x = list(df_cont[j])
         s = np.std(x)
         m = np.mean(x)
-
         final = []
         x = list(df[j])
 
@@ -48,15 +53,31 @@ def normalizado (df,columna):
             norm = (i-m)/s
             final.append(norm)
         df_norm[j] = final
-        j = j + 1
-    df_norm.columns = site
     df_norm.insert(0,'ID', ID)
     df_norm.insert(1,'Type', typ)
     return df_norm
 
-all_norm = normalizado(all_sites, 'Sample')
+all_norm = normalizado(all_sites, df_controles, columns, ID, typ)
+all_norm = all_norm.set_index('ID')
 all_norm.to_csv(output + '/OncoprintNorm.csv')
 
-mean_norm = normalizado(onco_mean, 'Gene')
-mean_norm.to_csv(output + '/OncoprintMeanNorm.csv')
+onco_mean = onco_mean.set_index('Sample')
 
+df_controles = onco_mean.T
+df_controles = df_controles[df_controles['Status'] == 'Normal']
+df_controles = df_controles.drop(['Status', 'Gene'], axis=1)
+
+columns = df_controles.columns.values
+df_controles[columns] = df_controles[columns].apply(pd.to_numeric, errors='coerce', axis=1)
+
+onco_mean = onco_mean.T
+typ = list(onco_mean['Status'])
+
+onco_mean = onco_mean.drop(['Status','Gene'], axis=1)
+columns = onco_mean.columns.values
+onco_mean[columns] = onco_mean[columns].apply(pd.to_numeric, errors='coerce', axis=1)
+ID = onco_mean.index.values
+
+mean_norm = normalizado(onco_mean, df_controles, columns, ID, typ)
+mean_norm = mean_norm.set_index('ID')
+mean_norm.to_csv(output + '/OncoprintMeanNorm.csv')

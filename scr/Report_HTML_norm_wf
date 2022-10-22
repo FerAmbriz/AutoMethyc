@@ -52,22 +52,20 @@ fig_depth = px.bar(df, x="ID", y="Count", color="Type")
 
 #------------------------All_sites ------------------
 sites_bed = pd.read_csv(bed)
-
 df = pd.read_csv(Oncoprint_All)
-df.columns = df.loc[0]
-df = df.drop(['Sample'], axis=1)
-df = df.drop(df.index[[0,1,2]])
-df = df.rename(columns = {np.nan:'Start'})
+
+df = pd.read_csv('/home/fer/Documents/Code/test/Output_cNorm_sFilt/CSV/Oncoprint_wf.csv')
+df.columns = list(df.loc[0, :])
+df = df.drop(df.index[[0, 1, 2]])
+df = df.rename(columns = {'Sample':'Chr', np.nan:'Start'})
 
 lst = []
 site = []
 for j in df.Start:
-    for i,k in zip(sites_bed.Site, sites_bed.Type):
+    for i,k,c in zip(sites_bed.Site, sites_bed.Type, sites_bed.chrom):
         if int(j) == int(i):
             lst.append(k)
-            site.append(i)
-
-df = df.set_index('Start')
+            site.append(str(c) + ':' + str(i))
 
 # Remplazar los valores
 lst = list(map(lambda x: x.replace('CpG island', '0'), lst))
@@ -75,8 +73,15 @@ lst = list(map(lambda x: x.replace('CpG shore', '1'), lst))
 lst = list(map(lambda x: x.replace('CpG shelf', '2'), lst))
 lst = list(map(lambda x: x.replace('CpG inter CGI', '3'), lst))
 
-df_annot = pd.DataFrame({'Site': site, 'Type':lst})
-df_annot = df_annot.set_index('Site')
+merge = []
+for i,j in zip(df.Chr, df.Start):
+    merge.append(str(i) + ':' + str(j))
+df['SiteCpG'] = merge
+df = df.set_index('SiteCpG')
+df = df.drop(['Chr', 'Start'], axis=1)
+
+df_annot = pd.DataFrame({'SiteCpG': site, 'Type':lst})
+df_annot = df_annot.set_index('SiteCpG')
 
 # Make array
 z = np.array([list(df_annot.Type)]).T
@@ -230,7 +235,7 @@ fig_all = fig
 df = pd.read_csv(OncoprintNorm)
 
 df = df.set_index('ID')
-df = df.drop(['Type', 'Unnamed: 0'], axis=1)
+df = df.drop(['Type'], axis=1)
 
 fig_norm_all = px.imshow(df.T, aspect="auto")
 #fig_norm_all.update_layout(paper_bgcolor="#1c1f27")
@@ -292,15 +297,27 @@ html_head = '''
 
             /* Change the link color on hover */
             li a:hover {
-            background-color: #04aa6d;
-            color: white;
-            }
+                background-color: #04aa6d;
+                color: white;
+                }
 
             .main{
-            margin-left: 15%;
-            padding: 1px 16px;
-            height 500px;
-            }
+                margin-left: 15%;
+                padding: 1px 16px;
+                height 500px;
+                }
+
+            .center {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                padding-left:10%;
+                }
+            .bottomnav {
+                 position: fixed;
+                 bottom:0px;
+                 padding-left:8px;
+                }
 
             .fraction {
                 display: inline-block;
@@ -310,9 +327,9 @@ html_head = '''
                 }
 
             .fraction > span {
-            display: block;
-            padding-top: 0.15em;
-            }
+                display: block;
+                padding-top: 0.15em;
+                }
 
             .fraction span.fdn {border-top: thin solid white;}
             .fraction span.bar {display: none;}
@@ -329,7 +346,8 @@ html_head = '''
             <li><a href="#all_norm"> All sites normalized</a></li>
             <li><a href="#pca"> PCA </a></li>
             <li><a href="#about"> About </a></li>
-            <img src="/home/fer/Documents/Code/AutoMethyc/img/logo-unam-corto.png" ="250" ="400">
+            <!–  "https://www.upo.es/investiga/rexpublica/wp-content/uploads/2019/11/logo-unam-corto.png"  –>
+            <img class="bottomnav" src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/logo-unam.png?raw=true" width="55" height="80">
         </ul>
 
         <div class="main">
