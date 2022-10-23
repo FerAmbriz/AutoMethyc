@@ -18,4 +18,4 @@ RUN curl -fsSL https://github.com/FelixKrueger/TrimGalore/archive/0.6.6.tar.gz -
 RUN tar xvzf trim_galore.tar.gz
 RUN mv /TrimGalore-0.6.6/trim_galore /usr/bin && rm -rf trim* Trim*
 
-COPY scr/ /usr/bin
+COPY scr /usr/bin/
