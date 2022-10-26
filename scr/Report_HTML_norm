@@ -388,6 +388,13 @@ html_head = '''
             .fraction span.fdn {border-top: thin solid white;}
             .fraction span.bar {display: none;}
 
+            .column {
+                float: left;
+                }
+            .center {
+                margin: auto;
+                width: 15%;
+                }
         </style>
     </head>
 
@@ -475,6 +482,12 @@ html_fooder = '''
     <body>
         <h3 id="about"> Repository  </h4>
             This program is avalible in <td><a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a></td>
+         <div class="row">
+            <div class="center">
+                <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/Escudo-UNAM.png?raw=true" width="65" height="75">
+                <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/LN_FESI.jpg?raw=true" width="75" height="80">
+            </div>
+        </div>
     </body>
 </html>'''
 
