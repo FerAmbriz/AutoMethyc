@@ -28,6 +28,30 @@ bed = input_folder+ '/CSV/StatusCpG.csv'
 depth = input_folder + '/CSV/CountUF_depth_merge.csv'
 
 print('#-------------------Plotting-------------------------')
+
+def sortOnco (df):
+    numero_chr = []
+    letra_chr = []
+
+    numeros = list(range(1,500, 1))
+    numeros = list(map(str,numeros))
+
+    for i in df.Chr:
+        if i.removeprefix('chr') in numeros:
+            numero_chr.append(int(i.removeprefix('chr')))
+            letra_chr.append('NaN')
+        else:
+            letra_chr.append(i.removeprefix('chr'))
+            numero_chr.append(500)
+
+    df ['C'] = numero_chr
+    df ['S'] = letra_chr
+
+    df = df.sort_values(['C', 'S'])
+    df = df.drop(['C', 'S'], axis = 1)
+
+    return df
+
 #----------------------------Depth--------------------------
 df = pd.read_csv(depth)
 longitud_inicial = len(df)
@@ -60,12 +84,15 @@ fig_depth = px.bar(df, x="ID", y="Count", color="Type")
 
 
 #------------------------All_sites ------------------
+
 sites_bed = pd.read_csv(bed)
 df = pd.read_csv(Oncoprint_All)
 
 df = df.drop(['Unnamed: 2'], axis=1)
 df = df.drop(df.index[[0,1]])
 df = df.rename(columns = {'Unnamed: 1':'Start', 'Sample':'Chr'})
+
+df = sortOnco(df)
 
 lst = []
 site = []
@@ -105,31 +132,31 @@ def discrete_colorscale(bvals, colors):
         dcolorscale.extend([[nvals[k], colors[k]], [nvals[k+1], colors[k]]])
     return dcolorscale
 
-if len(list(df_annot['Type'].value_counts())) == 3:
-    bvals = [0, 1, 2, 3]
-    colors = ['blue', '#3efe00', 'red']
-    dcolorsc = discrete_colorscale(bvals, colors)
-    heatmap = go.Heatmap(z=z, colorscale = dcolorsc,
-                     colorbar = dict(thickness=10,
-                                     tickvals=[0.2, 1, 1.7],
-                                     ticktext=['a', 'b', 'c']), x = ['CGI'], y = list(df.index)
+bvals = [0, 1, 2, 3 ,4]
+colors = ['blue', '#3efe00', 'red', '#00fec0']
+x = list(range(len(list(df_annot['Type'].value_counts()))+1))
+dcolorsc = discrete_colorscale(x, colors[0:len(list(df_annot['Type'].value_counts()))])
+
+heatmap = go.Heatmap(z=z, colorscale = dcolorsc,
+                    colorbar = dict(thickness=10,
+                                    tickvals=[0.2, 1, 1.7, 2.2],
+                                 ticktext=['a', 'b', 'c' ,'d']), x = ['CGI'], y = list(df.index)
                     )
-    fig1 = px.imshow(df, color_continuous_scale='RdBu_r')
-    #ff.create_annotated_heatmap(z1, x.tolist(), y.tolist(),  colorscale='matter')
-    fig2 = go.Figure(data=[heatmap])
+fig1 = px.imshow(df,  color_continuous_scale='RdBu_r')
+fig2 = go.Figure(data=[heatmap])
 
 
-    fig = make_subplots(
+fig = make_subplots(
         rows=1, cols=2,
         horizontal_spacing=0.05,
         column_widths=[0.9, 0.1], shared_yaxes=True
     )
 
-    fig.add_trace(fig1.data[0], 1, 1)
-    fig.add_trace(fig2.data[0], 1, 2)
+fig.add_trace(fig1.data[0], 1, 1)
+fig.add_trace(fig2.data[0], 1, 2)
 
 
-    fig.add_annotation(text='CpG island                CpG shore                CpG shelf',
+fig.add_annotation(text='CpG island                CpG shore                CpG shelf                CpG inter CGI',
                         align='left',
                         showarrow=False,
                         xref='paper',
@@ -138,7 +165,7 @@ if len(list(df_annot['Type'].value_counts())) == 3:
                         y=-0.13,
                         borderwidth=1)
 
-    fig.add_annotation(text='',
+fig.add_annotation(text='',
                         align='left',
                         showarrow=False,
                         xref='paper',
@@ -147,7 +174,7 @@ if len(list(df_annot['Type'].value_counts())) == 3:
                         y=-0.126,
                         bgcolor=colors[0],
                         borderwidth=7)
-    fig.add_annotation(text='',
+fig.add_annotation(text='',
                         align='left',
                         showarrow=False,
                         xref='paper',
@@ -156,7 +183,7 @@ if len(list(df_annot['Type'].value_counts())) == 3:
                         y=-0.126,
                         bgcolor=colors[1],
                         borderwidth=7)
-    fig.add_annotation(text='',
+fig.add_annotation(text='',
                         align='left',
                         showarrow=False,
                         xref='paper',
@@ -165,68 +192,7 @@ if len(list(df_annot['Type'].value_counts())) == 3:
                         y=-0.126,
                         bgcolor=colors[2],
                         borderwidth=7)
-else:
-    bvals = [0, 1, 2, 3 ,4]
-    colors = ['blue', '#3efe00', 'red', '#00fec0']
-    x = list(range(len(list(df_annot['Type'].value_counts()))+1))
-    dcolorsc = discrete_colorscale(x, colors[0:len(list(df_annot['Type'].value_counts()))])
-
-    heatmap = go.Heatmap(z=z, colorscale = dcolorsc,
-                     colorbar = dict(thickness=10,
-                                     tickvals=[0.2, 1, 1.7, 2.2],
-                                     ticktext=['a', 'b', 'c' ,'d']), x = ['CGI'], y = list(df.index)
-                    )
-    fig1 = px.imshow(df, color_continuous_scale='RdBu_r')
-    fig2 = go.Figure(data=[heatmap])
-
-
-    fig = make_subplots(
-        rows=1, cols=2,
-        horizontal_spacing=0.05,
-        column_widths=[0.9, 0.1], shared_yaxes=True
-    )
-
-    fig.add_trace(fig1.data[0], 1, 1)
-    fig.add_trace(fig2.data[0], 1, 2)
-
-
-    fig.add_annotation(text='CpG island                CpG shore                CpG shelf                CpG inter CGI',
-                        align='left',
-                        showarrow=False,
-                        xref='paper',
-                        yref='paper',
-                        x=0.3,
-                        y=-0.13,
-                        borderwidth=1)
-
-    fig.add_annotation(text='',
-                        align='left',
-                        showarrow=False,
-                        xref='paper',
-                        yref='paper',
-                        x=0.28,
-                        y=-0.126,
-                        bgcolor=colors[0],
-                        borderwidth=7)
-    fig.add_annotation(text='',
-                        align='left',
-                        showarrow=False,
-                        xref='paper',
-                        yref='paper',
-                        x=0.41,
-                        y=-0.126,
-                        bgcolor=colors[1],
-                        borderwidth=7)
-    fig.add_annotation(text='',
-                        align='left',
-                        showarrow=False,
-                        xref='paper',
-                        yref='paper',
-                        x=0.525,
-                        y=-0.126,
-                        bgcolor=colors[2],
-                        borderwidth=7)
-    fig.add_annotation(text='',
+fig.add_annotation(text='',
                         align='left',
                         showarrow=False,
                         xref='paper',
@@ -245,7 +211,7 @@ df = df.rename(columns = {'Sample':'Gene'})
 df = df.set_index('Gene')
 df = df.drop(df.index[[0,1]])
 
-fig_mean= px.imshow(df, aspect="auto", template= "plotly")
+fig_mean= px.imshow(df, aspect="auto",  color_continuous_scale='RdBu_r')
 #fig_mean.update_layout(paper_bgcolor="#1c1f27")
 #-------------------------Count-----------------------
 
@@ -306,11 +272,15 @@ fig_chr = px.bar(df, x="ID", y="Count", color="Status", title="Coverage Status")
 #---------------------------Norm all----------------------
 
 df = pd.read_csv(OncoprintNorm)
-
 df = df.set_index('ID')
 df = df.drop(['Type'], axis=1)
-
-fig_norm_all = px.imshow(df.T, aspect="auto")
+df = df.T.reset_index()
+df [['Chr', 'SpecificSite']] = df['index'].str.split(':',expand=True)
+df = sortOnco(df)
+df = df.drop(['Chr', 'SpecificSite'], axis = 1)
+df.rename(columns = {'index':'SiteCpG'}, inplace = True)
+df = df.set_index('SiteCpG')
+fig_norm_all = px.imshow(df, aspect="auto", color_continuous_scale='RdBu_r')
 #fig_norm_all.update_layout(paper_bgcolor="#1c1f27")
 
 
@@ -319,8 +289,20 @@ df = pd.read_csv(OncoprintMeanNorm)
 df = df.drop(['Type'], axis=1)
 df = df.set_index('ID')
 
-fig_mean_norm= px.imshow(df.T, aspect="auto")
+fig_mean_norm= px.imshow(df.T, aspect="auto",  color_continuous_scale='RdBu_r')
 #fig_mean_norm.update_layout(paper_bgcolor="#1c1f27")
+
+#-------------------Manhattan plot------------------
+df = pd.read_csv(OncoprintNorm)
+df = df.set_index('ID')
+df = df.T
+df = pd.DataFrame(df.stack()).reset_index()
+df.columns = ['Site', 'ID', 'Z score']
+
+df [['Chr', 'SpecificSite']] = df['Site'].str.split(':',expand=True)
+df = sortOnco(df)
+
+manhattan = px.scatter(df, x="Site", y='Z score', color="ID")
 
 #------------------------PCA----------------------
 
@@ -513,6 +495,7 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(html_spec4)
     f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_spec5)
+    f.write(manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_fooder)
 
