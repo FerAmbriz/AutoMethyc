@@ -20,12 +20,12 @@ df = df.drop(list(range(65,lenght,1)))
 df = df.rename(columns = {'90th Percentile\n':'90th Percentile'})
 
 if contador % 2 == 0:
-    print('impar')
-    contador = 1
-else:
-    print('par')
-    contador = 2
     df = df.drop(list(range(53,65,1)))
+    contador = 2
+    print(2)
+else:
+    print(1)
+    contador = 1
 
 df['ID'] = [ID + '_' + str(contador)] * len(df)
 print(len(df))

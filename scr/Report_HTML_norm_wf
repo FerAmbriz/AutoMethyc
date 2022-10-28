@@ -24,7 +24,7 @@ fastqc = input_folder + '/CSV/fastqc_merge.csv'
 
 print('#-------------------Plotting-------------------------')
 #---------------------------fastqc---------------------------
-df = pd.read_csv('/home/fer/Documents/Code/AutoMethyc/fastqc_merge.csv')
+df = pd.read_csv(fastqc)
 df['Mean'] = list(map(float, df.Mean))
 df = df.replace({'65-69': 67, '75-79': 77, '80-84': 82, '85-89': 87, '90-94': 92,
                       '100-104': 102, '105-109': 107, '110-114':112, '115-119': 117,
