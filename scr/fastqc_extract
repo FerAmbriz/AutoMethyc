@@ -1,0 +1,24 @@
+#!/bin/bash
+
+fastq_folder=$1
+output=$2
+
+
+unzip $fastq_folder/'*.zip'
+
+echo '#Base,Mean,Median,Lower Quartile,Upper Quartile,10th Percentile,90th Percentile,ID'> $output/fastqc_merge.csv
+
+array=($(ls -d */))
+tLen=${#array[@]}
+
+for (( i=0; i<${tLen}; i=i+1));
+do
+  x=${array[$i]%_S*}
+  ID=${x##*/}
+  echo $ID
+  echo ${array[$i]}
+  fastqc_read ${array[$i]}/fastqc_data.txt $output/fastqc_merge.csv $ID $i
+done
+
+rm -rf *_fastqc
+echo 'DONE'

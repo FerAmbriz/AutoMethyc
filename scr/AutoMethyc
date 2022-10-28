@@ -78,25 +78,20 @@ if [ "$norm" = "False" ]; then
 		# Construcción del merge
 		allmerge $output/results/06_bedGraph $output 'Sample'
 
-
-
-		####################REVISAR#######################
-
 		Oncoprint_wf $output/merge.csv $output
-
-
 
 		multiqc $output/results/02_fastq_trimmed/*
 		mv multiqc* $output/HTML
 
 		mv $output/results $output/Bismark
-
 				
 		mv $output/results/results_html/* $output/HTML/Bismark_report
 		mv $output/*csv $output/CSV
 		rm -rf $output/tmp
 
 		WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
+
+		fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
 		Report_HTML_wf $output $output/HTML
 	else
@@ -109,10 +104,6 @@ if [ "$norm" = "False" ]; then
 				rename $output/results/06_bedGraph
 				# Construcción del merge
 				allmerge $output/results/06_bedGraph $output 'Sample'
-
-
-
-				####################REVISAR#######################
 
 				# Aplicacion de filtros
 				Filter $output/merge.csv $filtro $output
@@ -131,6 +122,9 @@ if [ "$norm" = "False" ]; then
 
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 				WebScrapping $filtro $genome $output/CSV False
+
+				fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
+
 				Report_HTML $output $output/HTML 
 	fi
 else
@@ -157,6 +151,7 @@ else
 				mv multiqc_report.html $output/HTML/multiqc_report_normals.html
 				mv multiqc_data $output/HTML/multiqc_data_normals
 
+				fastqc_extract $output/Bismark/norm/results/02_fastq_trimmed $output/Bismark/norm/results
 
 				echo '------------------Samples---------------------'
 				BuclePipeline $input $output/samples $ref $thr $quality
@@ -165,11 +160,17 @@ else
 				rename $output/samples/results/06_bedGraph
 				allmerge $output/samples/results/06_bedGraph $output/samples 'Sample'
 
+				fastqc_extract $output/Bismark/samples/results/02_fastq_trimmed $output/Bismark/samples/results
+
 				echo 'Joining in one file the samples and normals'
 				
 				awk '(NR == 1) || (FNR > 1)' $output/norm/merge.csv $output/samples/merge.csv > $output/merge.csv
 				awk '(NR == 1) || (FNR > 1)' $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv > $output/CSV/CountUF_depth_merge.csv
+				awk '(NR == 1) || (FNR > 1)' $output/Bismark/norm/results/fastqc_merge.csv $output/Bismark/samples/results/fastqc_merge.csv > $output/CSV/fastqc_merge.csv
+
+
 				rm -rf $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv
+
 
 				echo 'Done merge samples and normals'
 
@@ -213,12 +214,10 @@ else
 				# Construcción del merge
 				allmerge $output/norm/results/06_bedGraph $output/norm 'Normal'
 
-
-
-				####################REVISAR#######################
-
 				# Aplicacion de filtros
 				python /usr/bin/Filter $output/norm/merge.csv $filtro $output/norm
+
+				fastqc_extract $output/Bismark/norm/results/02_fastq_trimmed $output/Bismark/norm/results
 
 				multiqc $output/norm/results/02_fastq_trimmed/*
 
@@ -234,11 +233,9 @@ else
 				rename $output/samples/results/06_bedGraph
 				allmerge $output/samples/results/06_bedGraph $output/samples 'Sample'
 
-
-
-				####################REVISAR#######################
-
 				Filter $output/samples/merge.csv $filtro $output/samples
+
+				fastqc_extract $output/Bismark/samples/results/02_fastq_trimmed $output/Bismark/samples/results
 
 				echo 'Joining in one file the samples and normals'
 				
@@ -251,6 +248,9 @@ else
 				awk '(NR == 1) || (FNR > 1)' $output/norm/merge.csv $output/samples/merge.csv > $output/merge.csv
 
 				awk '(NR == 1) || (FNR > 1)' $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv > $output/CSV/CountUF_depth_merge.csv
+
+				awk '(NR == 1) || (FNR > 1)' $output/Bismark/norm/results/fastqc_merge.csv $output/Bismark/samples/results/fastqc_merge.csv > $output/CSV/fastqc_merge.csv
+
 				rm -rf $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv
 
 

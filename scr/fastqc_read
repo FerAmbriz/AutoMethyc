@@ -1,0 +1,38 @@
+#!/usr/bin/python
+
+import sys
+import pandas as pd
+
+inp = sys.argv[1]
+merge = sys.argv[2]
+ID = sys.argv[3]
+contador = int(sys.argv[4])
+
+df = open(inp)
+lines = df.readlines()
+
+df = pd.DataFrame(lines)
+lenght = len(df)
+df = df[0].str.split('\t',expand=True)
+df.columns = df.iloc[12]
+df = df.drop(list(range(0,13,1)))
+df = df.drop(list(range(65,lenght,1)))
+df = df.rename(columns = {'90th Percentile\n':'90th Percentile'})
+
+if contador % 2 == 0:
+    print('impar')
+    contador = 1
+else:
+    print('par')
+    contador = 2
+    df = df.drop(list(range(53,65,1)))
+
+df['ID'] = [ID + '_' + str(contador)] * len(df)
+print(len(df))
+
+df_bd = pd.read_csv(merge)
+
+df_fastqc = pd.concat([df_bd, df],  sort=False)
+df_fastqc = df_fastqc.set_index('#Base')
+
+df_fastqc.to_csv(merge)
