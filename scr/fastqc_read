@@ -16,16 +16,23 @@ lenght = len(df)
 df = df[0].str.split('\t',expand=True)
 df.columns = df.iloc[12]
 df = df.drop(list(range(0,13,1)))
-df = df.drop(list(range(65,lenght,1)))
 df = df.rename(columns = {'90th Percentile\n':'90th Percentile'})
 
 if contador % 2 == 0:
-    df = df.drop(list(range(53,65,1)))
     contador = 2
     print(2)
 else:
     print(1)
     contador = 1
+
+cut = 13
+for i in df['#Base']:
+    if  i == '>>END_MODULE\n':
+        break
+    else:
+        cut = cut+1
+
+df = df.drop(list(range(cut,lenght,1)))
 
 df['ID'] = [ID + '_' + str(contador)] * len(df)
 print(len(df))

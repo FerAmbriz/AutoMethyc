@@ -85,7 +85,7 @@ if [ "$norm" = "False" ]; then
 
 		mv $output/results $output/Bismark
 				
-		mv $output/results/results_html/* $output/HTML/Bismark_report
+		mv $output/Bismark/results/results_html/* $output/HTML/Bismark_report
 		mv $output/*csv $output/CSV
 		rm -rf $output/tmp
 
@@ -116,7 +116,7 @@ if [ "$norm" = "False" ]; then
 				mv $output/results $output/Bismark
 
 				
-				mv $output/results/results_html/* $output/HTML/Bismark_report
+				mv $output/Bismark/results/results_html/* $output/HTML/Bismark_report
 				mv $output/*csv $output/CSV
 				rm -rf $output/tmp
 
@@ -151,7 +151,6 @@ else
 				mv multiqc_report.html $output/HTML/multiqc_report_normals.html
 				mv multiqc_data $output/HTML/multiqc_data_normals
 
-				fastqc_extract $output/Bismark/norm/results/02_fastq_trimmed $output/Bismark/norm/results
 
 				echo '------------------Samples---------------------'
 				BuclePipeline $input $output/samples $ref $thr $quality
@@ -160,23 +159,17 @@ else
 				rename $output/samples/results/06_bedGraph
 				allmerge $output/samples/results/06_bedGraph $output/samples 'Sample'
 
-				fastqc_extract $output/Bismark/samples/results/02_fastq_trimmed $output/Bismark/samples/results
 
 				echo 'Joining in one file the samples and normals'
 				
 				awk '(NR == 1) || (FNR > 1)' $output/norm/merge.csv $output/samples/merge.csv > $output/merge.csv
 				awk '(NR == 1) || (FNR > 1)' $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv > $output/CSV/CountUF_depth_merge.csv
-				awk '(NR == 1) || (FNR > 1)' $output/Bismark/norm/results/fastqc_merge.csv $output/Bismark/samples/results/fastqc_merge.csv > $output/CSV/fastqc_merge.csv
 
 
 				rm -rf $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv
 
 
 				echo 'Done merge samples and normals'
-
-
-
-				####################REVISAR#######################
 
 				Oncoprint_wf $output/merge.csv $output
 
@@ -192,7 +185,13 @@ else
 				rm -rf $output/Bismark/norm/tmp
 				rm -rf $output/Bismark/samples/tmp
 
+				mv $output/Bismark/norm/results/results_html/* $output/HTML/Bismark_report
+				mv $output/Bismark/norm/samples/results_html/* $output/HTML/Bismark_report
 				
+				fastqc_extract $output/Bismark/norm/results/02_fastq_trimmed $output/Bismark/norm
+				fastqc_extract $output/Bismark/samples/results/02_fastq_trimmed $output/Bismark/samples
+				awk '(NR == 1) || (FNR > 1)' $output/Bismark/norm/fastqc_merge.csv $output/Bismark/samples/fastqc_merge.csv > $output/CSV/fastqc_merge.csv
+
 				Norm_wf $output/CSV/Oncoprint_wf.csv $output/CSV
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
@@ -217,7 +216,6 @@ else
 				# Aplicacion de filtros
 				python /usr/bin/Filter $output/norm/merge.csv $filtro $output/norm
 
-				fastqc_extract $output/Bismark/norm/results/02_fastq_trimmed $output/Bismark/norm/results
 
 				multiqc $output/norm/results/02_fastq_trimmed/*
 
@@ -235,7 +233,6 @@ else
 
 				Filter $output/samples/merge.csv $filtro $output/samples
 
-				fastqc_extract $output/Bismark/samples/results/02_fastq_trimmed $output/Bismark/samples/results
 
 				echo 'Joining in one file the samples and normals'
 				
@@ -249,7 +246,6 @@ else
 
 				awk '(NR == 1) || (FNR > 1)' $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv > $output/CSV/CountUF_depth_merge.csv
 
-				awk '(NR == 1) || (FNR > 1)' $output/Bismark/norm/results/fastqc_merge.csv $output/Bismark/samples/results/fastqc_merge.csv > $output/CSV/fastqc_merge.csv
 
 				rm -rf $output/CountUF_depth.csv $output/CSV/CountUF_depth.csv
 
@@ -270,6 +266,13 @@ else
 
 				rm -rf $output/Bismark/norm/tmp
 				rm -rf $output/Bismark/samples/tmp
+
+				mv $output/Bismark/norm/results/results_html/* $output/HTML/Bismark_report
+				mv $output/Bismark/norm/samples/results_html/* $output/HTML/Bismark_report
+				
+				fastqc_extract $output/Bismark/norm/results/02_fastq_trimmed $output/Bismark/norm
+				fastqc_extract $output/Bismark/samples/results/02_fastq_trimmed $output/Bismark/samples
+				awk '(NR == 1) || (FNR > 1)' $output/Bismark/norm/fastqc_merge.csv $output/Bismark/samples/fastqc_merge.csv > $output/CSV/fastqc_merge.csv
 
 				Norm $output/CSV/Oncoprint.csv $output/CSV/OncoprintPromedio.csv $output/CSV
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
