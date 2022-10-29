@@ -25,21 +25,17 @@ print('#-------------------Plotting-------------------------')
 #---------------------------fastqc---------------------------
 df = pd.read_csv(fastqc)
 df['Mean'] = list(map(float, df.Mean))
-df = df.replace({'65-69': 67, '75-79': 77, '80-84': 82, '85-89': 87, '90-94': 92,
-                      '100-104': 102, '105-109': 107, '110-114':112, '115-119': 117,
-                       '120-124': 122, '125-129': 127, '130-134': 132, '135-139':137,
-                       '140-144': 142, '145-149': 147, '150-154': 152, '155-159': 157,
-                       '70-74': 72, '95-99': 97, '60-64': 62, '10-14': 12, '55-59': 57,
-                       '15-19': 17, '25-29': 27, '30-34': 32, '35-39': 37, '40-44': 42,
-                       '45-49': 47, '50-54':52, '20-24': 22, '195-199': 197, '220-224': 222,
-                       '215-219': 217, '210-214': 212, '205-209': 207, '200-204': 202,
-                       '175-179': 177, '190-194': 192, '185-189': 187, '180-184':182,
-                       '170-174':172, '165-169': 167, '160-164': 162, '10-14': 12
-                      })
+
+def split_base(s):
+    lst = list(map(int, s.split('-')))
+    m = (int(sum(lst)/len(lst)))
+    return m
+df['#Base'] = list(map(split_base, df['#Base']))
+
 df['#Base'] = list(map(int, list(df['#Base'])))
 df = df.rename(columns = {'#Base':'Position (pb)', 'Mean': 'Phred Score'})
 
-fig_fastqc = px.line(df_bd, x="Position (pb)", y="Phred Score", color='ID')
+fig_fastqc = px.line(df, x="Position (pb)", y="Phred Score", color='ID')
 fig_fastqc.add_hrect(y0=28, y1=40, line_width=0, fillcolor="green", opacity=0.2)
 fig_fastqc.add_hrect(y0=20, y1=28, line_width=0, fillcolor="yellow", opacity=0.2)
 fig_fastqc.add_hrect(y0=0, y1=20, line_width=0, fillcolor="red", opacity=0.2)
