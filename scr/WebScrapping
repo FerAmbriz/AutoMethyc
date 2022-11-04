@@ -38,6 +38,9 @@ bed = pd.read_csv(bed_file)
 if status == 'True':
     bed.rename(columns={'Unnamed: 0':'Chr', 'Unnamed: 1':'Start'}, inplace=True)
     bed = bed.drop([0,1,2])
+else:
+    bed = bed.drop([0,1])
+    bed.rename(columns={'Sample':'Chr', 'Unnamed: 1':'Start', 'Unnamed: 2': 'Gene'}, inplace=True)
 
 def distance (loci, db):
     dist = int(loci)-int(db)

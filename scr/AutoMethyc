@@ -121,7 +121,7 @@ if [ "$norm" = "False" ]; then
 				rm -rf $output/tmp
 
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
-				WebScrapping $filtro $genome $output/CSV False
+				WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
 
 				fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
@@ -277,7 +277,7 @@ else
 				Norm $output/CSV/Oncoprint.csv $output/CSV/OncoprintPromedio.csv $output/CSV
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
-				WebScrapping $filtro $genome $output/CSV False
+				WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
 				Report_HTML_norm $output $output/HTML
 	fi
 fi
