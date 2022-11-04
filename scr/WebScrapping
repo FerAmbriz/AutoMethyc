@@ -70,6 +70,8 @@ for crm, loci in zip(bed.Chr, bed.Start):
 
     df_bd = pd.concat([df_bd, db_i])
 
+df_bd['Site'] = list(map(int, df_bd['Site']))
+
 typ = []
 dist = []
 for loci, start, end, distance in zip(df_bd.Site, df_bd.chromStart, df_bd.chromEnd, df_bd.DistCpGIsland):
