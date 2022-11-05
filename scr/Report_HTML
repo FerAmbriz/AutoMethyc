@@ -38,7 +38,7 @@ df['#Base'] = list(map(int, list(df['#Base'])))
 df = df.rename(columns = {'#Base':'Position (pb)', 'Mean': 'Phred Score'})
 
 fig_fastqc = px.line(df, x="Position (pb)", y="Phred Score", color='ID')
-fig_fastqc.add_hrect(y0=28, y1=40, line_width=0, fillcolor="green", opacity=0.2)
+fig_fastqc.add_hrect(y0=28, y1=42, line_width=0, fillcolor="green", opacity=0.2)
 fig_fastqc.add_hrect(y0=20, y1=28, line_width=0, fillcolor="yellow", opacity=0.2)
 fig_fastqc.add_hrect(y0=0, y1=20, line_width=0, fillcolor="red", opacity=0.2)
 fig_fastqc.update_layout(showlegend=False)

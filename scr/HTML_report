@@ -1,0 +1,96 @@
+#!/bin/python3
+import pandas as pd
+import numpy as np
+import plotly.express as px
+from IPython.display import HTML
+import sys
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import re
+
+from modules_plotly import *
+from modules_html import *
+
+input_folder = sys.argv[1]
+Output = sys.argv[2]
+
+Oncoprint_All = input_folder+'/CSV/Oncoprint.csv'
+Oncoprint_mean = input_folder+'/CSV/OncoprintPromedio.csv'
+Count = input_folder+'/CSV/Count.csv'
+NotLoc = input_folder+'/CSV/NotLoc.csv'
+OncoprintNorm = input_folder+'/CSV/OncoprintNorm.csv'
+OncoprintMeanNorm = input_folder+'/CSV/OncoprintMeanNorm.csv'
+PCA_data = input_folder+'/CSV/PCA_vectors.csv'
+CountUF=input_folder+'/CSV/CountUF.csv'
+bed = input_folder+ '/CSV/StatusCpG.csv'
+depth = input_folder + '/CSV/CountUF_depth_merge.csv'
+fastqc = input_folder + '/CSV/fastqc_merge.csv'
+
+print('#-------------------Plotting-------------------------')
+
+#=======================fastqc======================#
+df = pd.read_csv(fastqc)
+fig_fastqc = plot_fastqc(df)
+
+#=======================Depth======================#
+df = pd.read_csv(depth)
+fig_depth = plot_depth(df)
+
+#========================All=========================#
+sites_bed = pd.read_csv(bed)
+df = pd.read_csv(Oncoprint_All)
+fig_all = plot_all(sites_bed, df)
+
+#========================Mean=======================#
+df = pd.read_csv(Oncoprint_mean)
+fig_mean = plot_mean(df)
+
+#=======================Count=======================#
+df = pd.read_csv(Count)
+df2 = pd.read_csv(CountUF)
+fig_samples = plot_count (df, df2)
+
+#=====================Off-target====================#
+df = pd.read_csv(Count)
+df2 = pd.read_csv(NotLoc)
+fig_oft = plot_offtarget(df, df2)
+
+#====================Norm all=======================#
+df = pd.read_csv(OncoprintNorm)
+fig_norm = plot_norm(df)
+
+#====================Norm mean=====================#
+df = pd.read_csv(OncoprintMeanNorm)
+fig_mean_norm = plot_mean_norm(df)
+
+#===================Mannhatan======================#
+df = pd.read_csv(OncoprintNorm)
+fig_manhattan = plot_manhattan(df)
+
+#=====================PCA=========================#
+finalDf = pd.read_csv(PCA_data)
+fig_pca = plot_pca(finalDf)
+
+
+#==========================HTML============================#
+
+with open(Output + '/AutoMethyc_Report.html', 'w') as f:
+    f.write(html_head_complete())
+    f.write(fig_fastqc.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_depth())
+    f.write(fig_depth.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_coverage())
+    f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(fig_oft.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_all())
+    f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_mean())
+    f.write(fig_mean.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_norm())
+    f.write(fig_norm.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_mean_norm())
+    f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_pca())
+    f.write(fig_manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_fooder())

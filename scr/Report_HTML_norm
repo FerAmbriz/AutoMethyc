@@ -66,7 +66,7 @@ df['#Base'] = list(map(int, list(df['#Base'])))
 df = df.rename(columns = {'#Base':'Position (pb)', 'Mean': 'Phred Score'})
 
 fig_fastqc = px.line(df, x="Position (pb)", y="Phred Score", color='ID')
-fig_fastqc.add_hrect(y0=28, y1=40, line_width=0, fillcolor="green", opacity=0.2)
+fig_fastqc.add_hrect(y0=28, y1=42, line_width=0, fillcolor="green", opacity=0.2)
 fig_fastqc.add_hrect(y0=20, y1=28, line_width=0, fillcolor="yellow", opacity=0.2)
 fig_fastqc.add_hrect(y0=0, y1=20, line_width=0, fillcolor="red", opacity=0.2)
 fig_fastqc.update_layout(showlegend=False)
@@ -82,9 +82,9 @@ ID = []
 
 for i, j, z in zip(df.filtered, df.unfiltered, df.ID):
     lst.append(i)
-    typ.append('filtered')
+    typ.append('on-target')
     lst.append(j)
-    typ.append('unfiltered')
+    typ.append('off-target')
     lI = [z] * 2
     ID = ID + lI
 
@@ -274,13 +274,13 @@ fig_samples.update_layout(
 #------------------------barplot----------------------#
 df = pd.read_csv(Count)
 df.columns = ['ID' , 'Count']
-df['Status'] = ['In_Loc'] * len(df)
+df['Status'] = ['on-target'] * len(df)
 
 
 df2 = pd.read_csv(NotLoc)
 df2 = pd.DataFrame(df2['ID'].value_counts()).reset_index()
 df2.columns = ['ID' , 'Count']
-df2['Status'] = ['NotLoc'] * len(df2)
+df2['Status'] = ['off-target'] * len(df2)
 
 df = pd.concat([df, df2])
 
@@ -415,18 +415,17 @@ html_head = '''
                 width: 15%;
                 }
             .c{
+              width: 50%;
               display: block;
-              margin-left: auto;
-              margin-right: auto;
-              width: 65%;
+              margin: auto;
             }
         </style>
     </head>
 
     <body>
         <ul class="vertical">
-            <li><a style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
-            <li><a href="#Home"> Home </a></li>
+            <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
+            <li><a href="#Base"> Base quality </a></li>
             <li><a href="#Depth"> Depth </a></li>
             <li><a href="#Samples" > Coverage </a></li>
             <li><a href="#All"> Heatmap all</a></li>
@@ -441,20 +440,29 @@ html_head = '''
             <h1 id="Home"> AutoMethyc </h1>
                 <h2> Version with normal samples </h2>
                     AutoMethyc is a pipeline automated which aims for simplicity and practcality in methylation analysis.
-                <h2 id="Depth"> Depth </h2>
-                    Count of sites filtered and unfiltered variables by depth
+
+                <h2 id="Base"> Base quality </h2>
+                    Merge of fastqc
         </div">
     </body>
 '''
 
 html_spec0 = '''
     <body>
+        <h2 id="Depth" > Depth </h2>
+            Count of sites filtered and unfiltered variables by depth
+    </body>
+'''
+
+
+html_spec1 = '''
+    <body>
         <h2 id="Samples" > Coverage </h2>
             The statistics of the samples consist of classifying the coverage (CVR) of the samples given the bedGraph and the average coverage of the samples, in addition to plotting the count of regions present in the bedGraph (In_loc) and those not present (Not_loc). In addition to evaluating the filter count (FTR) to visualize the number of filtered regions.
     </body>
 '''
 
-html_spec1 = '''
+html_spec2 = '''
     <body>
         <h2 id="All"> Heatmap all sites </h2>
             Heatmap of the percentage of methylation present at each site present in the bedGraph per sample
@@ -467,7 +475,7 @@ html_spec1 = '''
 '''
 
 
-html_spec2= '''
+html_spec3= '''
     <body>
         <h2 id="Mean"> Heatmap mean per Gene </h2>
             Heatmap of the average percentage of methylation present in each site corresponding to its corresponding gene.
@@ -475,7 +483,7 @@ html_spec2= '''
 '''
 
 
-html_spec3 = '''
+html_spec4 = '''
     <body>
         <h1> Normalization </h1>
             Normalization was performed considering the mean and standard deviation of the controls, applying to each value:
@@ -494,14 +502,14 @@ html_spec3 = '''
     </body>
 '''
 
-html_spec4 = '''
+html_spec5 = '''
     <body>
         <h2 id="Mean_norm"> Heatmap mean per gene normalized </h2>
             Heatmap with the mean of each normalized site belonging to each gene
     </body>
 '''
 
-html_spec5 = '''
+html_spec6 = '''
     <body>
         <h2 id="pca"> PCA </h2>
             Principal component analysis (PCA) applied to each site of the normals and samples. Each point represents a normalized site according to the corresponding group (normal or sample). To view which region is view the file "PCA_vectors.csv" in [Output]/CSV
@@ -526,19 +534,20 @@ html_fooder = '''
 with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(html_head)
     f.write(fig_fastqc.to_html(full_html=False, include_plotlyjs='cdn'))
-    f.write(fig_depth.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_spec0)
+    f.write(fig_depth.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_spec1)
     f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_chr.to_html(full_html=False, include_plotlyjs='cdn'))
-    f.write(html_spec1)
-    f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_spec2)
-    f.write(fig_mean.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_spec3)
-    f.write(fig_norm_all.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(fig_mean.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_spec4)
-    f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(fig_norm_all.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_spec5)
+    f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_spec6)
     f.write(manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_fooder)
