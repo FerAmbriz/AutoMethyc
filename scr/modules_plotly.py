@@ -90,10 +90,6 @@ def discrete_colorscale(bvals, colors):
     return dcolorscale
 
 def plot_all (sites_bed, df):
-    df = df.drop(['Unnamed: 2'], axis=1)
-    df = df.drop(df.index[[0,1]])
-    df = df.rename(columns = {'Unnamed: 1':'Start', 'Sample':'Chr'})
-
     df = sortOnco(df)
 
     lst = []

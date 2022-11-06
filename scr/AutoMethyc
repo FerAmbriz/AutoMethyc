@@ -93,7 +93,8 @@ if [ "$norm" = "False" ]; then
 
 		fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
-		Report_HTML_wf $output $output/HTML
+		#Report_HTML_wf $output $output/HTML
+		HTML_report $output $output/HTML False False
 	else
 		echo 'usando la version sin normales y con filtro'
 
@@ -125,7 +126,8 @@ if [ "$norm" = "False" ]; then
 
 				fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
-				Report_HTML $output $output/HTML 
+				#Report_HTML $output $output/HTML 
+				HTML_report $output $output/HTML False True
 	fi
 else
 	if [ "$filtro" = "False" ]; then
@@ -195,7 +197,8 @@ else
 				Norm_wf $output/CSV/Oncoprint_wf.csv $output/CSV
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
-				Report_HTML_norm_wf $output $output/HTML
+				#Report_HTML_norm_wf $output $output/HTML
+				HTML_report $output $output/HTML True False
 	else
 				echo 'usando la version con normales y con filtro'
 
@@ -278,7 +281,8 @@ else
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
-				Report_HTML_norm $output $output/HTML
+				#Report_HTML_norm $output $output/HTML
+				HTML_report $output $output/HTML True True
 	fi
 fi
 

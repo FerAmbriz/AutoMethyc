@@ -1,6 +1,6 @@
 #!/bin/python3
 
-def html_head_complete ():
+def html_css ():
     html = '''
 <html>
     <head>
@@ -70,7 +70,11 @@ def html_head_complete ():
             }
         </style>
     </head>
+    '''
+    return html
 
+def html_navbar_complete ():
+    html = '''
     <body>
         <ul class="vertical">
             <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
@@ -84,15 +88,75 @@ def html_head_complete ():
             <li><a href="#pca"> PCA </a></li>
             <li><a href="#about"> About </a></li>
         </ul>
+    </body>
+    '''
+    return html
 
-        <div class="main">
-            <h1 id="Home"> AutoMethyc </h1>
-                <h2> Version with normal samples </h2>
-                    AutoMethyc is a pipeline automated which aims for simplicity and practcality in methylation analysis.
 
-                <h2 id="Base"> Base quality </h2>
-                    Merge of fastqc
-        </div">
+
+
+
+def html_navbar_sFilt ():
+    html = '''
+    <body>
+        <ul class="vertical">
+            <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
+            <li><a href="#Base"> Base quality </a></li>
+            <li><a href="#Depth"> Depth </a></li>
+            <li><a href="#All"> Heatmap all</a></li>
+            <li><a href="#all_norm"> All sites normalized</a></li>
+            <li><a href="#pca"> PCA </a></li>
+            <li><a href="#about"> About </a></li>
+        </ul>
+    </body>
+    '''
+    return html
+
+def html_navbar_sNorm ():
+    html = '''
+    <body>
+        <ul class="vertical">
+            <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
+            <li><a href="#Base"> Base quality </a></li>
+            <li><a href="#Depth"> Depth </a></li>
+            <li><a href="#Samples" > Coverage </a></li>
+            <li><a href="#All"> Heatmap all</a></li>
+            <li><a href="#Mean"> Heatmap mean</a></li>
+            <li><a href="#about"> About </a></li>
+        </ul>
+    </body>
+    '''
+    return html
+
+def html_navbar_sNorm_sFilt ():
+    html = '''
+    <body>
+        <ul class="vertical">
+            <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
+            <li><a href="#Base"> Base quality </a></li>
+            <li><a href="#Depth"> Depth </a></li>
+            <li><a href="#All"> Heatmap all</a></li>
+            <li><a href="#about"> About </a></li>
+        </ul>
+    </body>
+    '''
+    return html
+
+def html_AutoMethyc ():
+    html = '''
+    <div class="main">
+        <h1 id="Home"> AutoMethyc </h1>
+            <h2> Version with normal samples </h2>
+                AutoMethyc is a pipeline automated which aims for simplicity and practcality in methylation analysis.
+    </div">
+    '''
+    return html
+
+def html_base ():
+    html = '''
+    <body>
+        <h2 id="Base" > Base quality </h2>
+        Merge of fastqc
     </body>
     '''
     return html
