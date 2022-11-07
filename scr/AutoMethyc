@@ -15,7 +15,7 @@ shift;
 current_arg="$1"
 case "$opt" in
 "-h"|"--help"      ) echo '''
-AutoMethyc version 0.0.2-beta
+AutoMethyc version 0.0.3-beta
 Usage
 	AutoMethyc [options]
 Options
@@ -57,6 +57,8 @@ echo '	depth: ' $depth
 echo '	quality: ' $quality
 echo '#-----------------------------------------------------------#'
 
+start=`date +%s`
+
 # Organizando el Output
 mkdir $output/CSV
 mkdir $output/HTML
@@ -93,7 +95,6 @@ if [ "$norm" = "False" ]; then
 
 		fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
-		#Report_HTML_wf $output $output/HTML
 		HTML_report $output $output/HTML False False
 	else
 		echo 'usando la version sin normales y con filtro'
@@ -126,7 +127,6 @@ if [ "$norm" = "False" ]; then
 
 				fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
-				#Report_HTML $output $output/HTML 
 				HTML_report $output $output/HTML False True
 	fi
 else
@@ -197,7 +197,6 @@ else
 				Norm_wf $output/CSV/Oncoprint_wf.csv $output/CSV
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
-				#Report_HTML_norm_wf $output $output/HTML
 				HTML_report $output $output/HTML True False
 	else
 				echo 'usando la version con normales y con filtro'
@@ -281,7 +280,6 @@ else
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
-				#Report_HTML_norm $output $output/HTML
 				HTML_report $output $output/HTML True True
 	fi
 fi
@@ -292,5 +290,9 @@ fi
 
 
 echo 'Done Report HTML' 
+
+end=`date +%s`
+runtime=$((end-start))
+echo 'run time = ' $runtime'(sec)'
 
 echo 'DONE'
