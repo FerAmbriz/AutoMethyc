@@ -40,6 +40,7 @@ Optional arguments
 "-n"|"--normal"      ) norm="$1"; shift;;
 "-g"|"--genome"       ) genome="$1"; shift;;
 "-q"|"--quality"       ) quality="$1"; shift;;
+"-d"|"--depth"       ) depth="$1"; shift;;
 	esac
 done
 
