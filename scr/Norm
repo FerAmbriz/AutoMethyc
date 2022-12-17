@@ -51,9 +51,10 @@ def normalizado (df, df_cont, typ):
 all_norm = normalizado(all_sites, df_controles, typ)
 
 all_norm = all_norm.reset_index()
-all_norm.rename(columns={'index', 'ID'}, inplace = True)
+all_norm.rename(columns={'index': 'ID'}, inplace = True)
 all_norm = all_norm.set_index('ID')
-
+print('All sites normalized')
+print(all_norm)
 all_norm.to_csv(output + '/OncoprintNorm.csv')
 
 onco_mean = onco_mean.set_index('Sample')
@@ -76,7 +77,8 @@ ID = onco_mean.index.values
 mean_norm = normalizado(onco_mean, df_controles, typ)
 
 mean_norm = mean_norm.reset_index()
-mean_norm.rename(columns={'index', 'ID'}, inplace = True)
+mean_norm.rename(columns={'index': 'ID'}, inplace = True)
 mean_norm = mean_norm.set_index('ID')
-
+print('Mean per Gene normalized')
+print(mean_norm)
 mean_norm.to_csv(output + '/OncoprintMeanNorm.csv')
