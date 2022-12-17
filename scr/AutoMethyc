@@ -216,7 +216,7 @@ else
 				allmerge $output/norm/results/06_bedGraph $output/norm 'Normal'
 
 				# Aplicacion de filtros
-				python /usr/bin/Filter $output/norm/merge.csv $filtro $output/norm
+				Filter $output/norm/merge.csv $filtro $output/norm
 
 
 				multiqc $output/norm/results/02_fastq_trimmed/*

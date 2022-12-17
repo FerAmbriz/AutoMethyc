@@ -31,30 +31,25 @@ all_sites = all_sites.T
 all_sites = all_sites.drop(all_sites.index[[0,1]])
 typ = list(all_sites['Status'])
 
-    # Delete columns
+# Delete columns
 all_sites = all_sites.drop(['Status'], axis=1)
 columns = all_sites.columns.values
 all_sites[columns] = all_sites[columns].apply(pd.to_numeric, errors='coerce', axis=1)
 ID = all_sites.index.values
 
-def normalizado (df, df_cont, colum, ID, typ):
-    df_norm = pd.DataFrame()
+def normalizado (df, df_cont, typ):
+    mean = np.array(df_cont.mean())
+    std = np.array(df_cont.std())
 
-    for j in colum:
-        x = list(df_cont[j])
-        s = np.std(x)
-        m = np.mean(x)
-        final = []
-        x = list(df[j])
-
-        for i in x:
-            norm = (i-m)/s
-            final.append(norm)
-        df_norm[j] = final
-    df_norm.insert(0,'ID', ID)
-    df_norm.insert(1,'Type', typ)
+    # Algebra lineal
+    df_norm = (df-mean)/std
+    df_norm.insert(0,'Type', typ)
     return df_norm
 
-all_norm = normalizado(all_sites, df_controles, columns, ID, typ)
+all_norm = normalizado(all_sites, df_controles, typ)
+
+all_norm = all_norm.reset_index()
+all_norm.rename(columns={'index', 'ID'}, inplace = True)
 all_norm = all_norm.set_index('ID')
+
 all_norm.to_csv(output + '/OncoprintNorm.csv')
