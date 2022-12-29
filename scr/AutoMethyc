@@ -65,13 +65,15 @@ mkdir $output/CSV
 mkdir $output/HTML
 mkdir $output/Bismark
 mkdir $output/HTML/Bismark_report
+mkdir $output/VCF
 
+ref_folder=${ref%/*}
 
 if [ "$norm" = "False" ]; then
 	if [ "$filtro" = "False" ]; then
 		echo 'usando la version sin normales y sin filtro'
 
-		BuclePipeline $input $output $ref $thr $quality
+		BuclePipeline $input $output $ref_folder $thr $quality
 
 		# Filtrado por profundidad
 		DepthCord $output/results/06_bedGraph $output/CSV $depth
@@ -96,11 +98,13 @@ if [ "$norm" = "False" ]; then
 
 		fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
+		RevelioHaplotype $output/Bismark/results/03_aligned $ref $output/VCF $threads
+
 		HTML_report $output $output/HTML False False
 	else
 		echo 'usando la version sin normales y con filtro'
 
-				BuclePipeline $input $output $ref $thr $quality
+				BuclePipeline $input $output $ref_folder $thr $quality
 				# Filtrado por profundidad
 				DepthCord $output/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
@@ -128,6 +132,8 @@ if [ "$norm" = "False" ]; then
 
 				fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
+				RevelioHaplotype $output/Bismark/results/03_aligned $ref $output/VCF $threads
+
 				HTML_report $output $output/HTML False True
 	fi
 else
@@ -140,7 +146,7 @@ else
 
 
 				echo '---------------Normal Samples------------------'
-				BuclePipeline $norm $output/norm $ref $thr $quality
+				BuclePipeline $norm $output/norm $ref_folder $thr $quality
 				# Filtrado por profundidad
 				DepthCord $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
@@ -156,7 +162,7 @@ else
 
 
 				echo '------------------Samples---------------------'
-				BuclePipeline $input $output/samples $ref $thr $quality
+				BuclePipeline $input $output/samples $ref_folder $thr $quality
 				# Filtrado por profundidad
 				DepthCord $output/samples/results/06_bedGraph $output $depth
 				rename $output/samples/results/06_bedGraph
@@ -198,6 +204,10 @@ else
 				Norm_wf $output/CSV/Oncoprint_wf.csv $output/CSV
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
+
+				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $threads
+				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $threads
+
 				HTML_report $output $output/HTML True False
 	else
 				echo 'usando la version con normales y con filtro'
@@ -208,7 +218,7 @@ else
 
 
 				echo '---------------Normal Samples------------------'
-				BuclePipeline $norm $output/norm $ref $thr $quality
+				BuclePipeline $norm $output/norm $ref_folder $thr $quality
 				# Filtrado por profundidad
 				DepthCord $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
@@ -228,7 +238,7 @@ else
 
 
 				echo '------------------Samples---------------------'
-				BuclePipeline $input $output/samples $ref $thr $quality
+				BuclePipeline $input $output/samples $ref_folder $thr $quality
 				# Filtrado por profundidad
 				DepthCord $output/samples/results/06_bedGraph $output $depth
 				rename $output/samples/results/06_bedGraph
@@ -281,6 +291,10 @@ else
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
+
+				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $threads
+				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $threads
+
 				HTML_report $output $output/HTML True True
 	fi
 fi
@@ -297,3 +311,5 @@ runtime=$((end-start))
 echo 'run time = ' $runtime'(sec)'
 
 echo 'DONE'
+
+#table_annovar.pl example/ex2.vcf humandb/ -buildver hg19 -out myanno -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish
