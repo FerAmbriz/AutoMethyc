@@ -98,7 +98,7 @@ if [ "$norm" = "False" ]; then
 
 		fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
-		RevelioHaplotype $output/Bismark/results/03_aligned $ref $output/VCF $threads
+		RevelioHaplotype $output/Bismark/results/03_aligned $ref $output/VCF $thr
 
 		HTML_report $output $output/HTML False False
 	else
@@ -132,7 +132,7 @@ if [ "$norm" = "False" ]; then
 
 				fastqc_extract $output/Bismark/results/02_fastq_trimmed $output/CSV
 
-				RevelioHaplotype $output/Bismark/results/03_aligned $ref $output/VCF $threads
+				RevelioHaplotype $output/Bismark/results/03_aligned $ref $output/VCF $thr
 
 				HTML_report $output $output/HTML False True
 	fi
@@ -205,8 +205,8 @@ else
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
 
-				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $threads
-				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $threads
+				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $thr
+				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $thr
 
 				HTML_report $output $output/HTML True False
 	else
@@ -292,8 +292,8 @@ else
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
 
-				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $threads
-				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $threads
+				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $thr
+				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $thr
 
 				HTML_report $output $output/HTML True True
 	fi

@@ -5,6 +5,7 @@ ref=$2
 output=$3
 threads=$4
 
+#---------------------- Reference Dictionary ---------------------#
 ref_folder=${ref%/*}
 reference_name=${ref##*/}
 reference_name=${reference_name%.*}
@@ -17,12 +18,14 @@ if [[  " ${array[*]} " =~ " ${reference_dict} " ]]; then
   echo 'Starting with processing'
 else
   echo 'Generating reference genome dictionary'
-  gatk CreateSequenceDictionary -R $reference
+  gatk CreateSequenceDictionary -R $ref
 fi
 
-mkdir $input_bam/tmp
 
-for i in $input_bam/*bam;
+mkdir $input_bam/tmp
+mkdir $input_bam/preprocessing
+
+for i in $input_bam/*.bam;
 do
   echo 'Starting variant call to ...'
   echo $i 
@@ -33,16 +36,16 @@ do
   prefix='one_mismatch.'
   ID=${ID/#$prefix}
 
-  samtools sort -@ $threads $i -o $input_bam/${ID}_sorted.bam
-  samtools calmd -@ $threads -b $input_bam/${ID}_sorted.bam $ref 1> $input_bam/${ID}_calmd.bam 2> /dev/null
-  samtools index -@ $threads $input_bam/${ID}_calmd.bam
+  samtools sort -@ $threads $i -o $input_bam/preprocessing/${ID}_sorted.bam
+  samtools calmd -@ $threads -b $input_bam/preprocessing/${ID}_sorted.bam $ref 1> $input_bam/preprocessing/${ID}_calmd.bam 2> /dev/null
+  samtools index -@ $threads $input_bam/preprocessing/${ID}_calmd.bam
 
-  revelio -t $input_bam/tmp --threads $threads -f $ref $input_bam/${ID}_calmd.bam $input_bam/${ID}_mask.bam
+  revelio -t $input_bam/tmp --threads $threads -f $ref $input_bam/preprocessing/${ID}_calmd.bam $input_bam/preprocessing/${ID}_mask.bam
   
-  samtools addreplacerg -r '@RG\tID:'${ID}'\tSM:'${ID} $input_bam/${ID}_mask.bam -o $input_bam/${ID}_mask.bam
-  samtools index -@ $threads $input_bam/${ID}_mask.bam
+  samtools addreplacerg -r '@RG\tID:'${ID}'\tSM:'${ID} $input_bam/preprocessing/${ID}_mask.bam -o $input_bam/preprocessing/${ID}_mask.bam
+  samtools index -@ $threads $input_bam/preprocessing/${ID}_mask.bam
 
-  gatk HaplotypeCaller -R $ref --native-pair-hmm-threads $threads -I $input_bam/${ID}_mask.bam -O $output/${ID}_mask_haplotype2.vcf
+  gatk HaplotypeCaller -R $ref --native-pair-hmm-threads $threads -I $input_bam/preprocessing/${ID}_mask.bam -O $output/${ID}_mask_haplotype2.vcf
 
 done
 
