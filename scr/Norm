@@ -39,10 +39,40 @@ columns = all_sites.columns.values
 all_sites[columns] = all_sites[columns].apply(pd.to_numeric, errors='coerce', axis=1)
 ID = all_sites.index.values
 
+def eval_columns (df, df_cont):
+    unique_columns = list(set(list(df.columns) + list(df_cont.columns)))
+
+    df_new = pd.DataFrame()
+    df_cont_new = pd.DataFrame()
+
+    for i in unique_columns:
+        if i in list(df.columns):
+            df_i = pd.DataFrame(df[i])
+            df_new = pd.concat([df_new, df_i], axis=1)
+
+        if i in list(df_cont.columns):
+            df_i = pd.DataFrame(df_cont[i])
+            df_cont_new = pd.concat([df_cont_new, df_i], axis=1)
+
+        if i not in list(df.columns):
+            df_i = pd.DataFrame({df.index.name: list(df.index), i:[np.nan]*len(df)})
+            df_i = df_i.set_index(df.index.name)
+            df_new = pd.concat([df_new, df_i], axis=1)
+
+        if i not in list(df_cont.columns):
+            df_i = pd.DataFrame({df_cont.index.name: list(df_cont.index), i:[np.nan]*len(df_cont)})
+            df_i = df_i.set_index(df_cont.index.name)
+            df_cont_new = pd.concat([df_cont_new, df_i], axis=1)
+    return df_new, df_cont_new
+
 def normalizado (df, df_cont, typ):
+    df, df_cont = eval_columns(df, df_cont)
+
+    #df = df.fillna(0)
+    #df_cont = df_cont.fillna(0)
+
     mean = np.array(df_cont.mean())
     std = np.array(df_cont.std())
-
     # Algebra lineal
     df_norm = (df-mean)/std
     df_norm.insert(0,'Type', typ)

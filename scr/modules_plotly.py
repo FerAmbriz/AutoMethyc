@@ -231,6 +231,7 @@ def plot_manhattan (df):
     df = df.T
     df = pd.DataFrame(df.stack()).reset_index()
     df.columns = ['Site', 'ID', 'Z score']
+    df = df.drop(range(0,len(df[df['Site']=='Type'])))
     df [['Chr', 'SpecificSite']] = df['Site'].str.split(':',expand=True)
 
     df = sortOnco(df)

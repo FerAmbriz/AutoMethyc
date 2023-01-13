@@ -32,6 +32,7 @@ params = {
 
 response = session.post(url, data=params)
 db = pd.read_csv(io.StringIO(response.text), sep='\t')
+print('Done extract data from UCSC')
 
 bed = pd.read_csv(bed_file)
 
@@ -63,8 +64,10 @@ for crm, loci in zip(bed.Chr, bed.Start):
         else:
             all_dist.append(distance(loci, j))
 
-    db_i['Site'] = original
-    db_i['DistCpGIsland'] = all_dist
+    #db_i['Site'] = original
+    db_i.insert(len(db_i.columns), 'Site', original)
+    #db_i['DistCpGIsland'] = all_dist
+    db_i.insert(len(db_i.columns), 'DistCpGIsland', all_dist)
 
     db_i = db_i[db_i['DistCpGIsland'] == db_i['DistCpGIsland'].min()]
 
@@ -92,3 +95,4 @@ df_bd['Type'] = typ
 df_bd['DistCpGIsland'] = dist
 
 df_bd.to_csv(output+'/StatusCpG.csv')
+print(f'Output in: {output}/StatusCpG.csv')
