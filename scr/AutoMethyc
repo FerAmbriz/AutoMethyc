@@ -15,7 +15,7 @@ shift;
 current_arg="$1"
 case "$opt" in
 "-h"|"--help"      ) echo '''
-AutoMethyc version 0.0.3-beta
+AutoMethyc version 0.0.4-beta
 Usage
 	AutoMethyc [options]
 Options
@@ -79,9 +79,9 @@ if [ "$norm" = "False" ]; then
 		DepthCord $output/results/06_bedGraph $output/CSV $depth
 
 		# descomprime y renombra los archivos por ID
-		rename $output/results/06_bedGraph
-		# Construcción del merge
-		allmerge $output/results/06_bedGraph $output 'Sample'
+		#rename $output/results/06_bedGraph
+		# Descomprime, y construye merge
+		MergeCord $output/results/06_bedGraph $output 'Sample'
 
 		Oncoprint_wf $output/merge.csv $output
 
@@ -108,9 +108,9 @@ if [ "$norm" = "False" ]; then
 				# Filtrado por profundidad
 				DepthCord $output/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
-				rename $output/results/06_bedGraph
+				#rename $output/results/06_bedGraph
 				# Construcción del merge
-				allmerge $output/results/06_bedGraph $output 'Sample'
+				MergeCord $output/results/06_bedGraph $output 'Sample'
 
 				# Aplicacion de filtros
 				Filter $output/merge.csv $filtro $output
@@ -150,9 +150,9 @@ else
 				# Filtrado por profundidad
 				DepthCord $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
-				rename $output/norm/results/06_bedGraph
+				#rename $output/norm/results/06_bedGraph
 				# Construcción del merge
-				allmerge $output/norm/results/06_bedGraph $output/norm 'Normal'
+				MergeCord $output/norm/results/06_bedGraph $output/norm 'Normal'
 				
 				
 				multiqc $output/norm/results/02_fastq_trimmed/*
@@ -165,8 +165,8 @@ else
 				BuclePipeline $input $output/samples $ref_folder $thr $quality
 				# Filtrado por profundidad
 				DepthCord $output/samples/results/06_bedGraph $output $depth
-				rename $output/samples/results/06_bedGraph
-				allmerge $output/samples/results/06_bedGraph $output/samples 'Sample'
+				#rename $output/samples/results/06_bedGraph
+				MergeCord $output/samples/results/06_bedGraph $output/samples 'Sample'
 
 
 				echo 'Joining in one file the samples and normals'
@@ -222,9 +222,9 @@ else
 				# Filtrado por profundidad
 				DepthCord $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
-				rename $output/norm/results/06_bedGraph
+				#rename $output/norm/results/06_bedGraph
 				# Construcción del merge
-				allmerge $output/norm/results/06_bedGraph $output/norm 'Normal'
+				MergeCord $output/norm/results/06_bedGraph $output/norm 'Normal'
 
 				# Aplicacion de filtros
 				Filter $output/norm/merge.csv $filtro $output/norm
@@ -241,8 +241,8 @@ else
 				BuclePipeline $input $output/samples $ref_folder $thr $quality
 				# Filtrado por profundidad
 				DepthCord $output/samples/results/06_bedGraph $output $depth
-				rename $output/samples/results/06_bedGraph
-				allmerge $output/samples/results/06_bedGraph $output/samples 'Sample'
+				#rename $output/samples/results/06_bedGraph
+				MergeCord $output/samples/results/06_bedGraph $output/samples 'Sample'
 
 				Filter $output/samples/merge.csv $filtro $output/samples
 

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+input_cov=$1
+output=$2
+stat=$3
+
+gzip -d $input_cov/*.gz
+
+array=($(ls $input_cov/*.cov))
+tLen=${#array[@]}
+
+echo 'Sample,Status,Chr,Start,End,Met_perc,Cyt_Met,Cyt_NoMet,Depth' > $output/merge.csv
+
+for (( i=0; i<${tLen}; i=i+1));
+do
+  ID=${array[i]%.*}
+  ID=${ID##*/}
+  prefix='one_mismatch.'
+  ID=${ID/#$prefix}
+
+  merge ${array[$i]} $ID $output $output/merge.csv $stat
+
+  echo 'done merge' ${array[$i]} 
+done
+
+echo '#---------------- Done merge -------------------#'
