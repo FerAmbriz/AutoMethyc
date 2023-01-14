@@ -27,7 +27,7 @@ if [ -d "$ref_bisulfito"  ]
 then 
 				echo 'starting with sample processing'
 else
-				bismark_genome_preparation $ref
+				bismark_genome_preparation $ref --parallel $(($thr/2))
 fi
 
 echo 'Using ...' $thr 'threads'
@@ -60,7 +60,7 @@ OUT=$output/tmp/03_aligned
 # 1 por 2 en --parallel
 
 echo "bismark aligned"; date
-bismark --bowtie2 -p $(($thr/2)) --parallel 1 --bam --fastq \
+bismark --bowtie2 --parallel $(($thr/2)) --bam --fastq \
         --output_dir ${OUT} \
         --prefix ${PREFIX} \
         --genome_folder ${genome} \
@@ -77,6 +77,7 @@ echo "bismark_methylation_extractor"; date
 bismark_methylation_extractor --paired-end \
                               --gzip \
                               --bedGraph \
+                              --parallel $(($thr/2)) \
                               --output ${OUT} \
                               --genome_folder ${genome} \
                               ${BAM_IN}
