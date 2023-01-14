@@ -13,7 +13,7 @@ echo 'Sample,Status,Chr,Start,End,Met_perc,Cyt_Met,Cyt_NoMet,Depth' > $output/me
 
 for (( i=0; i<${tLen}; i=i+1));
 do
-  ID=${array[i]%.*}
+  ID=${array[i]%S_*}
   ID=${ID##*/}
   prefix='one_mismatch.'
   ID=${ID/#$prefix}
