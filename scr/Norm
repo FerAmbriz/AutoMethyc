@@ -13,6 +13,9 @@ all_sites.columns = list(all_sites.loc[0, :])
 all_sites = all_sites.drop(all_sites.index[[0]])
 all_sites = all_sites.rename(columns = {'Sample':'Chr', np.nan:'Start'})
 
+onco_mean = onco_mean.rename(columns = {'Gene':'Sample'})
+
+
 lst = ['Status', 'Chr']
 
 for i in range(3,len(all_sites) + 1):
@@ -90,8 +93,9 @@ all_norm.to_csv(output + '/OncoprintNorm.csv')
 onco_mean = onco_mean.set_index('Sample')
 
 df_controles = onco_mean.T
+#print(df_controles)
 df_controles = df_controles[df_controles['Status'] == 'Normal']
-df_controles = df_controles.drop(['Status', 'Gene'], axis=1)
+df_controles = df_controles.drop(['Status'], axis=1)
 
 columns = df_controles.columns.values
 df_controles[columns] = df_controles[columns].apply(pd.to_numeric, errors='coerce', axis=1)
@@ -99,7 +103,7 @@ df_controles[columns] = df_controles[columns].apply(pd.to_numeric, errors='coerc
 onco_mean = onco_mean.T
 typ = list(onco_mean['Status'])
 
-onco_mean = onco_mean.drop(['Status','Gene'], axis=1)
+onco_mean = onco_mean.drop(['Status'], axis=1)
 columns = onco_mean.columns.values
 onco_mean[columns] = onco_mean[columns].apply(pd.to_numeric, errors='coerce', axis=1)
 ID = onco_mean.index.values

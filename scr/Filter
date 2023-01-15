@@ -4,7 +4,8 @@ import pandas as pd
 import numpy as np
 from tqdm import trange as tr
 from tqdm import tqdm as td
-
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 # 1 = Merge.csv
 # 2 = Filtro.csv
 # 3 = [Output]
@@ -35,6 +36,9 @@ ID = df_filtrado['Sample'].value_counts()
 
 df_filtrado = df_filtrado.set_index('Sample')
 
+print('Filtered: ')
+print(df_filtrado)
+
 df_filtrado.to_csv(OutputFilter+"/Filtered.csv")
 
 ID = pd.DataFrame(ID)
@@ -50,12 +54,16 @@ for ID in df.Sample.unique():
         for site in range(s, e+1, 1):
             if site not in list(df_i.Start):
                 db_i = dfF[dfF['Start'] == site]
-                db_i['ID'] = ID
+                db_i.insert(len(db_i), 'ID', ID)
                 df_bd = pd.concat([df_bd, db_i])
 
 df_NotLoc = df_bd.drop_duplicates(keep=False)
 
 df_NotLoc = df_NotLoc.set_index('ID')
+
+print('NotLoc: ')
+print(df_NotLoc)
+
 df_NotLoc.to_csv(OutputFilter+"/NotLoc.csv")
 
 print("")

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import pandas as pd
 import sys
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 Input = sys.argv[1]
 Output = sys.argv[2]
@@ -8,13 +10,12 @@ Output = sys.argv[2]
 print ('#----------------Construct Oncoprint-------------------#')
 merge_filtrado = pd.read_csv(Input)
 
-merge_filtrado=merge_filtrado.drop(['End',  'Cyt_Met', 'Cyt_NoMet'], axis=1)
+merge_filtrado=merge_filtrado.drop(['End',  'Cyt_Met', 'Cyt_NoMet', 'Depth'], axis=1)
 
 df = merge_filtrado.pivot(index=['Chr','Start','Gene'], columns=['Sample', 'Status'])
 
 # Eliminar el multindice de las columnas
 df = df.droplevel(level=0, axis=1)
-
 df.to_csv(Output+'/Oncoprint.csv')
 
 #Remplazar los valores numericos por 0
@@ -35,30 +36,50 @@ print ('#----------------- Done Oncoprint--------------------#')
 print('')
 print('#------------Init Construct Oncoprint Promedio -----------#')
 
+df = pd.read_csv(Output+'/Oncoprint.csv')
 # Eliminar el multindice
-df = df.droplevel(level=0)
+#df = df.droplevel(level=0)
 # Eliminar los indices
-df_reset = df.reset_index()
-df_reset = df_reset.drop(['Start'], axis = 1)
+#df_reset = df.reset_index()
+df_reset = df
+df_reset = df_reset.drop(['Unnamed: 1', 'Sample'], axis = 1)
+status = list(df_reset.iloc[0])
+status.pop(0)
 
+df_reset = df_reset.drop([0,1])
+
+df_reset = df_reset.rename(columns={"Unnamed: 2": "Gene"})
+print(df_reset)
 # Determinar los genes a graficar
 gen = list(df_reset['Gene'].unique())
 
-# Construcción de un df con las columnas anteriores
-df_bd = pd.DataFrame(columns = df.columns)
 
-for i in range(len(gen)):
-	# Filtrar el df por gen
-	df_reset_i = df_reset[df_reset['Gene'] == gen[i] ]
-	# Calcular la media por paciente de cada gen
-	x= df_reset_i.mean()
-	list = x.tolist()
-	# Agregar fila por fila correspondiente a cada gen de todas las muestras
-	df_bd.loc[i]=list
+
+ID = list(df_reset.columns)
+ID.pop(0)
+#print(type(df_reset['MET-GT134.cov'][3]))
+# Construcción de un df con las columnas anteriores
+df_bd = pd.DataFrame(columns = ID)
+df_bd.loc[0] = status
+
+gen.insert(0, 'Status')
+
+for i in ID:
+    df_reset[i] = df_reset[i].astype(float)
+
+for i in range(1,len(gen)):
+    # Filtrar el df por gen
+    df_reset_i = df_reset[df_reset['Gene'] == gen[i]]
+    # Calcular la media por paciente de cada gen
+    # Agregar fila por fila correspondiente a cada gen de todas las muestras
+    df_bd.loc[i]= list(df_reset_i.mean())
+    #x = list(df_reset_i.mean())
+    #df_bd = df_bd.append(pd.Series(x), ignore_index=True)
 
 # Insertat la columna de genes
 df_bd.insert(0, 'Gene', gen)
 df_bd = df_bd.set_index('Gene')
+print(df_bd)
 df_bd.to_csv(Output+'/OncoprintPromedio.csv')
 
 print ('')

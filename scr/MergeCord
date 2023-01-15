@@ -13,11 +13,11 @@ echo 'Sample,Status,Chr,Start,End,Met_perc,Cyt_Met,Cyt_NoMet,Depth' > $output/me
 
 for (( i=0; i<${tLen}; i=i+1));
 do
-  ID=${array[i]%S_*}
+  ID=${array[$i]%_S*}
   ID=${ID##*/}
   prefix='one_mismatch.'
   ID=${ID/#$prefix}
-
+  echo $ID
   merge ${array[$i]} $ID $output $output/merge.csv $stat
 
   echo 'done merge' ${array[$i]} 
