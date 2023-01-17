@@ -74,6 +74,8 @@ def funcPCA(df):
     x = np.array(df)
     x = x.astype(float)
 
+    x = StandardScaler().fit_transform(x)
+
     #typ = ['Normal'] * len(normals.T)
     #typ = typ + ['Sample'] * len(samples.T)
     df['Type'] = lst
