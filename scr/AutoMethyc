@@ -45,17 +45,18 @@ Optional arguments
 done
 
 figlet AutoMethyc
-
+echo Version 0.0.4-beta
+echo Universidad Nacional Autonoma de Mexico
 echo '#----------------------Parameters---------------------------#'
-echo '	input: ' $input
-echo '	output: ' $output
-echo '	ref: '	$ref
-echo '	filtro: ' $filtro
-echo '	threads: ' $thr
-echo '	normal: ' $norm
-echo '	genome: ' $genome
-echo '	depth: ' $depth
-echo '	quality: ' $quality
+echo 'input		|' $input
+echo 'output		|' $output
+echo 'reference	|'	$ref
+echo 'filtro		|' $filtro
+echo 'threads		|' $thr
+echo 'normal		|' $norm
+echo 'genome		|' $genome
+echo 'depth		|' $depth
+echo 'quality		|' $quality
 echo '#-----------------------------------------------------------#'
 
 start=`date +%s`

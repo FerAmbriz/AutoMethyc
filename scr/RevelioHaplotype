@@ -5,6 +5,8 @@ ref=$2
 output=$3
 threads=$4
 
+#start=`date +%s`
+
 #---------------------- Reference Dictionary ---------------------#
 ref_folder=${ref%/*}
 reference_name=${ref##*/}
@@ -45,8 +47,38 @@ do
   samtools addreplacerg -r '@RG\tID:'${ID}'\tSM:'${ID} $input_bam/preprocessing/${ID}_mask.bam -o $input_bam/preprocessing/${ID}_mask.bam
   samtools index -@ $threads $input_bam/preprocessing/${ID}_mask.bam
 
-  gatk HaplotypeCaller -R $ref --native-pair-hmm-threads $threads -I $input_bam/preprocessing/${ID}_mask.bam -O $output/${ID}_mask_haplotype2.vcf
-
 done
 
+echo 'Starting variant calling with HaplotypeCaller'
+
+
+arr=($(ls $input_bam/preprocessing/*_mask.bam))
+
+extract_values (){
+  arr2=()
+  while [ $termina -ge $contador ]
+  do
+    arr2+=(${arr[$contador]})
+    let contador=$contador+1
+  done
+}
+
+for (( i=0; i<${#arr[@]}; i=i+$threads));
+do
+  contador=$i && termina=$(($i + $(($threads - 1))))
+  extract_values
+
+  for j in ${arr2[@]};
+  do
+    ID=${j%_mask*}
+    ID=${ID##*/}
+    gatk HaplotypeCaller -R $ref --native-pair-hmm-threads 2 -I $input_bam/preprocessing/${ID}_mask.bam -O $output/${ID}_mask_haplotype2.vcf &
+    #gatk HaplotypeCaller -R $ref --native-pair-hmm-threads 2 -I $input_bam/${ID}_mask.bam -O $output/${ID}_mask_haplotype2.vcf &
+  done
+  wait
+done
+
+#end=`date +%s`
+#runtime=$((end-start))
+#echo 'run time = ' $runtime'(sec)'
 echo 'Done'
