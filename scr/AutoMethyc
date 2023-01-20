@@ -205,6 +205,7 @@ else
 				Norm_wf $output/CSV/Oncoprint_wf.csv $output/CSV
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
+				boxplot $output/CSV/OncoprintNorm.csv $output/CSV/OncoprintMeanNorm.csv $output/CSV
 
 				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $thr
 				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $thr
@@ -292,6 +293,8 @@ else
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
+
+				boxplot $output/CSV/OncoprintNorm.csv $output/CSV/OncoprintMeanNorm.csv $output/CSV
 
 				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $thr
 				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $thr
