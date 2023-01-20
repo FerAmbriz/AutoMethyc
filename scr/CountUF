@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+import os
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+
 import sys
 import pandas as pd
-
 merge_int = sys.argv[1]
 filtered = sys.argv[2]
 output = sys.argv[3]
