@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import os
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
+#import os
+#os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 import sys
 import requests
@@ -99,3 +99,4 @@ df_bd['DistCpGIsland'] = dist
 
 df_bd.to_csv(output+'/StatusCpG.csv')
 print(f'Output in: {output}/StatusCpG.csv')
+

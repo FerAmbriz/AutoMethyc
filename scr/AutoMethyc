@@ -84,8 +84,11 @@ if [ "$norm" = "False" ]; then
 		# Descomprime, y construye merge
 		MergeCord $output/results/06_bedGraph $output 'Sample'
 
+
 		Oncoprint_wf $output/merge.csv $output
 
+		Annot_gene $output/Oncoprint.csv $genome . False
+		
 		multiqc $output/results/02_fastq_trimmed/*
 		mv multiqc* $output/HTML
 
@@ -113,8 +116,10 @@ if [ "$norm" = "False" ]; then
 				# Construcción del merge
 				MergeCord $output/results/06_bedGraph $output 'Sample'
 
+				Annot_gene $filtro $genome $output/CSV True
+
 				# Aplicacion de filtros
-				Filter $output/merge.csv $filtro $output
+				Filter $output/merge.csv $output/CSV/anotate_bed.csv $output
 
 				Oncoprint $output/Filtered.csv $output
 
@@ -183,6 +188,8 @@ else
 
 				Oncoprint_wf $output/merge.csv $output
 
+				Annot_gene $output/Oncoprint.csv $genome . False
+
 				multiqc $output/samples/results/02_fastq_trimmed/*
 				mv multiqc_report.html $output/HTML/multiqc_report_samples.html
 				mv multiqc_data $output/HTML/multiqc_data_samples
@@ -227,9 +234,10 @@ else
 				#rename $output/norm/results/06_bedGraph
 				# Construcción del merge
 				MergeCord $output/norm/results/06_bedGraph $output/norm 'Normal'
+				Annot_gene $filtro $genome $output/CSV True
 
 				# Aplicacion de filtros
-				Filter $output/norm/merge.csv $filtro $output/norm
+				Filter $output/norm/merge.csv $output/CSV/anotate_bed.csv $output/norm
 
 
 				multiqc $output/norm/results/02_fastq_trimmed/*
@@ -246,7 +254,7 @@ else
 				#rename $output/samples/results/06_bedGraph
 				MergeCord $output/samples/results/06_bedGraph $output/samples 'Sample'
 
-				Filter $output/samples/merge.csv $filtro $output/samples
+				Filter $output/samples/merge.csv $output/CSV/anotate_bed.csv $output/samples
 
 
 				echo 'Joining in one file the samples and normals'
