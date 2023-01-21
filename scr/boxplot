@@ -21,6 +21,9 @@ df_gene = pd.melt(df_gene, id_vars=['ID', 'Type'], value_vars=columns_gene)
 print(df_type)
 print(df_gene)
 
+df_type = df_type.set_index('ID')
+df_gene = df_gene.set_index('ID')
+
 df_type.to_csv(output+'/Boxplot_all_sites.csv')
 df_gene.to_csv(output+'/Boxplot_mean_gene.csv')
 

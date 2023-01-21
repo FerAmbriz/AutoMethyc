@@ -77,11 +77,13 @@ if filtro == 'True':
         df_annotate = pd.DataFrame({ 'Chr': chrom_lst, 'Start': site_lst,
                                     'End': site_lst, 'Gene': gene_lst,
                                     'Strand': strand_lst, 'AccessName': name_access_lst})
-
+        df_annotate = df_annotate.set_index('Chr')
         df_annotate.to_csv(output + '/anotate_bed.csv')
     else:
         # Tiene bed con genes, por lo que no tiene que hacer nada
         print('Is not necessary the gene mapping')
+
+        bed = bed.set_index('Chr')
         bed.to_csv(output + '/anotate_bed.csv')
 else:
     # No tiene Genes porque tampoco hay filtro
@@ -120,4 +122,6 @@ else:
     df_annotate = pd.DataFrame({ 'Chr': chrom_lst, 'Start': site_lst,
                                  'End': site_lst, 'Gene': gene_lst,
                                  'Strand': strand_lst, 'AccessName': name_access_lst})
+    df_annotate = df_annotate.set_index('Chr')
+
     df_annotate.to_csv(output + '/anotate_bed.csv')

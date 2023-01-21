@@ -265,3 +265,188 @@ def plot_pca(finalDf):
         labels={'0': 'PC 1', '1': 'PC 2'})
 
     return fig_pca
+
+def merge_site(chrom, site):
+    return chrom + ':' + site
+
+def plot_site_percent(df):
+    df = df.drop(['Unnamed: 2'], axis=1)
+    df = df.drop([1])
+
+    patients = pd.DataFrame(df.iloc[0])
+    patients = patients.drop(['Sample', 'Unnamed: 1'])
+    patients = patients.reset_index()
+
+    df = df.drop([0])
+    df['Sample'] = list(map(merge_site, df['Sample'], df['Unnamed: 1']))
+    df = df.drop(['Unnamed: 1'], axis=1)
+
+    columns = list(df.columns)
+    columns.pop(0)
+    df_melt = pd.melt(df, id_vars=['Sample'], value_vars=columns)
+
+    def match_type(ID):
+        patients_i = patients[patients['index']==ID]
+        return list(patients_i[0])[0]
+    df_melt['Type'] = list(map(match_type, df_melt['variable']))
+    df_melt['value'] = list(map(float, df_melt['value']))
+    df_melt = df_melt.drop(['variable'], axis=1)
+
+    m = df_melt.groupby(['Sample', 'Type']).mean()
+    m.columns = ['mean']
+
+    s = df_melt.groupby(['Sample', 'Type']).std()
+    s.columns = ['std']
+
+    df_final = pd.concat([m,s], axis=1).reset_index()
+
+    df_s = df_final[df_final['Type'] == 'Sample']
+    df_n = df_final[df_final['Type'] == 'Normal']
+
+    fig = go.Figure([
+        # STD zone
+        go.Scatter(
+            name='Upper normal',
+            x=df_n['Sample'],
+            y=df_n['mean']+df_n['std'],
+            mode='lines',
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            showlegend=False
+        ),
+        go.Scatter(
+            name='Lower normal',
+            x=df_n['Sample'],
+            y=df_n['mean']-df_n['std'],
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            mode='lines',
+            fillcolor='#66A4F3',
+            fill='tonexty',
+            showlegend=False
+        ),
+        go.Scatter(
+            name='Upper sample',
+            x=df_s['Sample'],
+            y=df_s['mean']+df_s['std'],
+            mode='lines',
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            showlegend=False
+        ),
+        go.Scatter(
+            name='Lower sample',
+            x=df_s['Sample'],
+            y=df_s['mean']-df_s['std'],
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            mode='lines',
+            fillcolor='#F36666',
+            fill='tonexty',
+            showlegend=False
+        ),
+        go.Scatter(
+            name='normal',
+            x=df_n['Sample'],
+            y=df_n['mean'],
+            mode='lines',
+            line=dict(color='rgb(31, 119, 180)'),
+        ),
+        go.Scatter(
+            name='sample',
+            x=df_s['Sample'],
+            y=df_s['mean'],
+            mode='lines',
+            line=dict(color='red'),
+        )
+    ])
+
+    fig.update_layout(
+        yaxis_title='z score',
+        xaxis_title='site',
+        hovermode="x")
+    return fig
+
+def boxplot_site(df):
+    fig = px.box(df, x = 'Type' , y="value", labels={
+                     "value": "z score"
+                 })
+    return fig
+def plot_site_norm(df):
+    m = df.groupby(['variable', 'Type']).mean()
+    m = m.drop(['Unnamed: 0'], axis = 1)
+    m.columns = ['mean']
+
+    s = df.groupby(['variable', 'Type']).std()
+    s = s.drop(['Unnamed: 0'], axis = 1)
+    s.columns = ['std']
+
+    df_final = pd.concat([m,s], axis=1).reset_index()
+
+    df_s = df_final[df_final['Type'] == 'Sample']
+    df_n = df_final[df_final['Type'] == 'Normal']
+
+    fig = go.Figure([
+        # STD zone
+        go.Scatter(
+            name='Upper normal',
+            x=df_n['variable'],
+            y=df_n['mean']+df_n['std'],
+            mode='lines',
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            showlegend=False
+        ),
+        go.Scatter(
+            name='Lower normal',
+            x=df_n['variable'],
+            y=df_n['mean']-df_n['std'],
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            mode='lines',
+            fillcolor='#66A4F3',
+            fill='tonexty',
+            showlegend=False
+        ),
+        go.Scatter(
+            name='Upper sample',
+            x=df_s['variable'],
+            y=df_s['mean']+df_s['std'],
+            mode='lines',
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            showlegend=False
+        ),
+        go.Scatter(
+            name='Lower sample',
+            x=df_s['variable'],
+            y=df_s['mean']-df_s['std'],
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            mode='lines',
+            fillcolor='#F36666',
+            fill='tonexty',
+            showlegend=False
+        ),
+        go.Scatter(
+            name='normal',
+            x=df_n['variable'],
+            y=df_n['mean'],
+            mode='lines',
+            line=dict(color='rgb(31, 119, 180)'),
+        ),
+        go.Scatter(
+            name='sample',
+            x=df_s['variable'],
+            y=df_s['mean'],
+            mode='lines',
+            line=dict(color='red'),
+        )
+    ])
+
+    fig.update_layout(
+        yaxis_title='z score',
+        xaxis_title='site',
+        hovermode="x"
+    )
+    return fig

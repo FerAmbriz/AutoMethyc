@@ -11,6 +11,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import re
 
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 from modules_plotly import *
 from modules_html import *
 
@@ -33,6 +36,7 @@ bed = input_folder+ '/CSV/StatusCpG.csv'
 depth = input_folder + '/CSV/CountUF_depth_merge.csv'
 depth2 = input_folder + '/CSV/CountUF_depth.csv'
 fastqc = input_folder + '/CSV/fastqc_merge.csv'
+boxplot_csv = input_folder + '/CSV/Boxplot_all_sites.csv'
 
 print('#-------------------Plotting-------------------------')
 print('normals_status = ' + norm)
@@ -104,6 +108,18 @@ if norm == 'True':
     finalDf = pd.read_csv(PCA_data)
     fig_pca = plot_pca(finalDf)
 
+#====================SitePercent===================#
+df = pd.read_csv(Oncoprint_All)
+fig_percent_site = plot_site_percent(df)
+
+#====================Boxplot=======================#
+if norm == 'True':
+    df = pd.read_csv(boxplot_csv)
+    fig_boxplot = boxplot_site(df)
+#======================NormSite=====================#
+if norm == 'True':
+    df = pd.read_csv(boxplot_csv)
+    fig_site_norm = plot_site_norm(df)
 
 #==========================HTML============================#
 
@@ -142,4 +158,8 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(html_pca())
         f.write(fig_manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
+
+        f.write(fig_percent_site.to_html(full_html=False, include_plotlyjs='cdn'))
+        f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
+        f.write(fig_site_norm.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_fooder())
