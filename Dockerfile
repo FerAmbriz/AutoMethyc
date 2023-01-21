@@ -1,12 +1,11 @@
-FROM rocker/r-ubuntu
+FROM debian:stable
 #-------------------------- Dependencies -------------------------#
-RUN apt-get update && apt-get install -y --no-install-recommends samtools curl libssl-dev libxml2-dev libcurl4-openssl-dev \
-  fastqc unzip figlet git git-lfs python3-pip \
-  && apt-get install -y cutadapt default-jdk && pip install --no-cache-dir pandas numpy plotly plotly-express scikit-learn tqdm IPython pysam \
-  requests multiqc && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends wget python3 python3-pip samtools curl libssl-dev libxml2-dev libcurl4-openssl-dev \
+  fastqc unzip figlet git git-lfs cutadapt default-jdk && pip install --no-cache-dir pandas numpy plotly plotly-express scikit-learn tqdm IPython pysam \
+  requests multiqc && rm -rf /var/lib/apt/lists/* && ln -s /usr/bin/python3 /usr/bin/python
 
-RUN ln -s /usr/bin/python3.10 /usr/bin/python
-RUN R -e "install.packages(c('gsalib', 'ggplot2', 'reshape', 'gplots', 'tidyverse'))"
+#RUN ln -s /usr/bin/python3.10 /usr/bin/python
+#RUN R -e "install.packages(c('gsalib', 'ggplot2', 'reshape', 'gplots', 'tidyverse'))"
 
 RUN wget -O bowtie.zip https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.4.5/bowtie2-2.4.5-linux-x86_64.zip/download \
   && unzip bowtie.zip && mv bowtie2-2.4.5-linux-x86_64/bowtie* /usr/bin && rm -rf bowtie*
