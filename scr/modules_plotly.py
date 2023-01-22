@@ -460,3 +460,15 @@ def plot_site_norm(df):
         hovermode="x"
     )
     return fig
+def plot_options(df):
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df.columns),
+                    #fill_color='gray',
+                    align='left'),
+        cells=dict(values=[df.Parameter, df.Value],
+                   #fill_color='#E9E9E9',
+                   align='left', height=30))
+    ])
+    fig.update_layout(
+            height=300)
+    return fig

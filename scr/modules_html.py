@@ -84,19 +84,16 @@ def html_navbar_complete ():
             <li><a href="#Base"> Base quality </a></li>
             <li><a href="#Depth"> Depth </a></li>
             <li><a href="#Samples" > Coverage </a></li>
-            <li><a href="#All"> Heatmap all</a></li>
-            <li><a href="#Mean"> Heatmap mean</a></li>
-            <li><a href="#all_norm"> All sites normalized</a></li>
-            <li><a href="#Mean_norm"> Mean per gene normalized</a></li>
+            <li><a href="#All"> Methylation percentage </a></li>
+            <li><a href="#Mean"> Mean methylation </a></li>
+            <li><a href="#all_norm"> Normalized methylation </a></li>
+            <li><a href="#Mean_norm"> Mean normalized </a></li>
             <li><a href="#pca"> PCA </a></li>
             <li><a href="#about"> About </a></li>
         </ul>
     </body>
     '''
     return html
-
-
-
 
 
 def html_navbar_sFilt ():
@@ -106,8 +103,8 @@ def html_navbar_sFilt ():
             <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
             <li><a href="#Base"> Base quality </a></li>
             <li><a href="#Depth"> Depth </a></li>
-            <li><a href="#All"> Heatmap all</a></li>
-            <li><a href="#all_norm"> All sites normalized</a></li>
+            <li><a href="#All"> Methylation percentage </a></li>
+            <li><a href="#all_norm"> Mean methylation </a></li>
             <li><a href="#pca"> PCA </a></li>
             <li><a href="#about"> About </a></li>
         </ul>
@@ -123,8 +120,8 @@ def html_navbar_sNorm ():
             <li><a href="#Base"> Base quality </a></li>
             <li><a href="#Depth"> Depth </a></li>
             <li><a href="#Samples" > Coverage </a></li>
-            <li><a href="#All"> Heatmap all</a></li>
-            <li><a href="#Mean"> Heatmap mean</a></li>
+            <li><a href="#All"> Methylation percentage </a></li>
+            <li><a href="#Mean"> Mean methylation </a></li>
             <li><a href="#about"> About </a></li>
         </ul>
     </body>
@@ -138,20 +135,22 @@ def html_navbar_sNorm_sFilt ():
             <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
             <li><a href="#Base"> Base quality </a></li>
             <li><a href="#Depth"> Depth </a></li>
-            <li><a href="#All"> Heatmap all</a></li>
+            <li><a href="#All"> Methylation percentage </a></li>
             <li><a href="#about"> About </a></li>
         </ul>
     </body>
     '''
     return html
 
-def html_AutoMethyc ():
-    html = '''
+def html_AutoMethyc (command):
+    html = f'''
     <div class="main">
         <h1 id="Home"> AutoMethyc </h1>
-            <h2> Version with normal samples </h2>
-                AutoMethyc is a pipeline automated which aims for simplicity and practcality in methylation analysis.
+            AutoMethyc is an integrative pipeline to methylation analysis from raw paired-end sequences obtained from massive parallel bisulfite sequencing.
     </div">
+    <h2> Parameters </h2>
+        Command used and global parameters:
+    <p style="color:white; background:#2E3440; padding: 15px; border-radius: 15px;"><code>{command}</code></p>
     '''
     return html
 
@@ -159,7 +158,7 @@ def html_base ():
     html = '''
     <body>
         <h2 id="Base" > Base quality </h2>
-        Merge of fastqc
+        Base call error probability on logarithmic scale
     </body>
     '''
     return html
@@ -168,7 +167,7 @@ def html_depth ():
     html = '''
     <body>
         <h2 id="Depth" > Depth </h2>
-            Count of sites filtered and unfiltered variables by depth
+            Count of sites filtered by depth
     </body>
     '''
     return html
@@ -185,8 +184,8 @@ def html_coverage ():
 def html_all():
     html = '''
     <body>
-        <h2 id="All"> Heatmap all sites </h2>
-            Heatmap of the percentage of methylation present at each site present in the bedGraph per sample
+        <h2 id="All"> Methylation percentage </h2>
+            Methylation percentage present at each site per sample
          <div class="row">
             <div class="c">
                 <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/IslaCpG.jpeg?raw=true" width="650" height="150">
@@ -199,8 +198,8 @@ def html_all():
 def html_mean():
     html = '''
     <body>
-        <h2 id="Mean"> Heatmap mean per Gene </h2>
-            Heatmap of the average percentage of methylation present in each site corresponding to its corresponding gene.
+        <h2 id="Mean"> Mean methylation </h2>
+           Average percentage of methylation present in each gene of the sequenced region.
     </body>
     '''
     return html
@@ -220,8 +219,8 @@ def html_norm():
                 </div>
             </div>
 
-        <h2 id="all_norm"> Heatmap all sites normalized </h2>
-            Heatmap with all sites normalized based on the mean and standard deviation of the controls.
+        <h2 id="all_norm"> Normalized methylation </h2>
+            Normalized methylation based on the mean and standard deviation of the controls.
     </body>
     '''
     return html
@@ -229,8 +228,8 @@ def html_norm():
 def html_mean_norm():
     html = '''
     <body>
-        <h2 id="Mean_norm"> Heatmap mean per gene normalized </h2>
-            Heatmap with the mean of each normalized site belonging to each gene
+        <h2 id="Mean_norm"> Mean normalized </h2>
+            Mean normalization of each normalized site belonging to each gene
     </body>
     '''
     return html
@@ -239,7 +238,7 @@ def html_pca():
     html = '''
     <body>
         <h2 id="pca"> PCA </h2>
-            Principal component analysis (PCA) applied to each site of the normals and samples. Each point represents a normalized site according to the corresponding group (normal or sample). To view which region is view the file "PCA_vectors.csv" in [Output]/CSV
+            Principal component analysis (PCA) applied to each site of the normals and samples. Each point represents a normalized site according to the corresponding group (normal or sample).
     </body>
     '''
     return html

@@ -37,6 +37,8 @@ depth = input_folder + '/CSV/CountUF_depth_merge.csv'
 depth2 = input_folder + '/CSV/CountUF_depth.csv'
 fastqc = input_folder + '/CSV/fastqc_merge.csv'
 boxplot_csv = input_folder + '/CSV/Boxplot_all_sites.csv'
+c = input_folder + '/command_options.txt'
+
 
 print('#-------------------Plotting-------------------------')
 print('normals_status = ' + norm)
@@ -125,6 +127,16 @@ if norm == 'True':
     df = pd.read_csv(boxplot_csv)
     fig_site_norm = plot_site_norm(df)
 
+#======================Command======================#
+with open(c) as f:
+    command = f.readline()
+
+df = pd.read_csv(c)
+df = df.reset_index()
+df.columns = [ 'Parameter', 'Value']
+
+fig_table = plot_options(df)
+
 #==========================HTML============================#
 
 with open(Output + '/AutoMethyc_Report.html', 'w') as f:
@@ -137,8 +149,8 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(html_navbar_sNorm())
     elif norm == 'False' and filt == 'False':
         f.write(html_navbar_sNorm_sFilt())
-
-    f.write(html_AutoMethyc())
+    f.write(html_AutoMethyc(command))
+    f.write(fig_table.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_base())
     f.write(fig_fastqc.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_depth())
@@ -163,7 +175,7 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(fig_manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
 
-        f.write(fig_percent_site.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_site_norm.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(fig_percent_site.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_fooder())

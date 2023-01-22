@@ -8,6 +8,9 @@ genome="hg19"
 depth=20
 quality=30
 
+#Array para extraer el comando
+arr=()
+
 # Options
 while [[ $# -gt 0 ]]; do
 opt="$1"
@@ -32,17 +35,32 @@ Optional arguments
 	-d --depth		Minimum depth to consider (default=20)
 	-q --quality		Minimum quality (default=30)
 ''';  exit 1;;
-"-i"|"--input"      ) input="$1"; shift;;
-"-o"|"--output"      ) output="$1"; shift;;
-"-r"|"--ref"      ) ref="$1"; shift;;
-"-f"|"--filtro"      ) filtro="$1"; shift;;
-"-t"|"--threads"      ) thr="$1"; shift;;
-"-n"|"--normal"      ) norm="$1"; shift;;
-"-g"|"--genome"       ) genome="$1"; shift;;
-"-q"|"--quality"       ) quality="$1"; shift;;
-"-d"|"--depth"       ) depth="$1"; shift;;
+"-i"|"--input"      ) input="$1"; arr+=( "-i" "$1"); shift;;
+"-o"|"--output"      ) output="$1"; arr+=("-o" "$1"); shift;;
+"-r"|"--ref"      ) ref="$1"; arr+=("-r" "$1"); shift;;
+"-f"|"--filtro"      ) filtro="$1"; arr+=("-f" "$1"); shift;;
+"-t"|"--threads"      ) thr="$1"; arr+=("-t" "$1") shift;;
+"-n"|"--normal"      ) norm="$1"; arr+=("-n" "$1"); shift;;
+"-g"|"--genome"       ) genome="$1"; arr+=("-g" "$1"); shift;;
+"-q"|"--quality"       ) quality="$1"; arr+=("-q" "$1"); shift;;
+"-d"|"--depth"       ) depth="$1"; arr+=("-d" "$1"); shift;;
 	esac
 done
+echo Version 0.0.4-beta
+echo Universidad Nacional Autonoma de Mexico
+echo '#----------------------Parameters---------------------------#'
+echo 'input		|' $input
+echo 'output		|' $output
+echo 'reference	|'	$ref
+echo 'bed		|' $filtro
+echo 'threads		|' $thr
+echo 'normal		|' $norm
+echo 'genome		|' $genome
+echo 'depth		|' $depth
+echo 'quality		|' $quality
+echo '#-----------------------------------------------------------#'
+#echo -e AutoMethc ${arr[@]} \n input,$input \n output,$output \n reference,$ref > command_options.txt
+echo -e "\n Automethyc ${arr[@]} \n input,$input \n output,$output \n reference,$ref \n bed,$filtro \n threads,$thr \n normal,$norm \n genome,$genome \n depth,$depth \n quaility,$quality \n" > command_options.txt
 
 figlet AutoMethyc
 echo Version 0.0.4-beta
