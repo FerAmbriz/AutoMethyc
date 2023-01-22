@@ -188,7 +188,7 @@ else
 
 				Oncoprint_wf $output/merge.csv $output
 
-				Annot_gene $output/Oncoprint.csv $genome . False
+				Annot_gene $output/Oncoprint_wf.csv $genome . False
 
 				multiqc $output/samples/results/02_fastq_trimmed/*
 				mv multiqc_report.html $output/HTML/multiqc_report_samples.html
@@ -212,7 +212,8 @@ else
 				Norm_wf $output/CSV/Oncoprint_wf.csv $output/CSV
 				PCA $output/CSV/OncoprintNorm.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint_wf.csv $genome $output/CSV True
-				boxplot $output/CSV/OncoprintNorm.csv $output/CSV/OncoprintMeanNorm.csv $output/CSV
+				
+				boxplot $output/CSV/OncoprintNorm.csv $output/CSV False
 
 				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $thr
 				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $thr
@@ -302,7 +303,7 @@ else
 				CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
 				WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
 
-				boxplot $output/CSV/OncoprintNorm.csv $output/CSV/OncoprintMeanNorm.csv $output/CSV
+				boxplot $output/CSV/OncoprintNorm.csv $output/CSV True $output/CSV/OncoprintMeanNorm.csv
 
 				RevelioHaplotype $output/Bismark/norm/results/03_aligned $ref $output/VCF $thr
 				RevelioHaplotype $output/Bismark/samples/results/03_aligned $ref $output/VCF $thr

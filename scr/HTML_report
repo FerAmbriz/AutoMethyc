@@ -109,8 +109,12 @@ if norm == 'True':
     fig_pca = plot_pca(finalDf)
 
 #====================SitePercent===================#
-df = pd.read_csv(Oncoprint_All)
-fig_percent_site = plot_site_percent(df)
+if filt == 'True':
+    df = pd.read_csv(Oncoprint_All)
+    fig_percent_site = plot_site_percent(df)
+else:
+    df = pd.read_csv(Oncoprint_All_wf)
+    fig_percent_site = plot_site_percent(df)
 
 #====================Boxplot=======================#
 if norm == 'True':

@@ -6,6 +6,8 @@
 import pandas as pd
 import numpy as np
 import sys
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 all_sites = pd.read_csv(sys.argv[1], header = None)
 output = sys.argv[2]
@@ -83,7 +85,8 @@ def normalizado (df, df_cont, typ):
 all_norm = normalizado(all_sites, df_controles, typ)
 
 all_norm = all_norm.reset_index()
-all_norm.rename(columns={'index', 'ID'}, inplace = True)
+all_norm.rename(columns={'index': 'ID'}, inplace = True)
 all_norm = all_norm.set_index('ID')
+print(all_norm)
 
 all_norm.to_csv(output + '/OncoprintNorm.csv')

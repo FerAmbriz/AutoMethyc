@@ -42,6 +42,8 @@ print('Done extract data from UCSC')
 
 
 bed = pd.read_csv(bed_file)
+if 'Chr' not in list(bed.columns):
+    bed.rename(columns = {'Unnamed: 0':'Chr'}, inplace = True)
 
 if filtro == 'True':
     # if 'gene' not in list(bed.columns)

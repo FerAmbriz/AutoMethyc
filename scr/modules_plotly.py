@@ -270,14 +270,23 @@ def merge_site(chrom, site):
     return chrom + ':' + site
 
 def plot_site_percent(df):
-    df = df.drop(['Unnamed: 2'], axis=1)
-    df = df.drop([1])
+    if 'Unnamed: 2' in list(df.columns):
+        df = df.drop(['Unnamed: 2'], axis=1)
+        df = df.drop([1])
+        patients = pd.DataFrame(df.iloc[0])
+        df = df.drop([0])
 
-    patients = pd.DataFrame(df.iloc[0])
+
+    else:
+        df.columns = list(df.iloc[0])
+        df = df.drop([0, 2])
+        df.rename(columns = {np.nan:'Unnamed: 1'}, inplace = True)
+        patients = pd.DataFrame(df.iloc[0])
+        df = df.drop([1])
+
     patients = patients.drop(['Sample', 'Unnamed: 1'])
     patients = patients.reset_index()
-
-    df = df.drop([0])
+    patients.columns = ['index', 0]
     df['Sample'] = list(map(merge_site, df['Sample'], df['Unnamed: 1']))
     df = df.drop(['Unnamed: 1'], axis=1)
 
@@ -288,7 +297,9 @@ def plot_site_percent(df):
     def match_type(ID):
         patients_i = patients[patients['index']==ID]
         return list(patients_i[0])[0]
+
     df_melt['Type'] = list(map(match_type, df_melt['variable']))
+
     df_melt['value'] = list(map(float, df_melt['value']))
     df_melt = df_melt.drop(['variable'], axis=1)
 
@@ -362,7 +373,7 @@ def plot_site_percent(df):
     ])
 
     fig.update_layout(
-        yaxis_title='z score',
+        yaxis_title='methylation %',
         xaxis_title='site',
         hovermode="x")
     return fig
@@ -372,13 +383,12 @@ def boxplot_site(df):
                      "value": "z score"
                  })
     return fig
+
 def plot_site_norm(df):
     m = df.groupby(['variable', 'Type']).mean()
-    m = m.drop(['Unnamed: 0'], axis = 1)
     m.columns = ['mean']
 
     s = df.groupby(['variable', 'Type']).std()
-    s = s.drop(['Unnamed: 0'], axis = 1)
     s.columns = ['std']
 
     df_final = pd.concat([m,s], axis=1).reset_index()
