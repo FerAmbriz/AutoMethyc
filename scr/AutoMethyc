@@ -46,6 +46,8 @@ Optional arguments
 "-d"|"--depth"       ) depth="$1"; arr+=("-d" "$1"); shift;;
 	esac
 done
+
+figlet AutoMethyc
 echo Version 0.0.4-beta
 echo Universidad Nacional Autonoma de Mexico
 echo '#----------------------Parameters---------------------------#'
@@ -61,21 +63,6 @@ echo 'quality		|' $quality
 echo '#-----------------------------------------------------------#'
 #echo -e AutoMethc ${arr[@]} \n input,$input \n output,$output \n reference,$ref > command_options.txt
 echo -e "\n Automethyc ${arr[@]} \n input,$input \n output,$output \n reference,$ref \n bed,$filtro \n threads,$thr \n normal,$norm \n genome,$genome \n depth,$depth \n quaility,$quality \n" > command_options.txt
-
-figlet AutoMethyc
-echo Version 0.0.4-beta
-echo Universidad Nacional Autonoma de Mexico
-echo '#----------------------Parameters---------------------------#'
-echo 'input		|' $input
-echo 'output		|' $output
-echo 'reference	|'	$ref
-echo 'filtro		|' $filtro
-echo 'threads		|' $thr
-echo 'normal		|' $norm
-echo 'genome		|' $genome
-echo 'depth		|' $depth
-echo 'quality		|' $quality
-echo '#-----------------------------------------------------------#'
 
 start=`date +%s`
 
