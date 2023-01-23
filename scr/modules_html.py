@@ -190,6 +190,13 @@ def html_all():
             <div class="c">
                 <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/IslaCpG.jpeg?raw=true" width="650" height="150">
             </div>
+            The colors present in the graph are:
+            <ol type = "1" start = "0">
+                <li> CpG island: blue </li>
+                <li> CpG shore: green </li>
+                <li> CpG shelf: red </li>
+                <li> CpG inter: cyan </li>
+            </ol>
         </div>
     </body>
     '''

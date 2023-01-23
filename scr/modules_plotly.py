@@ -136,7 +136,13 @@ def plot_all (sites_bed, df):
                                 ticktext=['a', 'b', 'c' ,'d']), x = ['CGI'], y = list(df.index)
                     )
 
-    fig1 = px.imshow(df,  color_continuous_scale='RdBu_r')
+    #fig1 = px.imshow(df, labels=dict(x="ID"))
+    arr = df.to_numpy()
+    fig1 = go.Figure(data=go.Heatmap(
+                   z=arr, colorscale='RdBu',
+                   x=list(df.columns),
+                   y=list(df.index.values) ))
+
     fig2 = go.Figure(data=[heatmap])
 
     fig = make_subplots(
@@ -146,6 +152,15 @@ def plot_all (sites_bed, df):
 
     fig.add_trace(fig1.data[0], 1, 1)
     fig.add_trace(fig2.data[0], 1, 2)
+    #fig.update_xaxes(ticks="inside")
+
+    fig.update_xaxes(title_text="ID", row=1, col=1)
+    fig.update_yaxes(title_text="site", row=1, col=1)
+
+    fig.update_traces(showscale=False, row=1, col=2)
+    #fig.update_traces(color_continuous_scale='RdBu_r', row=1, col=1)
+    #print(fig.data)
+    #fig[1,1].update_yaxes(title_text='site')
 
     return fig
 
@@ -155,6 +170,7 @@ def plot_mean(df):
     df = df.drop(df.index[[0,1]])
 
     fig_mean= px.imshow(df, aspect="auto",  color_continuous_scale='RdBu_r')
+    fig_mean.update_xaxes(title_text="ID")
 
     return fig_mean
 
@@ -226,10 +242,12 @@ def plot_mean_norm (df):
     df = df.set_index('ID')
 
     fig_mean_norm= px.imshow(df.T, aspect="auto",  color_continuous_scale='RdBu_r')
+    fig_mean_norm.update_yaxes(title_text="Gene")
 
     return fig_mean_norm
 
 def plot_manhattan (df):
+    #df = df.dropna()
     df = df.set_index('ID')
     df = df.T
     df = pd.DataFrame(df.stack()).reset_index()
