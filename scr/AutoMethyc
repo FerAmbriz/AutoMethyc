@@ -62,7 +62,7 @@ echo 'depth		|' $depth
 echo 'quality		|' $quality
 echo '#-----------------------------------------------------------#'
 #echo -e AutoMethc ${arr[@]} \n input,$input \n output,$output \n reference,$ref > command_options.txt
-echo -e "\n Automethyc ${arr[@]} \n input,$input \n output,$output \n reference,$ref \n bed,$filtro \n threads,$thr \n normal,$norm \n genome,$genome \n depth,$depth \n quaility,$quality \n" > $output/command_options.txt
+echo -e " Automethyc ${arr[@]} \n input,$input \n output,$output \n reference,$ref \n bed,$filtro \n threads,$thr \n normal,$norm \n genome,$genome \n depth,$depth \n quaility,$quality \n" > $output/command_options.txt
 
 start=`date +%s`
 

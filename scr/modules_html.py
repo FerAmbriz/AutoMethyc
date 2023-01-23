@@ -194,11 +194,18 @@ def html_all():
     </body>
     '''
     return html
-
-def html_mean():
+def html_mean_site():
     html = '''
     <body>
         <h2 id="Mean"> Mean methylation </h2>
+           Average percentage of methylation present in each site.
+    </body>
+    '''
+    return html
+
+def html_mean_gene():
+    html = '''
+    <body>
            Average percentage of methylation present in each gene of the sequenced region.
     </body>
     '''

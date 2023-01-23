@@ -161,21 +161,22 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(fig_oft.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_all())
     f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_mean_site())
+    f.write(fig_percent_site.to_html(full_html=False, include_plotlyjs='cdn'))
     if filt == 'True':
-        f.write(html_mean())
+        f.write(html_mean_gene())
         f.write(fig_mean.to_html(full_html=False, include_plotlyjs='cdn'))
     if norm == 'True':
         f.write(html_norm())
         f.write(fig_norm.to_html(full_html=False, include_plotlyjs='cdn'))
-        f.write(html_mean_norm())
+        f.write(fig_site_norm.to_html(full_html=False, include_plotlyjs='cdn'))
+        f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
+        f.write(fig_manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
     if norm == 'True' and filt == 'True':
+        f.write(html_mean_norm())
         f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))
     if norm == 'True':
         f.write(html_pca())
-        f.write(fig_manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
 
-        f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
-        f.write(fig_site_norm.to_html(full_html=False, include_plotlyjs='cdn'))
-    f.write(fig_percent_site.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_fooder())
