@@ -7,6 +7,7 @@ filtro="False"
 genome="hg19"
 depth=20
 quality=30
+read_fastq="Paired"
 
 #Array para extraer el comando
 arr=()
@@ -37,13 +38,14 @@ Optional arguments
 ''';  exit 1;;
 "-i"|"--input"      ) input="$1"; arr+=( "-i" "$1"); shift;;
 "-o"|"--output"      ) output="$1"; arr+=("-o" "$1"); shift;;
-"-r"|"--ref"      ) ref="$1"; arr+=("-r" "$1"); shift;;
+"-r"|"--reference"      ) ref="$1"; arr+=("-r" "$1"); shift;;
 "-f"|"--filtro"      ) filtro="$1"; arr+=("-f" "$1"); shift;;
 "-t"|"--threads"      ) thr="$1"; arr+=("-t" "$1") shift;;
 "-n"|"--normal"      ) norm="$1"; arr+=("-n" "$1"); shift;;
 "-g"|"--genome"       ) genome="$1"; arr+=("-g" "$1"); shift;;
 "-q"|"--quality"       ) quality="$1"; arr+=("-q" "$1"); shift;;
 "-d"|"--depth"       ) depth="$1"; arr+=("-d" "$1"); shift;;
+"--read"       ) read_fastq="$1"; arr+=("--read" "$1"); shift;;
 	esac
 done
 
@@ -60,6 +62,7 @@ echo 'normal		|' $norm
 echo 'genome		|' $genome
 echo 'depth		|' $depth
 echo 'quality		|' $quality
+echo 'read		|' $read_fastq
 echo '#-----------------------------------------------------------#'
 #echo -e AutoMethc ${arr[@]} \n input,$input \n output,$output \n reference,$ref > command_options.txt
 echo -e " Automethyc ${arr[@]} \n input,$input \n output,$output \n reference,$ref \n bed,$filtro \n threads,$thr \n normal,$norm \n genome,$genome \n depth,$depth \n quaility,$quality \n" > $output/command_options.txt
@@ -79,7 +82,7 @@ if [ "$norm" = "False" ]; then
 	if [ "$filtro" = "False" ]; then
 		echo 'usando la version sin normales y sin filtro'
 
-		BuclePipeline $input $output $ref_folder $thr $quality
+		BuclePipeline $input $output $ref_folder $thr $quality $read_fastq
 
 		# Filtrado por profundidad
 		DepthCord $output/results/06_bedGraph $output/CSV $depth
@@ -113,7 +116,7 @@ if [ "$norm" = "False" ]; then
 	else
 		echo 'usando la version sin normales y con filtro'
 
-				BuclePipeline $input $output $ref_folder $thr $quality
+				BuclePipeline $input $output $ref_folder $thr $quality $read_fastq
 				# Filtrado por profundidad
 				DepthCord $output/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
@@ -157,7 +160,7 @@ else
 
 
 				echo '---------------Normal Samples------------------'
-				BuclePipeline $norm $output/norm $ref_folder $thr $quality
+				BuclePipeline $norm $output/norm $ref_folder $thr $quality $read_fastq
 				# Filtrado por profundidad
 				DepthCord $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
@@ -173,7 +176,7 @@ else
 
 
 				echo '------------------Samples---------------------'
-				BuclePipeline $input $output/samples $ref_folder $thr $quality
+				BuclePipeline $input $output/samples $ref_folder $thr $quality $read_fastq
 				# Filtrado por profundidad
 				DepthCord $output/samples/results/06_bedGraph $output $depth
 				#rename $output/samples/results/06_bedGraph
@@ -233,7 +236,7 @@ else
 
 
 				echo '---------------Normal Samples------------------'
-				BuclePipeline $norm $output/norm $ref_folder $thr $quality
+				BuclePipeline $norm $output/norm $ref_folder $thr $quality $read_fastq
 				# Filtrado por profundidad
 				DepthCord $output/norm/results/06_bedGraph $output/CSV $depth
 				# descomprime y renombra los archivos por ID
@@ -254,7 +257,7 @@ else
 
 
 				echo '------------------Samples---------------------'
-				BuclePipeline $input $output/samples $ref_folder $thr $quality
+				BuclePipeline $input $output/samples $ref_folder $thr $quality $read_fastq
 				# Filtrado por profundidad
 				DepthCord $output/samples/results/06_bedGraph $output $depth
 				#rename $output/samples/results/06_bedGraph
