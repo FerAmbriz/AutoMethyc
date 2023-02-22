@@ -8,13 +8,15 @@ import io
 import csv
 import pandas as pd
 from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
+from multiprocessing import Pool
 
 bed_file = sys.argv[1]
 ref = sys.argv[2]
 output = sys.argv[3]
-
-# booleans
+# booleans para definir el workflow
 filtro = sys.argv[4]
+threads = int(sys.argv[5])
 
 url = 'https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=1442153227_FWCo6wJtrFjEzVt07A5mEs5LeL3m'
 session = requests.Session()
@@ -45,42 +47,29 @@ bed = pd.read_csv(bed_file)
 if 'Chr' not in list(bed.columns):
     bed.rename(columns = {'Unnamed: 0':'Chr'}, inplace = True)
 
+#==================================Function======================================
+def paralell_search (site, chrom):
+    df_i = df[df['chrom']==chrom]
+    indicador  = 'off-target'
+    for i,j,gene,st,acc in zip(df_i.txStart, df_i.txEnd, df_i['name2'], df_i.strand, df_i.name):
+        if site in list(range(i,j)):
+            return [chrom, site, site, gene, st, acc]
+            indicador = 'on-target'
+    if indicador == 'off-target':
+        return [chrom, site,  site, 'NaN', 'NaN', 'NaN']
+
+#================================================================================
+
+
+
 if filtro == 'True':
     # if 'gene' not in list(bed.columns)
     if 'Gene' not in list(bed.columns):
+        array = process_map(paralell_search, bed.Start, bed.Chr, max_workers=threads)
+        df_annot = pd.DataFrame(array)
+        df_annot.columns = ['Chr', 'Start', 'End', 'Gene', 'Strand', 'AccessName']
 
-        gene_lst = []
-        site_lst = []
-        chrom_lst = []
-        strand_lst = []
-        name_access_lst = []
-        pbar = tqdm(desc='Gene Search', total=len(bed))
-
-        for site, chrom in zip(bed.Start, bed.Chr):
-            df_i = df[df['chrom']==chrom]
-            indicador  = 'off-target'
-            for i,j,gene,st,acc in zip(df_i.txStart, df_i.txEnd, df_i['name2'], df_i.strand, df_i.name):
-                if site in list(range(i,j)):
-                    gene_lst.append(gene)
-                    site_lst.append(site)
-                    chrom_lst.append(chrom)
-                    strand_lst.append(st)
-                    name_access_lst.append(acc)
-                    indicador = 'on-target'
-            if indicador == 'off-target':
-                gene_lst.append('NaN')
-                site_lst.append(site)
-                chrom_lst.append(chrom)
-                strand_lst.append('NaN')
-                name_access_lst.append('NaN')
-
-            pbar.update()
-        pbar.close()
-        df_annotate = pd.DataFrame({ 'Chr': chrom_lst, 'Start': site_lst,
-                                    'End': site_lst, 'Gene': gene_lst,
-                                    'Strand': strand_lst, 'AccessName': name_access_lst})
-        df_annotate = df_annotate.set_index('Chr')
-        df_annotate.to_csv(output + '/anotate_bed.csv')
+        df_annot.to_csv(output + '/anotate_bed.csv', index=False)
     else:
         # Tiene bed con genes, por lo que no tiene que hacer nada
         print('Is not necessary the gene mapping')
@@ -94,36 +83,9 @@ else:
     #bed['End'] = bed.Start
     bed = bed.drop([0,1,2])
 
-    gene_lst = []
-    site_lst = []
-    chrom_lst = []
-    strand_lst = []
-    name_access_lst = []
-    pbar = tqdm(desc='Gene Search', total=len(bed))
-    print(bed)
-    for site, chrom in zip(bed.Start, bed.Chr):
-        df_i = df[df['chrom']==chrom]
-        indicador  = 'off-target'
-        for i,j,gene,st,acc in zip(df_i.txStart, df_i.txEnd, df_i['name2'], df_i.strand, df_i.name):
-            if site in list(range(i,j)):
-                gene_lst.append(gene)
-                site_lst.append(site)
-                chrom_lst.append(chrom)
-                strand_lst.append(st)
-                name_access_lst.append(acc)
-                ndicador = 'on-target'
-        if indicador == 'off-target':
-            gene_lst.append('NaN')
-            site_lst.append(site)
-            chrom_lst.append(chrom)
-            strand_lst.append('NaN')
-            name_access_lst.append('NaN')
+    array = process_map(paralell_search, bed.Start, bed.Chr, max_workers=threads)
+    df_annot = pd.DataFrame(array)
+    df_annot.columns = ['Chr', 'Start', 'End', 'Gene', 'Strand', 'AccessName']
 
-        pbar.update()
-    pbar.close()
-    df_annotate = pd.DataFrame({ 'Chr': chrom_lst, 'Start': site_lst,
-                                 'End': site_lst, 'Gene': gene_lst,
-                                 'Strand': strand_lst, 'AccessName': name_access_lst})
-    df_annotate = df_annotate.set_index('Chr')
+    df_annot.to_csv(output + '/anotate_bed.csv', index=False)
 
-    df_annotate.to_csv(output + '/anotate_bed.csv')
