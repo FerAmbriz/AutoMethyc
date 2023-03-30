@@ -50,13 +50,13 @@ status = list(df_reset.iloc[0])
 status.pop(0)
 
 df_reset = df_reset.drop([0,1])
+df_reset = df_reset.dropna()
 
 df_reset = df_reset.rename(columns={"Unnamed: 2": "Gene"})
 print(df_reset)
+
 # Determinar los genes a graficar
 gen = list(df_reset['Gene'].unique())
-
-
 
 ID = list(df_reset.columns)
 ID.pop(0)

@@ -33,7 +33,7 @@ OncoprintMeanNorm = input_folder+'/CSV/OncoprintMeanNorm.csv'
 PCA_data = input_folder+'/CSV/PCA_vectors.csv'
 CountUF=input_folder+'/CSV/CountUF.csv'
 bed = input_folder+ '/CSV/StatusCpG.csv'
-depth = input_folder + '/CSV/CountUF_depth_merge.csv'
+depth = input_folder + '/CSV/CountUF_depth.csv'
 depth2 = input_folder + '/CSV/CountUF_depth.csv'
 fastqc = input_folder + '/CSV/fastqc_merge.csv'
 boxplot_csv = input_folder + '/CSV/Boxplot_all_sites.csv'
@@ -57,21 +57,21 @@ else:
     fig_depth = plot_depth(df)
 
 #========================All=========================#
-if filt == 'True':
-    sites_bed = pd.read_csv(bed)
-    df = pd.read_csv(Oncoprint_All)
-    df = df.drop(['Unnamed: 2'], axis=1)
-    df = df.drop(df.index[[0,1]])
-    df = df.rename(columns = {'Unnamed: 1':'Start', 'Sample':'Chr'})
+#if filt == 'True':
+sites_bed = pd.read_csv(bed)
+df = pd.read_csv(Oncoprint_All)
+df = df.drop(['Unnamed: 2'], axis=1)
+df = df.drop(df.index[[0,1]])
+df = df.rename(columns = {'Unnamed: 1':'Start', 'Sample':'Chr'})
 
-    fig_all = plot_all(sites_bed, df)
-else:
-    sites_bed = pd.read_csv(bed)
-    df = pd.read_csv(Oncoprint_All_wf)
-    df.columns = list(df.loc[0, :])
-    df = df.drop(df.index[[0, 1, 2]])
-    df = df.rename(columns = {'Sample':'Chr', np.nan:'Start'})
-    fig_all = plot_all(sites_bed, df)
+fig_all = plot_all(sites_bed, df)
+#else:
+#    sites_bed = pd.read_csv(bed)
+#    df = pd.read_csv(Oncoprint_All_wf)
+#    df.columns = list(df.loc[0, :])
+#    df = df.drop(df.index[[0, 1, 2]])
+#    df = df.rename(columns = {'Sample':'Chr', np.nan:'Start'})
+#    fig_all = plot_all(sites_bed, df)
 
 #========================Mean=======================#
 if filt == 'True':
@@ -79,16 +79,16 @@ if filt == 'True':
     fig_mean = plot_mean(df)
 
 #=======================Count=======================#
-if filt == 'True':
-    df = pd.read_csv(Count)
-    df2 = pd.read_csv(CountUF)
-    fig_samples = plot_count (df, df2)
+#if filt == 'True':
+#    df = pd.read_csv(Count)
+    #df2 = pd.read_csv(CountUF)
+#    fig_samples = plot_count (df)
 
 #=====================Off-target====================#
 if filt == 'True':
     df = pd.read_csv(Count)
-    df2 = pd.read_csv(NotLoc)
-    fig_oft = plot_offtarget(df, df2)
+    #df2 = pd.read_csv(NotLoc)
+    fig_oft = plot_offtarget(df)
 
 #====================Norm all=======================#
 if norm == 'True':
@@ -157,7 +157,7 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(fig_depth.to_html(full_html=False, include_plotlyjs='cdn'))
     if filt == 'True':
         f.write(html_coverage())
-        f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
+        #f.write(fig_samples.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_oft.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_all())
     f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))

@@ -1,11 +1,15 @@
 #!/bin/bash
 
+#============================= Input Parameters ============================#
 input=$1
 output=$2
-ref=$3
+genome=$3
 thr=$4
 quality=$5
 paired=$6
+PREFIX=one_mismatch
+FolderOutput=$7
+#============================= Make directories ============================#
 
 mkdir $output/tmp
 mkdir $output/tmp/02_fastq_trimmed
@@ -14,14 +18,17 @@ mkdir $output/tmp/04_deduplicated
 mkdir $output/tmp/05_bismark_extractor
 mkdir $output/tmp/06_bedGraph
 
-mkdir $output/results
-mkdir $output/results/02_fastq_trimmed
-mkdir $output/results/03_aligned
-mkdir $output/results/04_deduplicated
-mkdir $output/results/05_bismark_extractor
-mkdir $output/results/06_bedGraph
-mkdir $output/results/results_html
+mkdir $output/Bismark/$FolderOutput
+mkdir $output/Bismark/$FolderOutput/fastq_trimmed
+mkdir $output/Bismark/$FolderOutput/aligned
+mkdir $output/Bismark/$FolderOutput/deduplicated
+mkdir $output/Bismark/$FolderOutput/bismark_extractor
+mkdir $output/Bismark/$FolderOutput/bedGraph
+mkdir $output/Bismark/$FolderOutput/html_reports
 
+echo 'Using ...' $thr 'threads'
+
+#============================= Genome Conversion ============================#
 
 ref_bisulfito=$ref/Bisulfite_Genome
 if [ -d "$ref_bisulfito"  ]
@@ -31,8 +38,7 @@ else
 				bismark_genome_preparation $ref --parallel $(($thr/2))
 fi
 
-echo 'Using ...' $thr 'threads'
-
+#============================= Run pipeline ============================#
 
 array=($(ls $input/*.f*))
 tLen=${#array[@]}
@@ -48,30 +54,20 @@ if [ "$paired" = "Paired" ]; then
                         --illumina --output_dir ${OUT} \
                         --cores $thr ${FQ1} ${FQ2}
 
-                wait
-                genome=$ref
-                PREFIX=one_mismatch
-
+               
                 FQ1=$output/tmp/02_fastq_trimmed/*val_1.fq.gz
                 FQ2=$output/tmp/02_fastq_trimmed/*val_2.fq.gz
                 OUT=$output/tmp/03_aligned
 
-                #change 2 por 4 -p
-                # 1 por 2 en --parallel
 
-                echo "bismark aligned"; date
                 bismark --bowtie2 --parallel $(($thr/2)) --bam --fastq \
                         --output_dir ${OUT} \
                         --prefix ${PREFIX} \
                         --genome_folder ${genome} \
                         -1 ${FQ1} -2 ${FQ2}
 
-                wait
-
                 BAM_IN=$output/tmp/03_aligned/one_mismatch*pe.bam
                 OUT=$output/tmp/05_bismark_extractor/
-
-                genome=$ref
 
                 echo "bismark_methylation_extractor"; date
                 bismark_methylation_extractor --paired-end \
@@ -82,44 +78,25 @@ if [ "$paired" = "Paired" ]; then
                         --genome_folder ${genome} \
                         ${BAM_IN}
 
-                wait
-
-                genome=$ref
                 IN=$output/tmp/03_aligned/one_mismatch*pe.bam
                 OUT=$output/tmp/04_deduplicated
 
                 bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN} 
-
-                wait 
-
-                genome=$ref
 
                 bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
                         --splitting_report $output/tmp/05_bismark_extractor/one_mismatch*splitting_report.txt \
                         --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
                         --nucleotide_report $output/tmp/04_deduplicated/one_mismatch*.nucleotide_stats.txt
 
-                wait     
-                mv $output/tmp/02_fastq_trimmed/* $output/results/02_fastq_trimmed
-
-                wait
-
-                mv $output/tmp/03_aligned/* $output/results/03_aligned
-                wait
-
-                mv $output/tmp/04_deduplicated/*.bam $output/results/04_deduplicated
-                mv $output/tmp/04_deduplicated/*.txt $output/results/04_deduplicated
-
-                wait 
-
-                mv $output/tmp/05_bismark_extractor/*.txt.gz $output/results/05_bismark_extractor
-                mv $output/tmp/05_bismark_extractor/*.txt $output/results/05_bismark_extractor
-
-                wait
-                mv  $output/tmp/05_bismark_extractor/*.bedGraph.gz $output/results/06_bedGraph
-                mv  $output/tmp/05_bismark_extractor/*.bismark.cov.gz $output/results/06_bedGraph  
-                wait 
-                mv *.html $output/results/results_html
+                mv $output/tmp/02_fastq_trimmed/* $output/Bismark/$FolderOutput/fastq_trimmed
+                mv $output/tmp/03_aligned/* $output/Bismark/$FolderOutput/aligned
+                mv $output/tmp/04_deduplicated/*.bam $output/Bismark/$FolderOutput/deduplicated
+                mv $output/tmp/04_deduplicated/*.txt $output/Bismark/$FolderOutput/deduplicated
+                mv $output/tmp/05_bismark_extractor/*.txt.gz $output/Bismark/$FolderOutput/bismark_extractor
+                mv $output/tmp/05_bismark_extractor/*.txt $output/Bismark/$FolderOutput/bismark_extractor
+                mv  $output/tmp/05_bismark_extractor/*.bedGraph.gz $output/Bismark/$FolderOutput/bedGraph
+                mv  $output/tmp/05_bismark_extractor/*.bismark.cov.gz $output/Bismark/$FolderOutput/bedGraph  
+                mv *.html $output/Bismark/$FolderOutput/html_reports
         done
 else
         for (( i=0; i<${tLen}; i=i+1));
@@ -134,29 +111,17 @@ else
                         --illumina --output_dir ${OUT} \
                         --cores $thr ${FQ1}
 
-                wait
-                genome=$ref
-                PREFIX=one_mismatch
-
                 FQ1=$output/tmp/02_fastq_trimmed/*_trimmed.fq.gz
                 OUT=$output/tmp/03_aligned
 
-                #change 2 por 4 -p
-                # 1 por 2 en --parallel
-
-                echo "bismark aligned"; date
                 bismark --bowtie2 --parallel $(($thr/2)) --bam --fastq \
                         --output_dir ${OUT} \
                         --prefix ${PREFIX} \
                         --genome_folder ${genome} \
                         ${FQ1}
 
-                wait
-
                 BAM_IN=$output/tmp/03_aligned/one_mismatch*_bt2.bam
                 OUT=$output/tmp/05_bismark_extractor/
-
-                genome=$ref
 
                 echo "bismark_methylation_extractor"; date
                 bismark_methylation_extractor --single-end \
@@ -167,45 +132,29 @@ else
                         --genome_folder ${genome} \
                         ${BAM_IN}
 
-                wait
-
-                genome=$ref
                 IN=$output/tmp/03_aligned/one_mismatch*_bt2.bam
                 OUT=$output/tmp/04_deduplicated
 
                 bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN} 
-
-                wait 
-
-                genome=$ref
 
                 bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
                         --splitting_report $output/tmp/05_bismark_extractor/one_mismatch*splitting_report.txt \
                         --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
                         --nucleotide_report $output/tmp/04_deduplicated/one_mismatch*.nucleotide_stats.txt
 
-                wait     
-                mv $output/tmp/02_fastq_trimmed/* $output/results/02_fastq_trimmed
-
-                wait
-
-                mv $output/tmp/03_aligned/* $output/results/03_aligned
-                wait
-
-                mv $output/tmp/04_deduplicated/*.bam $output/results/04_deduplicated
-                mv $output/tmp/04_deduplicated/*.txt $output/results/04_deduplicated
-
-                wait 
-
-                mv $output/tmp/05_bismark_extractor/*.txt.gz $output/results/05_bismark_extractor
-                mv $output/tmp/05_bismark_extractor/*.txt $output/results/05_bismark_extractor
-
-                wait
-                mv  $output/tmp/05_bismark_extractor/*.bedGraph.gz $output/results/06_bedGraph
-                mv  $output/tmp/05_bismark_extractor/*.bismark.cov.gz $output/results/06_bedGraph  
-                wait 
-                mv *.html $output/results/results_html
+                mv $output/tmp/02_fastq_trimmed/* $output/Bismark/$FolderOutput/fastq_trimmed
+                mv $output/tmp/03_aligned/* $output/Bismark/$FolderOutput/aligned
+                mv $output/tmp/04_deduplicated/*.bam $output/Bismark/$FolderOutput/deduplicated
+                mv $output/tmp/04_deduplicated/*.txt $output/Bismark/$FolderOutput/deduplicated
+                mv $output/tmp/05_bismark_extractor/*.txt.gz $output/Bismark/$FolderOutput/bismark_extractor
+                mv $output/tmp/05_bismark_extractor/*.txt $output/Bismark/$FolderOutput/bismark_extractor
+                mv  $output/tmp/05_bismark_extractor/*.bedGraph.gz $output/Bismark/$FolderOutput/bedGraph
+                mv  $output/tmp/05_bismark_extractor/*.bismark.cov.gz $output/Bismark/$FolderOutput/bedGraph  
+                mv *.html $output/Bismark/$FolderOutput/html_reports
         done
 fi
-
-echo 'DONE'
+rm -rf $output/tmp/
+#mv $output/norm $output/Bismark &> /dev/null
+#mv $output/samples $output/Bismark &> /dev/null
+#mv $output/results $output/Bismark &> /dev/null
+echo '=================================== Done Bismark ==================================='

@@ -207,15 +207,15 @@ def plot_count (df, df2):
 
     return fig_samples
 
-def plot_offtarget(df, df2):
+def plot_offtarget(df):
     df.columns = ['ID' , 'Count']
     df['Status'] = ['on-target'] * len(df)
 
-    df2 = pd.DataFrame(df2['ID'].value_counts()).reset_index()
-    df2.columns = ['ID' , 'Count']
-    df2['Status'] = ['off-target'] * len(df2)
+#    df2 = pd.DataFrame(df2['ID'].value_counts()).reset_index()
+#    df2.columns = ['ID' , 'Count']
+#    df2['Status'] = ['off-target'] * len(df2)
 
-    df = pd.concat([df, df2])
+    #df = pd.concat([df, df2])
 
     fig_chr = px.bar(df, x="ID", y="Count", color="Status", title="Coverage Status")
 

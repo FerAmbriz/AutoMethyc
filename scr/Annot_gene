@@ -14,9 +14,7 @@ from multiprocessing import Pool
 bed_file = sys.argv[1]
 ref = sys.argv[2]
 output = sys.argv[3]
-# booleans para definir el workflow
-filtro = sys.argv[4]
-threads = int(sys.argv[5])
+threads = int(sys.argv[4])
 
 url = 'https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=1442153227_FWCo6wJtrFjEzVt07A5mEs5LeL3m'
 session = requests.Session()
@@ -42,7 +40,6 @@ df = pd.read_csv(io.StringIO(response.text), sep='\t')
 df = df.drop_duplicates(subset=["name2"])
 print('Done extract data from UCSC')
 
-
 bed = pd.read_csv(bed_file)
 if 'Chr' not in list(bed.columns):
     bed.rename(columns = {'Unnamed: 0':'Chr'}, inplace = True)
@@ -60,32 +57,26 @@ def paralell_search (site, chrom):
 
 #================================================================================
 
-
-
-if filtro == 'True':
-    # if 'gene' not in list(bed.columns)
-    if 'Gene' not in list(bed.columns):
+if 'Depth' not in list(bed.columns):
+    print('Processing bed')
+    if 'Gene' in list(bed.columns):
+        df_annot = bed
+        df_annot.to_csv(output + '/anotate_bed.csv', index=False)
+    else:
         array = process_map(paralell_search, bed.Start, bed.Chr, max_workers=threads)
         df_annot = pd.DataFrame(array)
         df_annot.columns = ['Chr', 'Start', 'End', 'Gene', 'Strand', 'AccessName']
-
         df_annot.to_csv(output + '/anotate_bed.csv', index=False)
-    else:
-        # Tiene bed con genes, por lo que no tiene que hacer nada
-        print('Is not necessary the gene mapping')
-
-        bed = bed.set_index('Chr')
-        bed.to_csv(output + '/anotate_bed.csv')
 else:
-    # No tiene Genes porque tampoco hay filtro
-    # Procesado del oncoprint
-    bed.rename(columns={'Sample':'Chr', 'Unnamed: 1':'Start'}, inplace=True)
-    #bed['End'] = bed.Start
-    bed = bed.drop([0,1,2])
-
+    print('Processing merge')
+    # Procesado del merge
+    bed = bed.drop(['End',  'Cyt_Met', 'Cyt_NoMet', 'Depth', 'Status'], axis=1)
+    bed = bed.pivot(index=['Chr', 'Start'], columns = ['Sample'])
+    bed = bed.reset_index()
+    bed.columns = bed.columns.droplevel(1)
+    print(bed[['Chr', 'Start']])
     array = process_map(paralell_search, bed.Start, bed.Chr, max_workers=threads)
     df_annot = pd.DataFrame(array)
     df_annot.columns = ['Chr', 'Start', 'End', 'Gene', 'Strand', 'AccessName']
-
+    print(df_annot)
     df_annot.to_csv(output + '/anotate_bed.csv', index=False)
-

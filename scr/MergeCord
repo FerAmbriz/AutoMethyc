@@ -11,5 +11,5 @@ do
 	x=${x##*/}
 	prefix='one_mismatch.'
 	ID=${x/#$prefix}
-	sed 's/\t/,/g' "$i" | awk '{OFS=",";print "'$stat'", $0}' | awk '{OFS=",";print "'${ID}'", $0}' >> merge.csv
+	sed 's/\t/,/g' "$i" | awk '{OFS=",";print "'$stat'", $0}' | awk '{OFS=",";print "'${ID}'", $0}' >> ${output}/merge.csv
 done
