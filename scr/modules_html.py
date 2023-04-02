@@ -96,22 +96,6 @@ def html_navbar_complete ():
     return html
 
 
-def html_navbar_sFilt ():
-    html = '''
-    <body>
-        <ul class="vertical">
-            <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
-            <li><a href="#Base"> Base quality </a></li>
-            <li><a href="#Depth"> Depth </a></li>
-            <li><a href="#All"> Methylation percentage </a></li>
-            <li><a href="#all_norm"> Mean methylation </a></li>
-            <li><a href="#pca"> PCA </a></li>
-            <li><a href="#about"> About </a></li>
-        </ul>
-    </body>
-    '''
-    return html
-
 def html_navbar_sNorm ():
     html = '''
     <body>
@@ -122,20 +106,6 @@ def html_navbar_sNorm ():
             <li><a href="#Samples" > Coverage </a></li>
             <li><a href="#All"> Methylation percentage </a></li>
             <li><a href="#Mean"> Mean methylation </a></li>
-            <li><a href="#about"> About </a></li>
-        </ul>
-    </body>
-    '''
-    return html
-
-def html_navbar_sNorm_sFilt ():
-    html = '''
-    <body>
-        <ul class="vertical">
-            <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
-            <li><a href="#Base"> Base quality </a></li>
-            <li><a href="#Depth"> Depth </a></li>
-            <li><a href="#All"> Methylation percentage </a></li>
             <li><a href="#about"> About </a></li>
         </ul>
     </body>

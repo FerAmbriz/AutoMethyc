@@ -93,19 +93,18 @@ if [ "$norm" = "False" ]; then
 		multiqc $output/Bismark/samples/fastq_trimmed/*
 		mv multiqc* $output/HTML
 
-		WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
+		WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV
 
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
 
 		RevelioHaplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
-		HTML_report $output $output/HTML False True
+		HTML_report $output $output/HTML False
 	else
 		echo '================= Without normals and with filter ====================='
 		BuclePipeline $input $output $ref_folder $thr $quality $read_fastq samples
 		# Filtrado por profundidad
 		DepthCord $output/Bismark/samples/bedGraph $output/CSV $depth
 		# descomprime y renombra los archivos por ID
-		#rename $output/results/06_bedGraph
 		# Construcción del merge
 		MergeCord $output/Bismark/samples/bedGraph $output/CSV 'Sample'
 		Annot_gene $filtro $genome $output/CSV $thr
@@ -116,14 +115,13 @@ if [ "$norm" = "False" ]; then
 		multiqc $output/Bismark/samples/fastq_trimmed/*
 		mv multiqc* $output/HTML
 
-		CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
-		WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
+		WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV
 
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
 
 		RevelioHaplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
 
-		HTML_report $output $output/HTML False True
+		HTML_report $output $output/HTML False
 	fi
 else
 	if [ "$filtro" = "False" ]; then
@@ -133,7 +131,6 @@ else
 		# Filtrado por profundidad
 		DepthCord $output/Bismark/normals/bedGraph $output/Bismark/normals $depth
 		# descomprime y renombra los archivos por ID
-		#rename $output/norm/results/06_bedGraph
 		# Construcción del merge
 		MergeCord $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'		
 		multiqc $output/Bismark/normals/fastq_trimmed/*
@@ -176,14 +173,14 @@ else
 		Norm $output/CSV/Oncoprint.csv $output/CSV/OncoprintPromedio.csv $output/CSV
 		PCA $output/CSV/OncoprintNorm.csv $output/CSV
 
-		WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
+		WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV
 		boxplot $output/CSV/OncoprintNorm.csv $output/CSV True $output/CSV/OncoprintMeanNorm.csv
 
 
-		RevelioHaplotype $output/Bismark/normals/results/aligned $ref $output/VCF $thr
-		RevelioHaplotype $output/Bismark/samples/results/aligned $ref $output/VCF $thr
+		RevelioHaplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
+		RevelioHaplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
 
-		HTML_report $output $output/HTML True True
+		HTML_report $output $output/HTML True
 	else
 		echo '==================== With normals and with filter ==================='
 		echo '-------------------------- Normal Samples ---------------------------'
@@ -192,7 +189,6 @@ else
 		DepthCord $output/Bismark/normals/bedGraph $output/Bismark/normals $depth
 
 		# descomprime y renombra los archivos por ID
-		#rename $output/norm/results/06_bedGraph
 		# Construcción del merge
 		MergeCord $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'
 
@@ -229,14 +225,13 @@ else
 
 		Norm $output/CSV/Oncoprint.csv $output/CSV/OncoprintPromedio.csv $output/CSV
 		PCA $output/CSV/OncoprintNorm.csv $output/CSV
-		CountUF $output/CSV/merge.csv $output/CSV/Filtered.csv $output/CSV
-		WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV False
+		WebScrapping $output/CSV/Oncoprint.csv $genome $output/CSV
 		boxplot $output/CSV/OncoprintNorm.csv $output/CSV True $output/CSV/OncoprintMeanNorm.csv
 
-		RevelioHaplotype $output/Bismark/normals/results/aligned $ref $output/VCF $thr
-		RevelioHaplotype $output/Bismark/samples/results/aligned $ref $output/VCF $thr
+		RevelioHaplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
+		RevelioHaplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
 
-		HTML_report $output $output/HTML True True
+		HTML_report $output $output/HTML True
 	fi
 fi
 
