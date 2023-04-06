@@ -223,6 +223,6 @@ end=`date +%s`
 runtime=$((end-start))
 echo 'run time = ' $runtime'(sec)'
 
-echo '=========================== AutoMethyc Complete =============================='
+echo '======================== AutoMethyc Complete ==========================='
 
 #table_annovar.pl example/ex2.vcf humandb/ -buildver hg19 -out myanno -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish
