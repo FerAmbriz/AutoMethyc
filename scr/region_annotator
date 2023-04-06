@@ -80,4 +80,4 @@ else:
     df_annot.columns = ['Chr', 'Start', 'End', 'Gene', 'Strand', 'AccessName']
     print(df_annot)
     df_annot.to_csv(output + '/annotated_regions.csv', index=False)
-print ('==================== done region_annotator ====================')
+print ('================== done region_annotator ===================')

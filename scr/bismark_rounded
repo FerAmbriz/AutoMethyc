@@ -85,14 +85,14 @@ if [ "$paired" = "Paired" ]; then
 
                 bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN} 
 
-                echo '====================== done bam2nuc ======================'
+                echo '===================== done bam2nuc ======================'
 
                 bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
                         --splitting_report $output/tmp/05_bismark_extractor/one_mismatch*splitting_report.txt \
                         --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
                         --nucleotide_report $output/tmp/04_deduplicated/one_mismatch*.nucleotide_stats.txt
 
-                echo '=================== done bismark2report ==================='
+                echo '================== done bismark2report =================='
 
                 mv $output/tmp/02_fastq_trimmed/* $output/Bismark/$FolderOutput/fastq_trimmed
                 mv $output/tmp/03_aligned/* $output/Bismark/$FolderOutput/aligned
@@ -117,7 +117,7 @@ else
                         --illumina --output_dir ${OUT} \
                         --cores $thr ${FQ1}
 
-                echo '==================== done trim_galore ===================='
+                echo '=================== done trim_galore ==================='
  
                 FQ1=$output/tmp/02_fastq_trimmed/*_trimmed.fq.gz
                 OUT=$output/tmp/03_aligned
@@ -148,14 +148,14 @@ else
 
                 bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN} 
 
-                echo '====================== done bam2nuc ======================'
+                echo '===================== done bam2nuc ====================='
 
                 bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
                         --splitting_report $output/tmp/05_bismark_extractor/one_mismatch*splitting_report.txt \
                         --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
                         --nucleotide_report $output/tmp/04_deduplicated/one_mismatch*.nucleotide_stats.txt
 
-                echo '=================== done bismark2report ==================='
+                echo '================= done bismark2report =================='
 
                 mv $output/tmp/02_fastq_trimmed/* $output/Bismark/$FolderOutput/fastq_trimmed
                 mv $output/tmp/03_aligned/* $output/Bismark/$FolderOutput/aligned
@@ -169,4 +169,4 @@ else
         done
 fi
 rm -rf $output/tmp/
-echo '=========================== done bismark_rounded ========================'
+echo '================= done bismark_rounded =================='
