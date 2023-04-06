@@ -12,7 +12,7 @@ bed_file = sys.argv[1]
 ref = sys.argv[2]
 output = sys.argv[3]
 
-print ('===================== mapping cpg islands =====================')
+print ('====================== mapping cpg islands ======================')
 
 # Web scrapping
 url = 'https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=1442153227_FWCo6wJtrFjEzVt07A5mEs5LeL3m'
@@ -95,4 +95,4 @@ df_bd['Type'] = typ
 df_bd['DistCpGIsland'] = dist
 
 df_bd.to_csv(output+'/cgi_features.csv')
-print ('===================== done cgi_mapping =====================')
+print ('======================= done cgi_mapping ========================')

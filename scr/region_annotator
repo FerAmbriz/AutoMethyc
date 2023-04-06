@@ -61,12 +61,12 @@ if 'Depth' not in list(bed.columns):
     print('Processing bed')
     if 'Gene' in list(bed.columns):
         df_annot = bed
-        df_annot.to_csv(output + '/anotate_bed.csv', index=False)
+        df_annot.to_csv(output + '/annotated_regions.csv', index=False)
     else:
         array = process_map(paralell_search, bed.Start, bed.Chr, max_workers=threads)
         df_annot = pd.DataFrame(array)
         df_annot.columns = ['Chr', 'Start', 'End', 'Gene', 'Strand', 'AccessName']
-        df_annot.to_csv(output + '/anotate_bed.csv', index=False)
+        df_annot.to_csv(output + '/annotated_regions.csv', index=False)
 else:
     print('Processing merge')
     # Procesado del merge

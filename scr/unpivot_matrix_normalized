@@ -8,11 +8,10 @@ import sys
 
 df_type_allsites = pd.read_csv(sys.argv[1])
 output = sys.argv[2]
+df_gene = pd.read_csv(sys.argv[3])
 
-print ('=============== making long format matrix normalized ===============')
-
+print ('============== making long format matrix normalized ==============')
 #----------------------------- mean gene norm ----------------------------#
-df_gene = pd.read_csv(sys.argv[4])
 columns_gene = list(df_gene.columns)
 columns_gene = columns_gene[2:len(columns_gene)]
 df_gene = pd.melt(df_gene, id_vars=['ID', 'Type'], value_vars=columns_gene)
@@ -30,4 +29,4 @@ print(df_type)
 df_type = df_type.set_index('ID')
 
 df_type.to_csv(output+'/filtered_target_normalized.csv')
-print ('================= done unpivot_matrix_normalized =================')
+print ('================ done unpivot_matrix_normalized ================')
