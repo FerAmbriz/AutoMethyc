@@ -160,11 +160,11 @@ else
 
 		matrix_normalizer $output/CSV/matrix_filtered_target.csv $output/CSV/matrix_mean_gene.csv $output/CSV
 
-		make_vectors_pca $output/CSV/OncoprintNorm.csv $output/CSV
+		make_vectors_pca $output/CSV/matrix_filtered_target_normalized.csv $output/CSV
 
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 
-		unpivot_matrix_normalized $output/CSV/OncoprintNorm.csv $output/CSV $output/CSV/OncoprintMeanNorm.csv
+		unpivot_matrix_normalized $output/CSV/matrix_filtered_target_normalized.csv $output/CSV $output/CSV/matrix_mean_gene_normalized.csv
 
 		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
@@ -193,7 +193,7 @@ else
 	
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/raw_data.csv $output/Bismark/samples/raw_data.csv > $output/CSV/raw_data.csv
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/count_depth_${depth}_pass.csv $output/Bismark/samples/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
-		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/fastqc_merge.csv $output/Bismark/samples/fastqc_merge.csv > $output/CSV/fastqc_merge.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/fastqc_raw_data.csv $output/Bismark/samples/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
 
 		region_annotator $filtro $genome $output/CSV $thr
 		
@@ -203,11 +203,11 @@ else
 	
 		matrix_normalizer $output/CSV/matrix_filtered_target.csv $output/CSV/matrix_mean_gene.csv $output/CSV
 
-		make_vectors_pca $output/CSV/OncoprintNorm.csv $output/CSV
+		make_vectors_pca $output/CSV/matrix_filtered_target_normalized.csv $output/CSV
 
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 		
-		unpivot_matrix_normalized $output/CSV/OncoprintNorm.csv $output/CSV $output/CSV/OncoprintMeanNorm.csv
+		unpivot_matrix_normalized $output/CSV/matrix_filtered_target_normalized.csv $output/CSV $output/CSV/matrix_mean_gene_normalized.csv
 
 		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
@@ -223,6 +223,6 @@ end=`date +%s`
 runtime=$((end-start))
 echo 'run time = ' $runtime'(sec)'
 
-echo '======================== AutoMethyc Complete ==========================='
+echo '===================== AutoMethyc Complete ========================'
 
 #table_annovar.pl example/ex2.vcf humandb/ -buildver hg19 -out myanno -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish
