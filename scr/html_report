@@ -21,22 +21,22 @@ input_folder = sys.argv[1]
 Output = sys.argv[2]
 
 norm = sys.argv[3]
+depth = sys.argv[4]
 
-Oncoprint_All = input_folder+'/CSV/Oncoprint.csv'
-Oncoprint_mean = input_folder+'/CSV/OncoprintPromedio.csv'
-Count = input_folder+'/CSV/Count.csv'
-NotLoc = input_folder+'/CSV/NotLoc.csv'
-OncoprintNorm = input_folder+'/CSV/OncoprintNorm.csv'
-OncoprintMeanNorm = input_folder+'/CSV/OncoprintMeanNorm.csv'
-PCA_data = input_folder+'/CSV/PCA_vectors.csv'
-bed = input_folder+ '/CSV/StatusCpG.csv'
-depth = input_folder + '/CSV/CountUF_depth.csv'
-fastqc = input_folder + '/CSV/fastqc_merge.csv'
-boxplot_csv = input_folder + '/CSV/Boxplot_all_sites.csv'
+print ('===================== making HTML report =====================')
+
 c = input_folder + '/command_options.txt'
-
-
-print('#-------------------Plotting-------------------------')
+depth = input_folder + '/CSV/count_depth_' + str(depth) + '_pass.csv'
+Count = input_folder+'/CSV/count_targets.csv'
+NotLoc = input_folder+'/CSV/off_targets.csv'
+Oncoprint_All = input_folder+'/CSV/matrix_filtered_target.csv'
+Oncoprint_mean = input_folder+'/CSV/matrix_mean_gene.csv'
+bed = input_folder+ '/CSV/cgi_features.csv'
+fastqc = input_folder + '/CSV/fastqc_raw_data.csv'
+OncoprintNorm = input_folder+'/CSV/matrix_filtered_target_normalized.csv'
+OncoprintMeanNorm = input_folder+'/CSV/matrix_mean_gene_normalized.csv'
+PCA_data = input_folder+'/CSV/pca_vectors.csv'
+boxplot_csv = input_folder + '/CSV/filtered_target_normalized.csv'
 
 #=======================fastqc======================#
 df = pd.read_csv(fastqc)
@@ -141,3 +141,4 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
 
     f.write(html_fooder())
+print ('===================== done html_report =====================')

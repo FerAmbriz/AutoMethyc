@@ -11,6 +11,8 @@ import sys
 input_df = sys.argv[1]
 output = sys.argv[2]
 
+print ('=================== calculating pca vectors ===================')
+
 df = pd.read_csv(input_df)
 #df = df.drop(df.index[[0,1]])
 #if 'ID' in list(df.columns):
@@ -103,4 +105,5 @@ def funcPCA(df):
 # Make PCA
 finalDf = funcPCA(df_bd)
 
-finalDf.to_csv(output+"/PCA_vectors.csv")
+finalDf.to_csv(output+"/pca_vectors.csv")
+print ('=================== done make_vectors_pca ===================')

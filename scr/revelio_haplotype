@@ -17,26 +17,22 @@ array=($(ls $ref_folder/$reference_name*))
 reference_dict=${ref%.*}.dict
 
 if [[  " ${array[*]} " =~ " ${reference_dict} " ]]; then
-  echo 'Starting with processing'
+  echo '================= starting with variant calling =================='
 else
-  echo 'Generating reference genome dictionary'
+  echo '============ Generating reference genome dictionary =============='
   gatk CreateSequenceDictionary -R $ref
+  echo '================= starting with variant calling =================='
 fi
-
+#-------------------------- processing --------------------------#
 
 mkdir $input_bam/tmp
 mkdir $input_bam/preprocessing
 
 for i in $input_bam/*.bam;
 do
-  echo 'Starting variant call to ...'
   echo $i 
   
-  
-  ID=${i%_S*}
-  ID=${ID##*/}
-  prefix='one_mismatch.'
-  ID=${ID/#$prefix}
+  ID=${i%_S*}; ID=${ID##*/}; prefix='one_mismatch.'; ID=${ID/#$prefix}
 
   samtools sort -@ $threads $i -o $input_bam/preprocessing/${ID}_sorted.bam
   samtools calmd -@ $threads -b $input_bam/preprocessing/${ID}_sorted.bam $ref 1> $input_bam/preprocessing/${ID}_calmd.bam 2> /dev/null
@@ -48,9 +44,6 @@ do
   samtools index -@ $threads $input_bam/preprocessing/${ID}_mask.bam
 
 done
-
-echo 'Starting variant calling with HaplotypeCaller'
-
 
 arr=($(ls $input_bam/preprocessing/*_mask.bam))
 
@@ -73,12 +66,7 @@ do
     ID=${j%_mask*}
     ID=${ID##*/}
     gatk HaplotypeCaller -R $ref --native-pair-hmm-threads 2 -I $input_bam/preprocessing/${ID}_mask.bam -O $output/${ID}_mask_haplotype2.vcf &
-    #gatk HaplotypeCaller -R $ref --native-pair-hmm-threads 2 -I $input_bam/${ID}_mask.bam -O $output/${ID}_mask_haplotype2.vcf &
   done
   wait
 done
-
-#end=`date +%s`
-#runtime=$((end-start))
-#echo 'run time = ' $runtime'(sec)'
-echo 'Done'
+echo '====================== done revelio_haplotype ======================'

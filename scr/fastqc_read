@@ -22,9 +22,7 @@ df = df.rename(columns = {'90th Percentile\n':'90th Percentile'})
 
 if contador % 2 == 0:
     contador = 2
-    print(2)
 else:
-    print(1)
     contador = 1
 
 cut = 13
@@ -37,7 +35,6 @@ for i in df['#Base']:
 df = df.drop(list(range(cut,lenght,1)))
 
 df['ID'] = [ID + '_' + str(contador)] * len(df)
-print(len(df))
 
 df_bd = pd.read_csv(merge)
 

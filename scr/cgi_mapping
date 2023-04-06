@@ -12,6 +12,8 @@ bed_file = sys.argv[1]
 ref = sys.argv[2]
 output = sys.argv[3]
 
+print ('================= mapping cpg islands =================')
+
 # Web scrapping
 url = 'https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=1442153227_FWCo6wJtrFjEzVt07A5mEs5LeL3m'
 session = requests.Session()
@@ -92,6 +94,5 @@ for loci, start, end, distance in zip(df_bd.Site, df_bd.chromStart, df_bd.chromE
 df_bd['Type'] = typ
 df_bd['DistCpGIsland'] = dist
 
-df_bd.to_csv(output+'/StatusCpG.csv')
-print(f'Output in: {output}/StatusCpG.csv')
-
+df_bd.to_csv(output+'/cgi_features.csv')
+print ('================= done cgi_mapping =================')

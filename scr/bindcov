@@ -1,0 +1,13 @@
+#!/bin/bash
+input=$1
+output=$2
+stat=$3
+
+echo 'Sample,Status,Chr,Start,End,Met_perc,Cyt_Met,Cyt_NoMet,Depth' > $output/raw_data.csv
+echo '==================== joining cov files ===================='
+for i in $input/*.cov;
+do
+  x=${i%_S*}; x=${x##*/}; prefix='one_mismatch.'; ID=${x/#$prefix}
+	sed 's/\t/,/g' "$i" | awk '{OFS=",";print "'$stat'", $0}' | awk '{OFS=",";print "'${ID}'", $0}' >> ${output}/raw_data.csv
+done
+echo '====================== done bindcov ======================'

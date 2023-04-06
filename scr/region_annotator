@@ -15,7 +15,7 @@ bed_file = sys.argv[1]
 ref = sys.argv[2]
 output = sys.argv[3]
 threads = int(sys.argv[4])
-
+print ('==================== annotating regions ====================')
 url = 'https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=1442153227_FWCo6wJtrFjEzVt07A5mEs5LeL3m'
 session = requests.Session()
 params = {
@@ -49,7 +49,7 @@ def paralell_search (site, chrom):
     df_i = df[df['chrom']==chrom]
     indicador  = 'off-target'
     for i,j,gene,st,acc in zip(df_i.txStart, df_i.txEnd, df_i['name2'], df_i.strand, df_i.name):
-        if site in list(range(i,j)):
+        if i <= site <= j:
             return [chrom, site, site, gene, st, acc]
             indicador = 'on-target'
     if indicador == 'off-target':
@@ -79,4 +79,5 @@ else:
     df_annot = pd.DataFrame(array)
     df_annot.columns = ['Chr', 'Start', 'End', 'Gene', 'Strand', 'AccessName']
     print(df_annot)
-    df_annot.to_csv(output + '/anotate_bed.csv', index=False)
+    df_annot.to_csv(output + '/annotated_regions.csv', index=False)
+print ('==================== done region_annotator ====================')

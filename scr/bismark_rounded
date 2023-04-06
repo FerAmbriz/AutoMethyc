@@ -26,8 +26,6 @@ mkdir $output/Bismark/$FolderOutput/bismark_extractor
 mkdir $output/Bismark/$FolderOutput/bedGraph
 mkdir $output/Bismark/$FolderOutput/html_reports
 
-echo 'Using ...' $thr 'threads'
-
 #============================= Genome Conversion ============================#
 
 ref_bisulfito=$ref/Bisulfite_Genome
@@ -54,6 +52,7 @@ if [ "$paired" = "Paired" ]; then
                         --illumina --output_dir ${OUT} \
                         --cores $thr ${FQ1} ${FQ2}
 
+                echo '==================== done trim_galore ===================='
                
                 FQ1=$output/tmp/02_fastq_trimmed/*val_1.fq.gz
                 FQ2=$output/tmp/02_fastq_trimmed/*val_2.fq.gz
@@ -66,10 +65,11 @@ if [ "$paired" = "Paired" ]; then
                         --genome_folder ${genome} \
                         -1 ${FQ1} -2 ${FQ2}
 
+                echo '===================== done bismark ====================='
+               
                 BAM_IN=$output/tmp/03_aligned/one_mismatch*pe.bam
                 OUT=$output/tmp/05_bismark_extractor/
 
-                echo "bismark_methylation_extractor"; date
                 bismark_methylation_extractor --paired-end \
                         --gzip \
                         --bedGraph \
@@ -78,15 +78,21 @@ if [ "$paired" = "Paired" ]; then
                         --genome_folder ${genome} \
                         ${BAM_IN}
 
+                echo '========== done bismark_methylation_extractor =========='
+               
                 IN=$output/tmp/03_aligned/one_mismatch*pe.bam
                 OUT=$output/tmp/04_deduplicated
 
                 bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN} 
 
+                echo '====================== done bam2nuc ======================'
+
                 bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
                         --splitting_report $output/tmp/05_bismark_extractor/one_mismatch*splitting_report.txt \
                         --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
                         --nucleotide_report $output/tmp/04_deduplicated/one_mismatch*.nucleotide_stats.txt
+
+                echo '=================== done bismark2report ==================='
 
                 mv $output/tmp/02_fastq_trimmed/* $output/Bismark/$FolderOutput/fastq_trimmed
                 mv $output/tmp/03_aligned/* $output/Bismark/$FolderOutput/aligned
@@ -111,6 +117,8 @@ else
                         --illumina --output_dir ${OUT} \
                         --cores $thr ${FQ1}
 
+                echo '==================== done trim_galore ===================='
+ 
                 FQ1=$output/tmp/02_fastq_trimmed/*_trimmed.fq.gz
                 OUT=$output/tmp/03_aligned
 
@@ -120,10 +128,11 @@ else
                         --genome_folder ${genome} \
                         ${FQ1}
 
+                echo '===================== done bismark ====================='
+ 
                 BAM_IN=$output/tmp/03_aligned/one_mismatch*_bt2.bam
                 OUT=$output/tmp/05_bismark_extractor/
 
-                echo "bismark_methylation_extractor"; date
                 bismark_methylation_extractor --single-end \
                         --gzip \
                         --bedGraph \
@@ -132,15 +141,21 @@ else
                         --genome_folder ${genome} \
                         ${BAM_IN}
 
+                echo '========== done bismark_methylation_extractor =========='
+               
                 IN=$output/tmp/03_aligned/one_mismatch*_bt2.bam
                 OUT=$output/tmp/04_deduplicated
 
                 bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN} 
 
+                echo '====================== done bam2nuc ======================'
+
                 bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
                         --splitting_report $output/tmp/05_bismark_extractor/one_mismatch*splitting_report.txt \
                         --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
                         --nucleotide_report $output/tmp/04_deduplicated/one_mismatch*.nucleotide_stats.txt
+
+                echo '=================== done bismark2report ==================='
 
                 mv $output/tmp/02_fastq_trimmed/* $output/Bismark/$FolderOutput/fastq_trimmed
                 mv $output/tmp/03_aligned/* $output/Bismark/$FolderOutput/aligned
@@ -154,7 +169,4 @@ else
         done
 fi
 rm -rf $output/tmp/
-#mv $output/norm $output/Bismark &> /dev/null
-#mv $output/samples $output/Bismark &> /dev/null
-#mv $output/results $output/Bismark &> /dev/null
-echo '=================================== Done Bismark ==================================='
+echo '=========================== done bismark_rounded ========================'

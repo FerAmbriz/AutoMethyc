@@ -1,0 +1,228 @@
+#!/bin/bash
+
+#============================= Defect parameters ============================#
+thr=4
+norm="False"
+filtro="False"
+genome="hg19"
+depth=20
+quality=30
+read_fastq="Paired"
+#============================= Input Parameters ============================#
+arr=()
+while [[ $# -gt 0 ]]; do
+	opt="$1"
+	shift;
+	current_arg="$1"
+	case "$opt" in
+"-h"|"--help"      ) echo '''
+AutoMethyc version 0.0.5-beta
+Usage
+	AutoMethyc [options]
+Options
+	-i --input		Folder with fastq
+	-o --output		Output location
+	-r --ref		reference genome file
+Optional arguments
+	-t --threads		Number of threads (default=4)
+	-n --normal		Folder with fastq of normals (default=False)
+	-g --genome		Reference genome (default=hg19)
+		other genomes:
+			{hg38, hg19, hg18, hg17, hg16, mm39, mm10, mm9, mm8, mm7}
+	-f --filtro		File with regions of interest (default=False)
+	-d --depth		Minimum depth to consider (default=20)
+	-q --quality		Minimum quality (default=30)
+''';  exit 1;;
+"-i"|"--input"      ) input="$1"; arr+=( "-i" "$1"); shift;;
+"-o"|"--output"      ) output="$1"; arr+=("-o" "$1"); shift;;
+"-r"|"--reference"      ) ref="$1"; arr+=("-r" "$1"); shift;;
+"-f"|"--filtro"      ) filtro="$1"; arr+=("-f" "$1"); shift;;
+"-t"|"--threads"      ) thr="$1"; arr+=("-t" "$1") shift;;
+"-n"|"--normal"      ) norm="$1"; arr+=("-n" "$1"); shift;;
+"-g"|"--genome"       ) genome="$1"; arr+=("-g" "$1"); shift;;
+"-q"|"--quality"       ) quality="$1"; arr+=("-q" "$1"); shift;;
+"-d"|"--depth"       ) depth="$1"; arr+=("-d" "$1"); shift;;
+"--read"       ) read_fastq="$1"; arr+=("--read" "$1"); shift;;
+	esac
+done
+ref_folder=${ref%/*}
+#============================= Presentation ============================#
+figlet AutoMethyc
+echo Version 0.0.5-beta
+echo Universidad Nacional Autonoma de Mexico
+echo '#============================Parameters==============================#'
+echo 'input		|' $input
+echo 'output		|' $output
+echo 'reference	|'	$ref
+echo 'bed		|' $filtro
+echo 'threads		|' $thr
+echo 'normal		|' $norm
+echo 'genome		|' $genome
+echo 'depth		|' $depth
+echo 'quality		|' $quality
+echo 'read		|' $read_fastq
+echo '#===================================================================#'
+echo -e " Automethyc ${arr[@]} \n input,$input \n output,$output \n reference,$ref \n bed,$filtro \n threads,$thr \n normal,$norm \n genome,$genome \n depth,$depth \n quaility,$quality \n" > $output/command_options.txt
+
+#============================= Pipeline flow ============================#
+start=`date +%s`
+
+mkdir $output/CSV
+mkdir $output/HTML
+mkdir $output/Bismark
+mkdir $output/HTML/Bismark_report
+mkdir $output/VCF
+
+if [ "$norm" = "False" ]; then
+	if [ "$filtro" = "False" ]; then
+		echo '================= Without normals and without filter ================='
+
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
+
+		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth
+
+		bindcov $output/Bismark/samples/bedGraph $output/CSV 'Sample'
+
+		region_annotator $output/CSV/raw_data.csv $genome $output/CSV $thr
+
+		filter_target $output/CSV/raw_data.csv $output/CSV/annotated_regions.csv $output/CSV/
+
+		matrix_builder $output/CSV/filtered_target.csv $output/CSV/
+
+		multiqc $output/Bismark/samples/fastq_trimmed/*
+		mv multiqc* $output/HTML
+
+		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
+
+		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
+
+		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+
+		html_report $output $output/HTML False $depth
+	else
+		echo '================= Without normals and with filter ====================='
+		
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
+
+		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth
+
+		bindcov $output/Bismark/samples/bedGraph $output/CSV 'Sample'
+
+		region_annotator $filtro $genome $output/CSV $thr
+
+		filter_target $output/CSV/raw_data.csv $output/CSV/annotated_regions.csv $output/CSV
+
+		matrix_builder $output/CSV/filtered_target.csv $output/CSV
+
+		multiqc $output/Bismark/samples/fastq_trimmed/*
+		mv multiqc* $output/HTML
+
+		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
+
+		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
+
+		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+
+		html_report $output $output/HTML False $depth
+	fi
+else
+	if [ "$filtro" = "False" ]; then
+		echo '==================== With normals and without filter ==================='
+		
+		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normals
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
+
+		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth
+		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth
+
+		bindcov $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'		
+		bindcov $output/Bismark/samples/bedGraph $output/Bismark/samples 'Sample'
+
+		fastqc_extract $output/Bismark/normals/fastq_trimmed $output/Bismark/normals
+		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/Bismark/samples
+
+		multiqc $output/Bismark/normals/fastq_trimmed/*
+		mv multiqc_report.html $output/HTML/multiqc_report_normals.html
+		mv multiqc_data $output/HTML/multiqc_data_normals
+		multiqc $output/Bismark/samples/fastq_trimmed/*
+		mv multiqc_report.html $output/HTML/multiqc_report_samples.html
+		mv multiqc_data $output/HTML/multiqc_data_samples
+
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/raw_data.csv $output/Bismark/samples/raw_data.csv > $output/CSV/raw_data.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/count_depth_${depth}_pass.csv $output/Bismark/samples/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv 
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/fastqc_raw_data.csv $output/Bismark/samples/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
+
+		region_annotator $output/CSV/raw_data.csv $genome $output/CSV $thr
+
+		filter_target $output/CSV/raw_data.csv $output/CSV/annotated_regions.csv $output/CSV
+
+		matrix_builder $output/CSV/filtered_target.csv $output/CSV
+
+		matrix_normalizer $output/CSV/matrix_filtered_target.csv $output/CSV/matrix_mean_gene.csv $output/CSV
+
+		make_vectors_pca $output/CSV/OncoprintNorm.csv $output/CSV
+
+		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
+
+		unpivot_matrix_normalized $output/CSV/OncoprintNorm.csv $output/CSV $output/CSV/OncoprintMeanNorm.csv
+
+		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
+		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+
+		html_report $output $output/HTML True $depth
+	else
+		echo '==================== With normals and with filter ==================='
+		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normals
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
+	
+		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth
+		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth
+	
+		bindcov $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'
+		bindcov $output/Bismark/samples/bedGraph $output/Bismark/samples 'Sample'
+
+		fastqc_extract $output/Bismark/normals/fastq_trimmed $output/Bismark/normals
+		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/Bismark/samples
+
+		multiqc $output/Bismark/normals/fastq_trimmed/*
+		mv multiqc_report.html $output/HTML/multiqc_report_normals.html
+		mv multiqc_data $output/HTML/multiqc_data_normals
+		multiqc $output/Bismark/samples/fastq_trimmed/*
+		mv multiqc_report.html $output/HTML/multiqc_report_samples.html
+		mv multiqc_data $output/HTML/multiqc_data_samples
+	
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/raw_data.csv $output/Bismark/samples/raw_data.csv > $output/CSV/raw_data.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/count_depth_${depth}_pass.csv $output/Bismark/samples/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/fastqc_merge.csv $output/Bismark/samples/fastqc_merge.csv > $output/CSV/fastqc_merge.csv
+
+		region_annotator $filtro $genome $output/CSV $thr
+		
+		filter_target $output/CSV/raw_data.csv $output/CSV/annotated_regions.csv $output/CSV
+		
+		matrix_builder $output/CSV/filtered_target.csv $output/CSV/
+	
+		matrix_normalizer $output/CSV/matrix_filtered_target.csv $output/CSV/matrix_mean_gene.csv $output/CSV
+
+		make_vectors_pca $output/CSV/OncoprintNorm.csv $output/CSV
+
+		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
+		
+		unpivot_matrix_normalized $output/CSV/OncoprintNorm.csv $output/CSV $output/CSV/OncoprintMeanNorm.csv
+
+		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
+		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+
+		html_report $output $output/HTML True $depth
+	fi
+fi
+
+#Rscript /usr/bin/Oncoprint.R $output/OncoprintRellenado.csv $output/all_sites.png
+#Rscript /usr/bin/OncoprintPromedio.R $output/OncoprintPromedio.csv $output/mean.png
+
+end=`date +%s`
+runtime=$((end-start))
+echo 'run time = ' $runtime'(sec)'
+
+echo '=========================== AutoMethyc Complete =============================='
+
+#table_annovar.pl example/ex2.vcf humandb/ -buildver hg19 -out myanno -remove -protocol refGene,cytoBand,exac03,avsnp147,dbnsfp30a -operation g,r,f,f,f -nastring . -vcfinput -polish

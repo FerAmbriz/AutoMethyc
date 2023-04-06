@@ -9,13 +9,8 @@ from tqdm import trange as tr
 from tqdm import tqdm as td
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
-# 1 = Merge.csv
-# 2 = Filtro.csv
-# 3 = [Output]
 
-print ('')
-print ('#-----------------Init Filter -------------------#')
-print ('')
+print ('==================== starting filtering ====================')
 #----------------------------Data------------------------------
 df = pd.read_csv(sys.argv[1])
 dfF = pd.read_csv(sys.argv[2])
@@ -39,13 +34,13 @@ ID = df_filtrado['Sample'].value_counts()
 
 df_filtrado = df_filtrado.set_index('Sample')
 
-print('Filtered: ')
+print('on-targets: ')
 print(df_filtrado)
 
-df_filtrado.to_csv(OutputFilter+"/Filtered.csv")
+df_filtrado.to_csv(OutputFilter+"/filtered_target.csv")
 
 ID = pd.DataFrame(ID)
-ID.to_csv(OutputFilter+"/Count.csv")
+ID.to_csv(OutputFilter+"/count_targets.csv")
 
 #-----------------------NotLoc--------------------------
 
@@ -64,15 +59,8 @@ df_NotLoc = df_bd.drop_duplicates(keep=False)
 
 df_NotLoc = df_NotLoc.set_index('ID')
 
-print('NotLoc: ')
+print('off-targets: ')
 print(df_NotLoc)
 
-df_NotLoc.to_csv(OutputFilter+"/NotLoc.csv")
-
-print("")
-print("Output: " + OutputFilter)
-print("""
-		(1) Filtered.csv
-		(2) Count.csv
-		(3) NotLoc.csv
-		""")
+df_NotLoc.to_csv(OutputFilter+"/off_targets.csv")
+print ('==================== done filter_target ====================')

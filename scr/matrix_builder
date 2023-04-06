@@ -9,8 +9,8 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 Input = sys.argv[1]
 Output = sys.argv[2]
+print ('=============== starting matrix construction ===============')
 
-print ('#----------------Construct Oncoprint-------------------#')
 merge_filtrado = pd.read_csv(Input)
 
 merge_filtrado=merge_filtrado.drop(['End',  'Cyt_Met', 'Cyt_NoMet', 'Depth'], axis=1)
@@ -19,31 +19,11 @@ df = merge_filtrado.pivot(index=['Chr','Start','Gene'], columns=['Sample', 'Stat
 
 # Eliminar el multindice de las columnas
 df = df.droplevel(level=0, axis=1)
-df.to_csv(Output+'/Oncoprint.csv')
-
-#Remplazar los valores numericos por 0
-#df = df.fillna(0)
-#df.to_csv(Output+'/OncoprintRellenado.csv')
-
-
-print ('''
-
-Output:
-	Output/Oncoprint.csv
-''')
-
-print ('#----------------- Done Oncoprint--------------------#')
+df.to_csv(Output+'/matrix_filtered_target.csv')
 
 #-----------------------------------------------------------------------
 
-print('')
-print('#------------Init Construct Oncoprint Promedio -----------#')
-
-df = pd.read_csv(Output+'/Oncoprint.csv')
-# Eliminar el multindice
-#df = df.droplevel(level=0)
-# Eliminar los indices
-#df_reset = df.reset_index()
+df = pd.read_csv(Output+'/matrix_filtered_target.csv')
 df_reset = df
 df_reset = df_reset.drop(['Unnamed: 1', 'Sample'], axis = 1)
 status = list(df_reset.iloc[0])
@@ -57,10 +37,9 @@ print(df_reset)
 
 # Determinar los genes a graficar
 gen = list(df_reset['Gene'].unique())
-
 ID = list(df_reset.columns)
 ID.pop(0)
-#print(type(df_reset['MET-GT134.cov'][3]))
+
 # Construcción de un df con las columnas anteriores
 df_bd = pd.DataFrame(columns = ID)
 df_bd.loc[0] = status
@@ -76,17 +55,10 @@ for i in range(1,len(gen)):
     # Calcular la media por paciente de cada gen
     # Agregar fila por fila correspondiente a cada gen de todas las muestras
     df_bd.loc[i]= list(df_reset_i.mean())
-    #x = list(df_reset_i.mean())
-    #df_bd = df_bd.append(pd.Series(x), ignore_index=True)
 
 # Insertat la columna de genes
 df_bd.insert(0, 'Gene', gen)
 df_bd = df_bd.set_index('Gene')
 print(df_bd)
-df_bd.to_csv(Output+'/OncoprintPromedio.csv')
-
-print ('')
-print('Output: OncoprintPromedio.csv')
-print('')
-
-print('#----------------Done--------------------#')
+df_bd.to_csv(Output+'/matrix_mean_gene.csv')
+print ('==================== done matrix_builder ====================')

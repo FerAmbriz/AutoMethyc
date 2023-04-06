@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 import sys
 
+print ('=================== normalizing matrix ===================')
+
 all_sites = pd.read_csv(sys.argv[1], header = None)
 onco_mean = pd.read_csv(sys.argv[2])
 output = sys.argv[3]
@@ -89,9 +91,9 @@ all_norm = normalizado(all_sites, df_controles, typ)
 all_norm = all_norm.reset_index()
 all_norm.rename(columns={'index': 'ID'}, inplace = True)
 all_norm = all_norm.set_index('ID')
-print('All sites normalized')
+print('All normalized sites')
 print(all_norm)
-all_norm.to_csv(output + '/OncoprintNorm.csv')
+all_norm.to_csv(output + '/matrix_filtered_target_normalized.csv')
 
 onco_mean = onco_mean.set_index('Sample')
 
@@ -118,4 +120,5 @@ mean_norm.rename(columns={'index': 'ID'}, inplace = True)
 mean_norm = mean_norm.set_index('ID')
 print('Mean per Gene normalized')
 print(mean_norm)
-mean_norm.to_csv(output + '/OncoprintMeanNorm.csv')
+mean_norm.to_csv(output + '/matrix_mean_gene_normalized.csv')
+print ('=================== done matrix_normalizer ===================')
