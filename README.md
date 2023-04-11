@@ -38,7 +38,7 @@ AutoMethyc -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [bedGraph.csv
 ```
 ## Optional arguments
 ```
-  -t --threads		Number of threads (default=4)
+  	-t --threads		Number of threads (default=4)
 	-n --normal		Folder with fastq of normals (default=False)
 	-g --genome		Genome used for request in UCSC (default=hg19)
 		other genomes:
