@@ -26,17 +26,18 @@ Options
 Optional arguments
 	-t --threads		Number of threads (default=4)
 	-n --normal		Folder with fastq of normals (default=False)
-	-g --genome		Reference genome (default=hg19)
+	-g --genome		Genome used for request in UCSC (default=hg19)
 		other genomes:
 			{hg38, hg19, hg18, hg17, hg16, mm39, mm10, mm9, mm8, mm7}
-	-f --filtro		File with regions of interest (default=False)
+	-b --bed		File with regions of interest (default=False)
 	-d --depth		Minimum depth to consider (default=20)
 	-q --quality		Minimum quality (default=30)
+	--read		Read type in fastq (default=Paired)
 ''';  exit 1;;
 "-i"|"--input"      ) input="$1"; arr+=( "-i" "$1"); shift;;
 "-o"|"--output"      ) output="$1"; arr+=("-o" "$1"); shift;;
 "-r"|"--reference"      ) ref="$1"; arr+=("-r" "$1"); shift;;
-"-f"|"--filtro"      ) filtro="$1"; arr+=("-f" "$1"); shift;;
+"-b"|"--bed"      ) filtro="$1"; arr+=("-f" "$1"); shift;;
 "-t"|"--threads"      ) thr="$1"; arr+=("-t" "$1") shift;;
 "-n"|"--normal"      ) norm="$1"; arr+=("-n" "$1"); shift;;
 "-g"|"--genome"       ) genome="$1"; arr+=("-g" "$1"); shift;;
