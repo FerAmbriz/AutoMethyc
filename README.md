@@ -3,24 +3,18 @@
   <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png" width="200px" height="auto">
 </p>
 
-AutoMethyc is a pipeline automated which aims for simplicity and practicality in methylation analysis.
+AutoMethyc is an integrative pipeline to methylation analysis from raw paired-end sequences obtained from massive parallel bisulfite sequencing.
+
 ## Install
 ### Install with Docker
 We created a [docker container](https://hub.docker.com/r/ambrizbiotech/automethyc) with all the necessary dependencies to run the program in order to provide a portable and self-sufficient container. To install it you need to have [docker installed](https://docs.docker.com/engine/install/) and then download the docker image.
 ```
 docker pull ambrizbiotech/automethyc
 ```
-### Install in PATH
-For this installation option is necessary to install all the dependencies.
-### Dependencies
-* Bowtie2 v2.4.5 http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#building-from-source
-* Samtools v1.15.1-12 http://www.htslib.org/
-* Bismark v0.23.0 https://www.bioinformatics.babraham.ac.uk/projects/bismark/
-* Anaconda3 v4.12.0 https://www.anaconda.com/ with python v3.9.12
-* fastqc v0.11.9 https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
-* TrimGalore v0.6.6 https://github.com/FelixKrueger/TrimGalore
+### Local installation
+For this installation option is necessary to install all the dependencies detailed in greater detail in the [documentation](https://github.com/FerAmbriz/AutoMethyc/blob/master/AutoMethyc_Documentation.pdf)
 
-And then move the files from the `scr` folder to the $PATH
+Once the dependencies are installed, move the dependencies in the `scr` folder to the $PATH
 ```
 git clone https://github.com/FerAmbriz/AutoMethyc.git
 cd AutoMethyc/scr
