@@ -1,6 +1,6 @@
 # AutoMethyc
 <p align="center">
-  <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png" width="350px" height="auto">
+  <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png" width="250px" height="auto">
 </p>
 
 AutoMethyc is a pipeline automated which aims for simplicity and practicality in methylation analysis.
