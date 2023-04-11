@@ -1,4 +1,6 @@
 # AutoMethyc
+<img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/logoAutoMethyc_v2.svg" width="800px" height="auto">
+
 AutoMethyc is a pipeline automated which aims for simplicity and practicality in methylation analysis.
 ## Install
 ### Install with Docker
