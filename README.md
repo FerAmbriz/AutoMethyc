@@ -24,7 +24,7 @@ sudo mv * /usr/bin/
 ### Docker version
 With the docker version is recommended to run the docker container in the background so that the execution does not break when leaving the container, moreover to linking and mounting a volume to work with the files of the machine, for this, the volume is mounted in the directory with the files of the user(s) (usually "/home"). And finally the program is executed with AutoMethyc followed by the input parameters.
 ```
-docker run -v [/home]:[/home] -d ambrizbiotech/automethyc AutoMethyc \
+docker run -v [/home]:[/home] -d ambrizbiotech/automethyc automethyc \
     -i [fastq_folder] -o [Output_folder] -r [genome reference file] [optional arguments]
 ```
 The output when executing this command is the "container ID" that will be running in the background. To see the execution progress use:
@@ -34,7 +34,7 @@ docker logs "container ID"
 ### Installed version in PATH
 With the version installed in the PATH it is simply executed with AutoMethyc followed by the input parameters
 ```
-AutoMethyc -i [fastq_folder] -o [Output_folder] -r [ref_folder] -f [bedGraph.csv] [optional arguments]
+automethyc -i [fastq_folder] -o [Output_folder] -r [genome reference file] [optional arguments]
 ```
 ## Optional arguments
 ```
