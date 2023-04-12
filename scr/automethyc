@@ -150,7 +150,7 @@ else
 		mv multiqc_data $output/HTML/multiqc_data_samples
 
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/raw_data.csv $output/Bismark/samples/raw_data.csv > $output/CSV/raw_data.csv
-		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/count_depth_${depth}_pass.csv $output/Bismark/samples/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv 
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/count_depth_${depth}_pass.csv $output/Bismark/samples/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/fastqc_raw_data.csv $output/Bismark/samples/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
 
 		region_annotator $output/CSV/raw_data.csv $genome $output/CSV $thr
