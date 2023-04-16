@@ -46,13 +46,23 @@ Optional arguments
 	esac
 done
 
-dir=$(pwd)
+#============================= Pathways extraction ============================#
+dir=$(pwd) ; dir_home=$(echo $dir | cut -d'/' -f2)
 
-input=$dir/$input
-output=$dir/$output
-ref=$dir/$ref
-norm=$dir/$norm
+# Clasificación de rutas absolutas y relativas
+pathway_val () {
+	if [ "$1" = "False" ]; then
+		var=$1
+	elif [ "$(echo $1 | cut -d'/' -f2)" != "$dir_home" ]; then #ruta relativa
+		var=$dir/$1
+	else #ruta absoluta
+		var=$1
+	fi
+}
 
-dir_home=$(echo $input1 | cut -d'/' -f2)
+pathway_val $input ; input=$var
+pathway_val $output ; output=$var
+pathway_val $ref ; ref=$var
+pathway_val $norm ; norm=$var
 
 docker run -v /${dir_home}:/${dir_home} -d ambrizbiotech/automethyc automethyc -i $input -o $output -r $ref -n $norm -t $thr -b $filtro -g $genome -q $quality -d $depth
