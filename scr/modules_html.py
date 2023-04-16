@@ -115,10 +115,15 @@ def html_navbar_sNorm ():
 def html_AutoMethyc (command):
     html = f'''
     <div class="main">
-        <h1 id="Home"> AutoMethyc </h1>
-            AutoMethyc is an integrative pipeline to methylation analysis from raw paired-end sequences obtained from massive parallel bisulfite sequencing.
+        <h1 id="Home"; style="margin-bottom: 5px;"> AutoMethyc </h1>
+        <hr style="margin-top: 0;">
+        <div class="center">
+            <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png?raw=true" width="110" height="100">
+        </div>
+        AutoMethyc is an integrative pipeline to methylation analysis from raw paired-end sequences obtained from massive parallel bisulfite sequencing.
     </div">
-    <h2> Parameters </h2>
+    <h2 style="margin-bottom: 5px;"> Parameters </h2>
+    <hr>
         Command used and global parameters:
     <p style="color:white; background:#2E3440; padding: 15px; border-radius: 15px;"><code>{command}</code></p>
     '''
@@ -127,7 +132,8 @@ def html_AutoMethyc (command):
 def html_base ():
     html = '''
     <body>
-        <h2 id="Base" > Base quality </h2>
+        <h2 id="Base"; style="margin-bottom: 5px;"> Base quality </h2>
+        <hr style="margin-top: 0;">
         Base call error probability on logarithmic scale
     </body>
     '''
@@ -136,7 +142,8 @@ def html_base ():
 def html_depth ():
     html = '''
     <body>
-        <h2 id="Depth" > Depth </h2>
+        <h2 id="Depth"; style="margin-bottom: 5px;"> Depth </h2>
+        <hr>
             Count of sites filtered by depth
     </body>
     '''
@@ -145,7 +152,8 @@ def html_depth ():
 def html_coverage ():
     html = '''
     <body>
-        <h2 id="Samples" > Coverage </h2>
+        <h2 id="Samples" ; style="margin-bottom: 5px;"> Coverage </h2>
+        <hr>
             The statistics of the samples consist of classifying the coverage (CVR) of the samples given the bedGraph and the average coverage of the samples, in addition to plotting the count of regions present in the bedGraph (In_loc) and those not present (Not_loc). In addition to evaluating the filter count (FTR) to visualize the number of filtered regions.
     </body>
     '''
@@ -154,7 +162,8 @@ def html_coverage ():
 def html_all():
     html = '''
     <body>
-        <h2 id="All"> Methylation percentage </h2>
+        <h2 id="All"; style="margin-bottom: 5px;"> Methylation percentage </h2>
+        <hr>
             Methylation percentage present at each site per sample
          <div class="row">
             <div class="c">
@@ -174,7 +183,8 @@ def html_all():
 def html_mean_site():
     html = '''
     <body>
-        <h2 id="Mean"> Mean methylation </h2>
+        <h2 id="Mean"; style="margin-bottom: 5px;"> Mean methylation </h2>
+        <hr>
            Average percentage of methylation present in each site.
     </body>
     '''
@@ -191,7 +201,8 @@ def html_mean_gene():
 def html_norm():
     html = '''
     <body>
-        <h1> Normalization </h1>
+        <h1 style="margin-bottom: 5px;"> Normalization </h1>
+        <hr>
             Normalization was performed considering the mean and standard deviation of the controls, applying to each value:
 
             <div class style="text-align: center;">
@@ -203,7 +214,8 @@ def html_norm():
                 </div>
             </div>
 
-        <h2 id="all_norm"> Normalized methylation </h2>
+        <h2 id="all_norm", style="margin-bottom: 5px;"> Normalized methylation </h2>
+        <hr>
             Normalized methylation based on the mean and standard deviation of the controls.
     </body>
     '''
@@ -212,7 +224,8 @@ def html_norm():
 def html_mean_norm():
     html = '''
     <body>
-        <h2 id="Mean_norm"> Mean normalized </h2>
+        <h2 id="Mean_norm", style="margin-bottom: 5px;"> Mean normalized </h2>
+        <hr>
             Mean normalization of each normalized site belonging to each gene
     </body>
     '''
@@ -221,7 +234,8 @@ def html_mean_norm():
 def html_pca():
     html = '''
     <body>
-        <h2 id="pca"> PCA </h2>
+        <h2 id="pca"; style="margin-bottom: 5px;"> PCA </h2>
+        <hr>
             Principal component analysis (PCA) applied to each site of the normals and samples. Each point represents a normalized site according to the corresponding group (normal or sample).
     </body>
     '''
@@ -230,7 +244,8 @@ def html_pca():
 def html_fooder():
     html= '''
     <body>
-        <h3 id="about"> Repository  </h4>
+        <h3 id="about"; style="margin-bottom: 5px;"> Repository  </h4>
+        <hr>
             This program is avalible in <td><a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a></td>
          <div class="row">
             <div class="center">

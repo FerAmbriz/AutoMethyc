@@ -1,0 +1,58 @@
+#!/bin/bash
+
+#============================= Defect parameters ============================#
+thr=4
+norm="False"
+filtro="False"
+genome="hg19"
+depth=20
+quality=30
+read_fastq="Paired"
+#============================= Input Parameters ============================#
+while [[ $# -gt 0 ]]; do
+	opt="$1"
+	shift;
+	current_arg="$1"
+	case "$opt" in
+"-h"|"--help"      ) echo '''
+AutoMethyc version 0.0.5-beta
+Usage
+	automethyc [options]
+Options
+	-i --input		Folder with fastq
+	-o --output		Output location
+	-r --ref		reference genome file
+Optional arguments
+	-t --threads		Number of threads (default=4)
+	-n --normal		Folder with fastq of normals (default=False)
+	-g --genome		Genome used for request in UCSC (default=hg19)
+		other genomes:
+			{hg38, hg19, hg18, hg17, hg16, mm39, mm10, mm9, mm8, mm7}
+	-b --bed		File with regions of interest (default=False)
+	-d --depth		Minimum depth to consider (default=20)
+	-q --quality		Minimum quality (default=30)
+	--read		Read type in fastq (default=Paired)
+''';  exit 1;;
+"-i"|"--input"      ) input="$1"; shift;;
+"-o"|"--output"      ) output="$1"; shift;;
+"-r"|"--reference"      ) ref="$1"; shift;;
+"-b"|"--bed"      ) filtro="$1"; shift;;
+"-t"|"--threads"      ) thr="$1"; shift;;
+"-n"|"--normal"      ) norm="$1"; shift;;
+"-g"|"--genome"       ) genome="$1"; shift;;
+"-q"|"--quality"       ) quality="$1"; shift;;
+"-d"|"--depth"       ) depth="$1"; shift;;
+"--read"       ) read_fastq="$1"; shift;;
+	esac
+done
+
+dir=$(pwd)
+
+input=$dir/$input
+output=$dir/$output
+ref=$dir/$ref
+norm=$dir/$norm
+
+dir_home=$(echo $input1 | cut -d'/' -f2)
+
+docker run -v /${dir_home}:/${dir_home} -d ambrizbiotech/automethyc automethyc -i $input -o $output -r $ref -n $norm -t $thr -b $filtro -g $genome -q $quality -d $depth
