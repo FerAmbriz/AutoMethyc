@@ -106,4 +106,4 @@ def funcPCA(df):
 finalDf = funcPCA(df_bd)
 
 finalDf.to_csv(output+"/pca_vectors.csv")
-print ('=================== done make_vectors_pca ===================')
+print ('==================== done make_vectors_pca ====================')

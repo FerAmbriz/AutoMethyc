@@ -403,6 +403,7 @@ def boxplot_site(df):
     return fig
 
 def plot_site_norm(df):
+    df = df.drop(['ID'], axis = 1)
     m = df.groupby(['variable', 'Type']).mean()
     m.columns = ['mean']
 
