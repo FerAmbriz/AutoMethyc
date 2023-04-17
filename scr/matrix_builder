@@ -52,6 +52,7 @@ for i in ID:
 for i in range(1,len(gen)):
     # Filtrar el df por gen
     df_reset_i = df_reset[df_reset['Gene'] == gen[i]]
+    df_reset_i = df_reset_i.set_index('Gene')
     # Calcular la media por paciente de cada gen
     # Agregar fila por fila correspondiente a cada gen de todas las muestras
     df_bd.loc[i]= list(df_reset_i.mean())
