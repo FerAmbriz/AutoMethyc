@@ -12,7 +12,7 @@ We created a [docker container](https://hub.docker.com/r/ambrizbiotech/automethy
 docker pull ambrizbiotech/automethyc
 ```
 ### Local installation
-For this installation option is necessary to install all the dependencies detailed in greater detail in the [documentation](https://github.com/FerAmbriz/AutoMethyc/blob/master/AutoMethyc_Documentation.pdf)
+For this installation option is necessary to install all the dependencies detailed in greater detail in the [documentation](https://github.com/FerAmbriz/AutoMethyc/blob/master/Documentation.pdf)
 
 Once the dependencies are installed, move the dependencies in the `scr` folder to the $PATH
 ```
