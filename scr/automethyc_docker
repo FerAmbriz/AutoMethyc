@@ -64,5 +64,6 @@ pathway_val $input ; input=$var
 pathway_val $output ; output=$var
 pathway_val $ref ; ref=$var
 pathway_val $norm ; norm=$var
+pathway_val $filtro ; filtro=$var
 
 docker run -v /${dir_home}:/${dir_home} -d ambrizbiotech/automethyc automethyc -i $input -o $output -r $ref -n $norm -t $thr -b $filtro -g $genome -q $quality -d $depth
