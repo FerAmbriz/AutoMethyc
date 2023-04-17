@@ -69,4 +69,4 @@ do
   done
   wait
 done
-echo '==================== done revelio_haplotype ===================='
+echo '====================== done revelio_haplotype ====================='
