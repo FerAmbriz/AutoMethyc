@@ -22,16 +22,15 @@ sudo mv * /usr/bin/
 ```
 ## Usage
 ### Docker version
-With the docker version is recommended to run the docker container in the background so that the execution does not break when leaving the container, moreover to linking and mounting a volume to work with the files of the machine, for this, the volume is mounted in the directory with the files of the user(s) (usually "/home"). And finally the program is executed with AutoMethyc followed by the input parameters.
+In case you are using the version installed with docker, you have to mount the volume (-v) in the corresponding directory and run it in the background (-d) to avoid breaking the process in long execution times. For this, we provide an automount script with the possibility of using relative and absolute path
 ```
-docker run -v [/home]:[/home] -d ambrizbiotech/automethyc automethyc \
-    -i [fastq_folder] -o [Output_folder] -r [genome reference file] [optional arguments]
+automethyc_docker -i [fastq_folder] -o [Output_folder] -r [reference genome file] [optional arguments]
 ```
 The output when executing this command is the "container ID" that will be running in the background. To see the execution progress use:
 ```
 docker logs "container ID"
 ```
-### Installed version in PATH
+### Local installation
 With the version installed in the PATH it is simply executed with AutoMethyc followed by the input parameters
 ```
 automethyc -i [fastq_folder] -o [Output_folder] -r [genome reference file] [optional arguments]
