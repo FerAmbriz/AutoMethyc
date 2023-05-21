@@ -3,7 +3,7 @@ input=$1
 output=$2
 stat=$3
 
-echo 'Sample,Status,Chr,Start,End,Met_perc,Cyt_Met,Cyt_NoMet,Depth' > $output/raw_data.csv
+echo 'ID,Type,Chr,Start,End,Met_perc,Cyt_Met,Cyt_NoMet,Depth' > $output/raw_data.csv
 echo '==================== joining cov files ===================='
 for i in $input/*.cov;
 do

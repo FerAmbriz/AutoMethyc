@@ -70,8 +70,8 @@ if 'Depth' not in list(bed.columns):
 else:
     print('Processing merge')
     # Procesado del merge
-    bed = bed.drop(['End',  'Cyt_Met', 'Cyt_NoMet', 'Depth', 'Status'], axis=1)
-    bed = bed.pivot(index=['Chr', 'Start'], columns = ['Sample'])
+    bed = bed.drop(['End',  'Cyt_Met', 'Cyt_NoMet', 'Depth', 'Type'], axis=1)
+    bed = bed.pivot(index=['Chr', 'Start'], columns = ['ID'])
     bed = bed.reset_index()
     bed.columns = bed.columns.droplevel(1)
     print(bed[['Chr', 'Start']])

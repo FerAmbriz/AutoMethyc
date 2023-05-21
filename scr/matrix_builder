@@ -15,7 +15,7 @@ merge_filtrado = pd.read_csv(Input)
 
 merge_filtrado=merge_filtrado.drop(['End',  'Cyt_Met', 'Cyt_NoMet', 'Depth'], axis=1)
 
-df = merge_filtrado.pivot(index=['Chr','Start','Gene'], columns=['Sample', 'Status'])
+df = merge_filtrado.pivot(index=['Chr','Start','Gene'], columns=['ID', 'Type'])
 
 # Eliminar el multindice de las columnas
 df = df.droplevel(level=0, axis=1)
@@ -25,7 +25,7 @@ df.to_csv(Output+'/matrix_filtered_target.csv')
 
 df = pd.read_csv(Output+'/matrix_filtered_target.csv')
 df_reset = df
-df_reset = df_reset.drop(['Unnamed: 1', 'Sample'], axis = 1)
+df_reset = df_reset.drop(['Unnamed: 1', 'ID'], axis = 1)
 status = list(df_reset.iloc[0])
 status.pop(0)
 
@@ -44,7 +44,7 @@ ID.pop(0)
 df_bd = pd.DataFrame(columns = ID)
 df_bd.loc[0] = status
 
-gen.insert(0, 'Status')
+gen.insert(0, 'Type')
 
 for i in ID:
     df_reset[i] = df_reset[i].astype(float)

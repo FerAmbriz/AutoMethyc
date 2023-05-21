@@ -165,7 +165,7 @@ def plot_all (sites_bed, df):
     return fig
 
 def plot_mean(df):
-    df = df.rename(columns = {'Sample':'Gene'})
+    df = df.rename(columns = {'ID':'Gene'})
     df = df.set_index('Gene')
     df = df.drop(df.index[[0,1]])
 
@@ -175,14 +175,14 @@ def plot_mean(df):
     return fig_mean
 
 def plot_count (df, df2):
-    up = max(df.Sample)
+    up = max(df.ID)
     rng = up-7
 
     for i in range(rng):
         df = df.replace({i : '<'+str(rng)})
 
-    values = df['Sample'].value_counts().to_list()
-    labels= df['Sample'].value_counts()
+    values = df['ID'].value_counts().to_list()
+    labels= df['ID'].value_counts()
     labels = labels.index.values
 
     values2 = df2['Filter'].value_counts().to_list()
@@ -302,15 +302,15 @@ def plot_site_percent(df):
         patients = pd.DataFrame(df.iloc[0])
         df = df.drop([1])
 
-    patients = patients.drop(['Sample', 'Unnamed: 1'])
+    patients = patients.drop(['ID', 'Unnamed: 1'])
     patients = patients.reset_index()
     patients.columns = ['index', 0]
-    df['Sample'] = list(map(merge_site, df['Sample'], df['Unnamed: 1']))
+    df['ID'] = list(map(merge_site, df['Sample'], df['Unnamed: 1']))
     df = df.drop(['Unnamed: 1'], axis=1)
 
     columns = list(df.columns)
     columns.pop(0)
-    df_melt = pd.melt(df, id_vars=['Sample'], value_vars=columns)
+    df_melt = pd.melt(df, id_vars=['ID'], value_vars=columns)
 
     def match_type(ID):
         patients_i = patients[patients['index']==ID]
@@ -321,22 +321,22 @@ def plot_site_percent(df):
     df_melt['value'] = list(map(float, df_melt['value']))
     df_melt = df_melt.drop(['variable'], axis=1)
 
-    m = df_melt.groupby(['Sample', 'Type']).mean()
+    m = df_melt.groupby(['ID', 'Type']).mean()
     m.columns = ['mean']
 
-    s = df_melt.groupby(['Sample', 'Type']).std()
+    s = df_melt.groupby(['ID', 'Type']).std()
     s.columns = ['std']
 
     df_final = pd.concat([m,s], axis=1).reset_index()
 
-    df_s = df_final[df_final['Type'] == 'Sample']
+    df_s = df_final[df_final['Type'] == 'ID']
     df_n = df_final[df_final['Type'] == 'Normal']
 
     fig = go.Figure([
         # STD zone
         go.Scatter(
             name='Upper normal',
-            x=df_n['Sample'],
+            x=df_n['ID'],
             y=df_n['mean']+df_n['std'],
             mode='lines',
             marker=dict(color="#444"),
@@ -345,7 +345,7 @@ def plot_site_percent(df):
         ),
         go.Scatter(
             name='Lower normal',
-            x=df_n['Sample'],
+            x=df_n['ID'],
             y=df_n['mean']-df_n['std'],
             marker=dict(color="#444"),
             line=dict(width=0),
@@ -356,7 +356,7 @@ def plot_site_percent(df):
         ),
         go.Scatter(
             name='Upper sample',
-            x=df_s['Sample'],
+            x=df_s['ID'],
             y=df_s['mean']+df_s['std'],
             mode='lines',
             marker=dict(color="#444"),
@@ -365,7 +365,7 @@ def plot_site_percent(df):
         ),
         go.Scatter(
             name='Lower sample',
-            x=df_s['Sample'],
+            x=df_s['ID'],
             y=df_s['mean']-df_s['std'],
             marker=dict(color="#444"),
             line=dict(width=0),
@@ -376,14 +376,14 @@ def plot_site_percent(df):
         ),
         go.Scatter(
             name='normal',
-            x=df_n['Sample'],
+            x=df_n['ID'],
             y=df_n['mean'],
             mode='lines',
             line=dict(color='rgb(31, 119, 180)'),
         ),
         go.Scatter(
             name='sample',
-            x=df_s['Sample'],
+            x=df_s['ID'],
             y=df_s['mean'],
             mode='lines',
             line=dict(color='red'),
@@ -412,7 +412,7 @@ def plot_site_norm(df):
 
     df_final = pd.concat([m,s], axis=1).reset_index()
 
-    df_s = df_final[df_final['Type'] == 'Sample']
+    df_s = df_final[df_final['Type'] == 'ID']
     df_n = df_final[df_final['Type'] == 'Normal']
 
     fig = go.Figure([

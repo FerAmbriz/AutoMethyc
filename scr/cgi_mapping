@@ -41,7 +41,7 @@ print('Done extract data from UCSC')
 bed = pd.read_csv(bed_file)
 
 bed = bed.drop([0,1])
-bed.rename(columns={'Sample':'Chr', 'Unnamed: 1':'Start', 'Unnamed: 2': 'Gene'}, inplace=True)
+bed.rename(columns={'ID':'Chr', 'Unnamed: 1':'Start', 'Unnamed: 2': 'Gene'}, inplace=True)
 
 def distance (loci, db):
     dist = int(loci)-int(db)

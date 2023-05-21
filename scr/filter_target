@@ -20,19 +20,19 @@ print("Done read csv")
 #----------------------------InLoc------------------------------
 df_bd = pd.DataFrame()
 lst = []
-for c,s,ID in zip(df.Chr, df.Start, df.Sample):
+for c,s,ID in zip(df.Chr, df.Start, df.ID):
     dF_i = dfF[dfF['Chr'] == c]
     for sF,eF,Gene in zip(dF_i.Start, dF_i.End, dF_i.Gene):
         if s in range(sF, eF+1, 1):
-            db_i = df[(df['Start'] == s) & (df['Sample'] == ID)]
+            db_i = df[(df['Start'] == s) & (df['ID'] == ID)]
             lst.append(Gene)
             df_bd = pd.concat([df_bd, db_i])
 df_bd['Gene'] = lst
 df_filtrado = df_bd
 
-ID = df_filtrado['Sample'].value_counts()
+ID = df_filtrado['ID'].value_counts()
 
-df_filtrado = df_filtrado.set_index('Sample')
+df_filtrado = df_filtrado.set_index('ID')
 
 print('on-targets: ')
 print(df_filtrado)
@@ -45,8 +45,8 @@ ID.to_csv(OutputFilter+"/count_targets.csv")
 #-----------------------NotLoc--------------------------
 
 df_bd = pd.DataFrame()
-for ID in df.Sample.unique():
-    df_id = df[df['Sample'] == ID]
+for ID in df.ID.unique():
+    df_id = df[df['ID'] == ID]
     for c,s,e in zip(dfF.Chr, dfF.Start, dfF.End):
         df_i = df_id[df_id['Chr']== c]
         for site in range(s, e+1, 1):

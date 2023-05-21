@@ -16,9 +16,9 @@ output = sys.argv[3]
 all_sites = all_sites.drop([2], axis = 1)
 all_sites.columns = list(all_sites.loc[0, :])
 all_sites = all_sites.drop(all_sites.index[[0]])
-all_sites = all_sites.rename(columns = {'Sample':'Chr', np.nan:'Start'})
+all_sites = all_sites.rename(columns = {'ID':'Chr', np.nan:'Start'})
 
-onco_mean = onco_mean.rename(columns = {'Gene':'Sample'})
+onco_mean = onco_mean.rename(columns = {'Gene':'ID'})
 
 
 lst = ['Status', 'Chr']
@@ -95,7 +95,7 @@ print('All normalized sites')
 print(all_norm)
 all_norm.to_csv(output + '/matrix_filtered_target_normalized.csv')
 
-onco_mean = onco_mean.set_index('Sample')
+onco_mean = onco_mean.set_index('ID')
 
 df_controles = onco_mean.T
 #print(df_controles)

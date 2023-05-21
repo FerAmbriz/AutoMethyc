@@ -25,7 +25,7 @@ df.replace([np.inf, -np.inf], 0, inplace=True)
 normals = df[df['Type'] == 'Normal']
 normals = normals.set_index('Type')
 
-samples = df[df['Type'] == 'Sample']
+samples = df[df['Type'] == 'ID']
 samples = samples.set_index('Type')
 
 #indexado del df original 
@@ -83,7 +83,7 @@ def funcPCA(df):
     x = StandardScaler().fit_transform(x)
 
     #typ = ['Normal'] * len(normals.T)
-    #typ = typ + ['Sample'] * len(samples.T)
+    #typ = typ + ['ID'] * len(samples.T)
     df['Type'] = lst
 
     pca = PCA()
