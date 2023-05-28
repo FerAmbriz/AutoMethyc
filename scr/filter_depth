@@ -7,7 +7,7 @@ depth=$3
 gzip -d $input/*.gz
 
 echo 'filtered,unfiltered,depth_mean' > $output/count_depth_${depth}_pass.csv
-echo '==================== filtering by depth ===================='
+echo '==================== filtering by depth ==================='
 
 for i in $input/*.cov;
 do

@@ -21,7 +21,7 @@ all_sites = all_sites.rename(columns = {'ID':'Chr', np.nan:'Start'})
 onco_mean = onco_mean.rename(columns = {'Gene':'ID'})
 
 
-lst = ['Status', 'Chr']
+lst = ['Type', 'Chr']
 
 for i in range(3,len(all_sites) + 1):
     lst.append(all_sites['Chr'][i] + ':' + all_sites['Start'][i])
@@ -29,8 +29,8 @@ all_sites['Site'] = lst
 all_sites = all_sites.set_index('Site')
 
 df_controles = all_sites.T
-df_controles = df_controles[df_controles['Status'] == 'Normal']
-df_controles = df_controles.drop(['Status', 'Chr'], axis=1)
+df_controles = df_controles[df_controles['Type'] == 'Normal']
+df_controles = df_controles.drop(['Type', 'Chr'], axis=1)
 
 #Cambiar a valores numericos con lo que se va a hacer la media y std
 columns = df_controles.columns.values
@@ -39,10 +39,10 @@ df_controles[columns] = df_controles[columns].apply(pd.to_numeric, errors='coerc
 all_sites = all_sites.T
 # Delete rows
 all_sites = all_sites.drop(all_sites.index[[0,1]])
-typ = list(all_sites['Status'])
+typ = list(all_sites['Type'])
 
     # Delete columns
-all_sites = all_sites.drop(['Status','Chr'], axis=1)
+all_sites = all_sites.drop(['Type','Chr'], axis=1)
 columns = all_sites.columns.values
 all_sites[columns] = all_sites[columns].apply(pd.to_numeric, errors='coerce', axis=1)
 ID = all_sites.index.values
@@ -99,16 +99,16 @@ onco_mean = onco_mean.set_index('ID')
 
 df_controles = onco_mean.T
 #print(df_controles)
-df_controles = df_controles[df_controles['Status'] == 'Normal']
-df_controles = df_controles.drop(['Status'], axis=1)
+df_controles = df_controles[df_controles['Type'] == 'Normal']
+df_controles = df_controles.drop(['Type'], axis=1)
 
 columns = df_controles.columns.values
 df_controles[columns] = df_controles[columns].apply(pd.to_numeric, errors='coerce', axis=1)
 
 onco_mean = onco_mean.T
-typ = list(onco_mean['Status'])
+typ = list(onco_mean['Type'])
 
-onco_mean = onco_mean.drop(['Status'], axis=1)
+onco_mean = onco_mean.drop(['Type'], axis=1)
 columns = onco_mean.columns.values
 onco_mean[columns] = onco_mean[columns].apply(pd.to_numeric, errors='coerce', axis=1)
 ID = onco_mean.index.values

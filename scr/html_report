@@ -23,7 +23,7 @@ Output = sys.argv[2]
 norm = sys.argv[3]
 depth = sys.argv[4]
 
-print ('======================== making HTML report ========================')
+print ('======================= making HTML report ======================')
 
 c = input_folder + '/command_options.txt'
 depth = input_folder + '/CSV/count_depth_' + str(depth) + '_pass.csv'
@@ -141,4 +141,4 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
 
     f.write(html_fooder())
-print ('========================= done html_report =========================')
+print ('======================== done html_report =======================')

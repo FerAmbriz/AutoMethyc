@@ -17,11 +17,11 @@ array=($(ls $ref_folder/$reference_name*))
 reference_dict=${ref%.*}.dict
 
 if [[  " ${array[*]} " =~ " ${reference_dict} " ]]; then
-  echo '================= starting with variant calling =================='
+  echo '================ starting with variant calling ================='
 else
-  echo '============ Generating reference genome dictionary =============='
+  echo '=========== Generating reference genome dictionary ============='
   gatk CreateSequenceDictionary -R $ref
-  echo '================= starting with variant calling =================='
+  echo '================ starting with variant calling ================='
 fi
 #-------------------------- processing --------------------------#
 
@@ -69,4 +69,4 @@ do
   done
   wait
 done
-echo '====================== done revelio_haplotype ====================='
+echo '===================== done revelio_haplotype ===================='

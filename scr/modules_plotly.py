@@ -305,7 +305,7 @@ def plot_site_percent(df):
     patients = patients.drop(['ID', 'Unnamed: 1'])
     patients = patients.reset_index()
     patients.columns = ['index', 0]
-    df['ID'] = list(map(merge_site, df['Sample'], df['Unnamed: 1']))
+    df['ID'] = list(map(merge_site, df['ID'], df['Unnamed: 1']))
     df = df.drop(['Unnamed: 1'], axis=1)
 
     columns = list(df.columns)

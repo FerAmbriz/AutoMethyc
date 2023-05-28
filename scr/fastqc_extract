@@ -5,7 +5,7 @@ output=$2
 
 original=$(pwd)
 
-echo '==================== joining fastqc files ===================='
+echo '=================== joining fastqc files ==================='
 
 cd $fastqc_folder
 unzip '*.zip'
@@ -22,4 +22,4 @@ do
   x=${array[$i]%_S*}; ID=${x##*/}
   fastqc_read ${array[$i]}/fastqc_data.txt $output/fastqc_raw_data.csv $ID $i
 done
-echo '====================== done fastqc_extract ======================'
+echo '==================== done fastqc_extract ==================='
