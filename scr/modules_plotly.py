@@ -247,17 +247,20 @@ def plot_mean_norm (df):
     return fig_mean_norm
 
 def plot_manhattan (df):
-    #df = df.dropna()
-    df = df.set_index('ID')
-    df = df.T
+    df = df.set_index('ID'); df = df.T
     df = pd.DataFrame(df.stack()).reset_index()
     df.columns = ['Site', 'ID', 'Z score']
+
+    ID_normals = list(df[(df['Site']=='Type') & (df['Z score'] == 'Normal')] ['ID'])
+    match_ID = lambda ID: 'Normal' if ID in ID_normals else 'Sample'
+
     df = df.drop(range(0,len(df[df['Site']=='Type'])))
+    df['Type'] = list(map (match_ID, df['ID']))
+
     df [['Chr', 'SpecificSite']] = df['Site'].str.split(':',expand=True)
 
     df = sortOnco(df)
-
-    manhattan = px.scatter(df, x="Site", y='Z score', color="ID")
+    manhattan = px.scatter(df, x="Site", y='Z score', color="Type")
 
     return manhattan
 
@@ -485,6 +488,79 @@ def plot_options(df):
                     #fill_color='gray',
                     align='left'),
         cells=dict(values=[df.Parameter, df.Value],
+                   #fill_color='#E9E9E9',
+                   align='left', height=30))
+    ])
+    fig.update_layout(
+            height=300)
+    return fig
+
+def plot_global_percent(df):
+    df = df[['Type','Met_perc']]
+    df = df.groupby('Type').agg(['mean', 'std'])
+    df = df.reset_index()
+    df.columns = ['Type', 'mean', 'std']
+
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df.columns),
+                    #fill_color='gray',
+                    align='left'),
+        cells=dict(values=[df['Type'], df['mean'], df['std']],
+                   #fill_color='#E9E9E9',
+                   align='left', height=30))
+    ])
+    fig.update_layout(
+            height=300)
+    return fig
+
+def plot_zscore_table(df):
+    df = df.groupby(by=['variable', 'Type']).agg(['mean', 'std']).reset_index()
+    df = pd.melt(df, id_vars =[ ('variable',''),  ('Type','')], value_vars =[('value', 'mean'),('value', 'std')])
+    df.columns = ['Site', 'Type', 'x', 'Statistical', 'value']
+    df = pd.pivot_table(df, index =['Site', 'Statistical'], columns =['Type']).reset_index()
+    df.columns = ['Site', 'Statistical', 'Normal', 'Sample']
+    df = df.sort_values(by=['Site','Statistical'], ascending = True)
+
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df.columns),
+                    #fill_color='gray',
+                    align='left'),
+        cells=dict(values=[df['Site'], df['Statistical'], df['Normal'], df['Sample']],
+                   #fill_color='#E9E9E9',
+                   align='left', height=30))
+    ])
+    fig.update_layout(
+            height=300)
+    return fig
+
+def plot_table_mean_gene(df, status):
+    if status == 'zscore':
+        df  = df.set_index('ID')
+    else:
+        df  = df.set_index('Gene'); df = df.T
+    df.iloc[:, 1:] = df.iloc[:, 1:].astype(float)
+    df = df.groupby('Type').agg(['mean', 'std']).T
+    df = df.reset_index(); df.columns = ['Gene', 'Statistical', 'Normal', 'Sample']
+
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df.columns),
+                    #fill_color='gray',
+                    align='left'),
+        cells=dict(values=[df['Gene'], df['Statistical'], df['Normal'], df['Sample']],
+                   #fill_color='#E9E9E9',
+                   align='left', height=30))
+    ])
+    fig.update_layout(
+            height=300)
+    return fig
+
+def plot_table_pca(df):
+    df = df.sort_values(by=['PCA1', 'PCA2'], ascending = False)
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(['Type','PCA1', 'PCA2']),
+                    #fill_color='gray',
+                    align='left'),
+        cells=dict(values=[df['Type'], df['PCA1'], df['PCA2']],
                    #fill_color='#E9E9E9',
                    align='left', height=30))
     ])

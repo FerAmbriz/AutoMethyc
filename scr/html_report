@@ -34,10 +34,10 @@ Oncoprint_mean = input_folder+'/CSV/matrix_mean_gene.csv'
 bed = input_folder+ '/CSV/cgi_features.csv'
 fastqc = input_folder + '/CSV/fastqc_raw_data.csv'
 OncoprintNorm = input_folder+'/CSV/matrix_filtered_target_normalized.csv'
-OncoprintMeanNorm = input_folder+'/CSV/matrix_mean_gene_normalized.csv'
-PCA_data = input_folder+'/CSV/pca_vectors.csv'
+OncoprintMeanNorm = input_folder + '/CSV/matrix_mean_gene_normalized.csv'
+PCA_data = input_folder + '/CSV/pca_vectors.csv'
 boxplot_csv = input_folder + '/CSV/filtered_target_normalized.csv'
-
+filtered_target = input_folder + '/CSV/filtered_target.csv'
 #=======================fastqc======================#
 df = pd.read_csv(fastqc)
 fig_fastqc = plot_fastqc(df)
@@ -106,6 +106,21 @@ df.columns = [ 'Parameter', 'Value']
 
 fig_table = plot_options(df)
 
+#==========================global==========================#
+df = pd.read_csv(filtered_target)
+table_global = plot_global_percent(df)
+#==========================table_norm======================#
+df = pd.read_csv(boxplot_csv)
+table_zscore = plot_zscore_table(df)
+#======================mean_gene_table=====================#
+df = pd.read_csv(Oncoprint_mean)
+table_mean_gene = plot_table_mean_gene(df, 'methpercent')
+#===================mean_gene_table_norm===================#
+df = pd.read_csv(OncoprintMeanNorm)
+table_mean_gene_normalized = plot_table_mean_gene(df, 'zscore')
+#========================TablePCA==========================#
+df = pd.read_csv(PCA_data)
+table_pca = plot_table_pca(df)
 #==========================HTML============================#
 
 with open(Output + '/AutoMethyc_Report.html', 'w') as f:
@@ -124,20 +139,25 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(html_coverage())
     f.write(fig_oft.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_all())
+    f.write(table_global.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_mean_site())
     f.write(fig_percent_site.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_mean_gene())
+    f.write(table_mean_gene.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_mean.to_html(full_html=False, include_plotlyjs='cdn'))
     if norm == 'True':
         f.write(html_norm())
+        f.write(table_zscore.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_norm.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_site_norm.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(html_mean_norm())
+        f.write(table_mean_gene_normalized.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(html_pca())
+        f.write(table_pca.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
 
     f.write(html_fooder())
