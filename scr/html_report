@@ -107,20 +107,34 @@ df.columns = [ 'Parameter', 'Value']
 fig_table = plot_options(df)
 
 #==========================global==========================#
-df = pd.read_csv(filtered_target)
-table_global = plot_global_percent(df)
+if norm == 'True':
+    df = pd.read_csv(filtered_target)
+    table_global = plot_site_table(df, 'percentage')
+else:
+    df = pd.read_csv(filtered_target)
+    table_global = plot_site_table_samples(df)
 #==========================table_norm======================#
-df = pd.read_csv(boxplot_csv)
-table_zscore = plot_zscore_table(df)
+if norm == 'True':
+    df = pd.read_csv(boxplot_csv)
+    table_zscore = plot_site_table(df, 'zscore')
 #======================mean_gene_table=====================#
-df = pd.read_csv(Oncoprint_mean)
-table_mean_gene = plot_table_mean_gene(df, 'methpercent')
+if norm == 'True':
+    df = pd.read_csv(Oncoprint_mean)
+    table_mean_gene = plot_table_mean_gene(df, 'methpercent')
+else:
+    df = pd.read_csv(Oncoprint_mean)
+    table_mean_gene = plot_table_mean_gene_samples(df)
 #===================mean_gene_table_norm===================#
-df = pd.read_csv(OncoprintMeanNorm)
-table_mean_gene_normalized = plot_table_mean_gene(df, 'zscore')
+if norm == 'True':
+    df = pd.read_csv(OncoprintMeanNorm)
+    table_mean_gene_normalized = plot_table_mean_gene(df, 'zscore')
 #========================TablePCA==========================#
-df = pd.read_csv(PCA_data)
-table_pca = plot_table_pca(df)
+if norm == 'True':
+    df = pd.read_csv(PCA_data)
+    table_pca = plot_table_pca(df)
+#=========================DonutCGI=========================#
+df = pd.read_csv(bed)
+figure_donut_cgi = plot_donut_cgi(df)
 #==========================HTML============================#
 
 with open(Output + '/AutoMethyc_Report.html', 'w') as f:
@@ -138,10 +152,11 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(fig_depth.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_coverage())
     f.write(fig_oft.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_cgi())
+    f.write(figure_donut_cgi.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_all())
     f.write(table_global.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))
-    f.write(html_mean_site())
     f.write(fig_percent_site.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_mean_gene())
     f.write(table_mean_gene.to_html(full_html=False, include_plotlyjs='cdn'))
@@ -151,8 +166,8 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(table_zscore.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_norm.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_site_norm.to_html(full_html=False, include_plotlyjs='cdn'))
-        f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
+        f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(html_mean_norm())
         f.write(table_mean_gene_normalized.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))

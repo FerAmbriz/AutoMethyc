@@ -98,6 +98,7 @@ if [ "$norm" = "False" ]; then
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
 
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+		snv_count $output/VCF $output/CSV
 
 		html_report $output $output/HTML False $depth
 	else
@@ -123,6 +124,7 @@ if [ "$norm" = "False" ]; then
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
 
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+		snv_count $output/VCF $output/CSV
 
 		html_report $output $output/HTML False $depth
 	fi
@@ -170,6 +172,8 @@ else
 		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
 
+		snv_count $output/VCF $output/CSV
+
 		html_report $output $output/HTML True $depth
 	else
 		echo '==================== With normals and with filter ==================='
@@ -212,6 +216,8 @@ else
 
 		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+
+		snv_count $output/VCF $output/CSV
 
 		html_report $output $output/HTML True $depth
 	fi

@@ -217,7 +217,7 @@ def plot_offtarget(df):
 
     #df = pd.concat([df, df2])
 
-    fig_chr = px.bar(df, x="ID", y="Count", color="Status", title="Coverage Status")
+    fig_chr = px.bar(df, x="ID", y="Count")
 
     return fig_chr
 
@@ -331,8 +331,7 @@ def plot_site_percent(df):
     s.columns = ['std']
 
     df_final = pd.concat([m,s], axis=1).reset_index()
-
-    df_s = df_final[df_final['Type'] == 'ID']
+    df_s = df_final[df_final['Type'] == 'Sample']
     df_n = df_final[df_final['Type'] == 'Normal']
 
     fig = go.Figure([
@@ -415,7 +414,7 @@ def plot_site_norm(df):
 
     df_final = pd.concat([m,s], axis=1).reset_index()
 
-    df_s = df_final[df_final['Type'] == 'ID']
+    df_s = df_final[df_final['Type'] == 'Sample']
     df_n = df_final[df_final['Type'] == 'Normal']
 
     fig = go.Figure([
@@ -513,19 +512,65 @@ def plot_global_percent(df):
             height=300)
     return fig
 
-def plot_zscore_table(df):
+def custom_order_site(df, column):
+    df_m = df[df['Statistical'] == 'mean']
+    df_m = df_m.sort_values(by=['Sample','Normal'], ascending = False)
+    orden_sites = list(df_m[column])
+    df = df.set_index(column).loc[orden_sites].reset_index()
+    return df
+
+def make_merge_site(chrom, start):
+    return chrom + ':' + str(start)
+
+def plot_site_table(df, status):
+    if status == 'percentage':
+        df['variable'] = list(map(make_merge_site, df['Chr'], df['Start']))
+        df = df[['ID', 'Type', 'variable', 'Met_perc']]
+        df.columns = ['ID', 'Type', 'variable', 'value']
+
     df = df.groupby(by=['variable', 'Type']).agg(['mean', 'std']).reset_index()
     df = pd.melt(df, id_vars =[ ('variable',''),  ('Type','')], value_vars =[('value', 'mean'),('value', 'std')])
     df.columns = ['Site', 'Type', 'x', 'Statistical', 'value']
     df = pd.pivot_table(df, index =['Site', 'Statistical'], columns =['Type']).reset_index()
     df.columns = ['Site', 'Statistical', 'Normal', 'Sample']
     df = df.sort_values(by=['Site','Statistical'], ascending = True)
+    df = custom_order_site(df, 'Site')
+    df = df.dropna()
 
     fig = go.Figure(data=[go.Table(
         header=dict(values=list(df.columns),
                     #fill_color='gray',
                     align='left'),
         cells=dict(values=[df['Site'], df['Statistical'], df['Normal'], df['Sample']],
+                   #fill_color='#E9E9E9',
+                   align='left', height=30))
+    ])
+    fig.update_layout(
+            height=300)
+    return fig
+
+def plot_site_table_samples(df):
+    df['variable'] = list(map(make_merge_site, df['Chr'], df['Start']))
+    df = df[['ID', 'Type', 'variable', 'Met_perc']]
+    df.columns = ['ID', 'Type', 'variable', 'value']
+    df = df.groupby(by=['variable', 'Type']).agg(['mean', 'std']).reset_index()
+    df = pd.melt(df, id_vars =[ ('variable',''),  ('Type','')], value_vars =[('value', 'mean'),('value', 'std')])
+    df.columns = ['Site', 'Type', 'x', 'Statistical', 'value']
+    df = pd.pivot_table(df, index =['Site', 'Statistical'], columns =['Type']).reset_index()
+    df.columns = ['Site', 'Statistical', 'Sample']
+    def custom_order_site(df, column):
+        df_m = df[df['Statistical'] == 'mean']
+        df_m = df_m.sort_values(by=['Sample'], ascending = False)
+        orden_sites = list(df_m[column])
+        df = df.set_index(column).loc[orden_sites].reset_index()
+        return df
+    df = custom_order_site(df, 'Site')
+
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df.columns),
+                    #fill_color='gray',
+                    align='left'),
+        cells=dict(values=[df['Site'], df['Statistical'], df['Sample']],
                    #fill_color='#E9E9E9',
                    align='left', height=30))
     ])
@@ -541,12 +586,39 @@ def plot_table_mean_gene(df, status):
     df.iloc[:, 1:] = df.iloc[:, 1:].astype(float)
     df = df.groupby('Type').agg(['mean', 'std']).T
     df = df.reset_index(); df.columns = ['Gene', 'Statistical', 'Normal', 'Sample']
+    df = custom_order_site(df, 'Gene')
 
     fig = go.Figure(data=[go.Table(
         header=dict(values=list(df.columns),
                     #fill_color='gray',
                     align='left'),
         cells=dict(values=[df['Gene'], df['Statistical'], df['Normal'], df['Sample']],
+                   #fill_color='#E9E9E9',
+                   align='left', height=30))
+    ])
+    fig.update_layout(
+            height=300)
+    return fig
+
+def plot_table_mean_gene_samples(df):
+    df  = df.set_index('Gene'); df = df.T
+    df.iloc[:, 1:] = df.iloc[:, 1:].astype(float)
+    df = df.groupby('Type').agg(['mean', 'std']).T
+    df = df.reset_index(); df.columns = ['Gene', 'Statistical', 'Sample']
+
+    def custom_order_site(df, column):
+        df_m = df[df['Statistical'] == 'mean']
+        df_m = df_m.sort_values(by=['Sample'], ascending = False)
+        orden_sites = list(df_m[column])
+        df = df.set_index(column).loc[orden_sites].reset_index()
+        return df
+    df = custom_order_site(df, 'Gene')
+
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df.columns),
+                    #fill_color='gray',
+                    align='left'),
+        cells=dict(values=[df['Gene'], df['Statistical'], df['Sample']],
                    #fill_color='#E9E9E9',
                    align='left', height=30))
     ])
@@ -566,4 +638,12 @@ def plot_table_pca(df):
     ])
     fig.update_layout(
             height=300)
+    return fig
+
+def plot_donut_cgi(df):
+    df = pd.DataFrame(df['Type'].value_counts()).reset_index()
+    df.columns = ['Type', 'Frequency']
+    fig = go.Figure(data=[go.Pie(labels=['CpG island', 'CpG shore', 'CpG shelf', 'CpG inter'], values=df['Frequency'], hole=.3)])
+    fig.update_traces(marker=dict(colors=['blue', '#3efe00', 'red', '#00fec0']))
+    fig.update_layout(height=400)
     return fig

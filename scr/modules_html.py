@@ -72,6 +72,7 @@ def html_css ():
               margin: auto;
             }
         </style>
+        <link rel="icon" href="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png?raw=true">
     </head>
     '''
     return html
@@ -84,6 +85,7 @@ def html_navbar_complete ():
             <li><a href="#Base"> Base quality </a></li>
             <li><a href="#Depth"> Depth </a></li>
             <li><a href="#Samples" > Coverage </a></li>
+            <li><a href="#cgi" > CGI mapping </a></li>
             <li><a href="#All"> Methylation percentage </a></li>
             <li><a href="#Mean"> Mean methylation </a></li>
             <li><a href="#all_norm"> Normalized methylation </a></li>
@@ -104,6 +106,7 @@ def html_navbar_sNorm ():
             <li><a href="#Base"> Base quality </a></li>
             <li><a href="#Depth"> Depth </a></li>
             <li><a href="#Samples" > Coverage </a></li>
+            <li><a href="#cgi" > CGI mapping </a></li>
             <li><a href="#All"> Methylation percentage </a></li>
             <li><a href="#Mean"> Mean methylation </a></li>
             <li><a href="#about"> About </a></li>
@@ -134,7 +137,7 @@ def html_base ():
     <body>
         <h2 id="Base"; style="margin-bottom: 5px;"> Base quality </h2>
         <hr style="margin-top: 0;">
-        Base call error probability on logarithmic scale
+        Logarithmic ratio of Phred Q quality scores to base call error probabilities.
     </body>
     '''
     return html
@@ -144,7 +147,7 @@ def html_depth ():
     <body>
         <h2 id="Depth"; style="margin-bottom: 5px;"> Depth </h2>
         <hr>
-            Count of sites filtered by depth
+        Count of filtered (off-targets) and unfiltered (on-targets) sites according to the depth threshold established for greater certainty in the analysis.
     </body>
     '''
     return html
@@ -154,38 +157,32 @@ def html_coverage ():
     <body>
         <h2 id="Samples" ; style="margin-bottom: 5px;"> Coverage </h2>
         <hr>
-            The statistics of the samples consist of classifying the coverage (CVR) of the samples given the bedGraph and the average coverage of the samples, in addition to plotting the count of regions present in the bedGraph (In_loc) and those not present (Not_loc). In addition to evaluating the filter count (FTR) to visualize the number of filtered regions.
+        Count of sites present in the regions of interest provided by BED file
     </body>
     '''
     return html
 
-def html_all():
+def html_cgi():
     html = '''
     <body>
-        <h2 id="All"; style="margin-bottom: 5px;"> Methylation percentage </h2>
+        <h2 id="cgi"; style="margin-bottom: 5px;"> CGI mapping </h2>
         <hr>
-            Methylation percentage present at each site per sample
+        Mapped regions and their classification considering the nearest CpG island
          <div class="row">
             <div class="c">
                 <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/IslaCpG.jpeg?raw=true" width="650" height="150">
             </div>
-            The colors present in the graph are:
-            <ol type = "1" start = "0">
-                <li> CpG island: blue </li>
-                <li> CpG shore: green </li>
-                <li> CpG shelf: red </li>
-                <li> CpG inter: cyan </li>
             </ol>
         </div>
     </body>
     '''
     return html
-def html_mean_site():
+def html_all():
     html = '''
     <body>
-        <h2 id="Mean"; style="margin-bottom: 5px;"> Mean methylation </h2>
+        <h2 id="All"; style="margin-bottom: 5px;"> Methylation percentage </h2>
         <hr>
-           Average percentage of methylation present in each site.
+        Methylation percentage considering the cytosines methylated and unmethylated for each site
     </body>
     '''
     return html
@@ -193,6 +190,8 @@ def html_mean_site():
 def html_mean_gene():
     html = '''
     <body>
+        <h2 id="Mean"; style="margin-bottom: 5px;"> Mean methylation </h2>
+        <hr>
            Average percentage of methylation present in each gene of the sequenced region.
     </body>
     '''
@@ -203,20 +202,7 @@ def html_norm():
     <body>
         <h1 style="margin-bottom: 5px;"> Normalization </h1>
         <hr>
-            Normalization was performed considering the mean and standard deviation of the controls, applying to each value:
-
-            <div class style="text-align: center;">
-                <i>N<sub>i</sub></i> =
-                <div class="fraction">
-                    <span class="fup"> x<sub>i</sub> - μ </span>
-                    <span class="bar">/</span>
-                    <span class="fdn"> σ </span>
-                </div>
-            </div>
-
-        <h2 id="all_norm", style="margin-bottom: 5px;"> Normalized methylation </h2>
-        <hr>
-            Normalized methylation based on the mean and standard deviation of the controls.
+            Normalization was performed considering the mean and standard deviation of the controls
     </body>
     '''
     return html
