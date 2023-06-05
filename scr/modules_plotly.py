@@ -528,9 +528,11 @@ def plot_site_table(df, status):
         df = df[['ID', 'Type', 'variable', 'Met_perc']]
         df.columns = ['ID', 'Type', 'variable', 'value']
 
+    df = df.set_index('ID')
     df = df.groupby(by=['variable', 'Type']).agg(['mean', 'std']).reset_index()
-    df = pd.melt(df, id_vars =[ ('variable',''),  ('Type','')], value_vars =[('value', 'mean'),('value', 'std')])
-    df.columns = ['Site', 'Type', 'x', 'Statistical', 'value']
+    df.columns = ['site', 'Type', 'mean', 'std']
+    df = pd.melt(df, id_vars =['site', 'Type'], value_vars =['mean','std'])
+    df.columns = ['Site', 'Type', 'Statistical', 'value']
     df = pd.pivot_table(df, index =['Site', 'Statistical'], columns =['Type']).reset_index()
     df.columns = ['Site', 'Statistical', 'Normal', 'Sample']
     df = df.sort_values(by=['Site','Statistical'], ascending = True)
