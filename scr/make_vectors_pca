@@ -25,7 +25,7 @@ df.replace([np.inf, -np.inf], 0, inplace=True)
 normals = df[df['Type'] == 'Normal']
 normals = normals.set_index('Type')
 
-samples = df[df['Type'] == 'ID']
+samples = df[df['Type'] == 'Sample']
 samples = samples.set_index('Type')
 
 #indexado del df original 
