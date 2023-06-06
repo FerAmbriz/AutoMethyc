@@ -10,6 +10,7 @@ from IPython.display import HTML
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import re
+from multiprocessing import Pool
 
 def sortOnco (df):
     numero_chr = []
@@ -125,7 +126,7 @@ def plot_all (sites_bed, df):
     z = np.array([list(df_annot.Type)]).T
 
     bvals = [0, 1, 2, 3 ,4]
-    colors = ['blue', '#3efe00', 'red', '#00fec0']
+    colors = ['#219518', '#955D14', '#1D9BD6', '#3D58AB']
 
     x = list(range(len(list(df_annot['Type'].value_counts()))+1))
     dcolorsc = discrete_colorscale(x, colors[0:len(list(df_annot['Type'].value_counts()))])
@@ -252,7 +253,7 @@ def plot_manhattan (df):
     df.columns = ['Site', 'ID', 'Z score']
 
     ID_normals = list(df[(df['Site']=='Type') & (df['Z score'] == 'Normal')] ['ID'])
-    match_ID = lambda ID: 'Normal' if ID in ID_normals else 'Sample'
+    match_ID = lambda ID: 'normal' if ID in ID_normals else 'sample'
 
     df = df.drop(range(0,len(df[df['Site']=='Type'])))
     df['Type'] = list(map (match_ID, df['ID']))
@@ -260,13 +261,11 @@ def plot_manhattan (df):
     df [['Chr', 'SpecificSite']] = df['Site'].str.split(':',expand=True)
 
     df = sortOnco(df)
-    manhattan = px.scatter(df, x="Site", y='Z score', color="Type")
+    manhattan = px.scatter(df, x="Site", y='Z score', color="Type", opacity=0.7)
 
     return manhattan
 
 def plot_pca(finalDf):
-    finalDf = finalDf.drop(['Unnamed: 0'], axis=1)
-
     # match columns
     ptr_norm = list(finalDf.Type)
     r = re.compile(".*normal")
@@ -336,46 +335,46 @@ def plot_site_percent(df):
 
     fig = go.Figure([
         # STD zone
-        go.Scatter(
-            name='Upper normal',
-            x=df_n['ID'],
-            y=df_n['mean']+df_n['std'],
-            mode='lines',
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            showlegend=False
-        ),
-        go.Scatter(
-            name='Lower normal',
-            x=df_n['ID'],
-            y=df_n['mean']-df_n['std'],
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            mode='lines',
-            fillcolor='#66A4F3',
-            fill='tonexty',
-            showlegend=False
-        ),
-        go.Scatter(
-            name='Upper sample',
-            x=df_s['ID'],
-            y=df_s['mean']+df_s['std'],
-            mode='lines',
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            showlegend=False
-        ),
-        go.Scatter(
-            name='Lower sample',
-            x=df_s['ID'],
-            y=df_s['mean']-df_s['std'],
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            mode='lines',
-            fillcolor='#F36666',
-            fill='tonexty',
-            showlegend=False
-        ),
+        #go.Scatter(
+        #    name='Upper normal',
+        #    x=df_n['ID'],
+        #    y=df_n['mean']+df_n['std'],
+        #    mode='lines',
+        #    marker=dict(color="#444"),
+        #    line=dict(width=0),
+        #    showlegend=False
+        #),
+        #go.Scatter(
+        #    name='Lower normal',
+        #    x=df_n['ID'],
+        #    y=df_n['mean']-df_n['std'],
+        #    marker=dict(color="#444"),
+        #    line=dict(width=0),
+        #    mode='lines',
+        #    fillcolor='#66A4F3',
+        #    fill='tonexty',
+        #    showlegend=False
+        #),
+        #go.Scatter(
+        #    name='Upper sample',
+        #    x=df_s['ID'],
+        #    y=df_s['mean']+df_s['std'],
+        #    mode='lines',
+        #    marker=dict(color="#444"),
+        #    line=dict(width=0),
+        #    showlegend=False
+        #),
+        #go.Scatter(
+        #    name='Lower sample',
+        #    x=df_s['ID'],
+        #    y=df_s['mean']-df_s['std'],
+        #    marker=dict(color="#444"),
+        #    line=dict(width=0),
+        #    mode='lines',
+        #    fillcolor='#F36666',
+        #    fill='tonexty',
+        #    showlegend=False
+        #),
         go.Scatter(
             name='normal',
             x=df_n['ID'],
@@ -399,9 +398,10 @@ def plot_site_percent(df):
     return fig
 
 def boxplot_site(df):
-    fig = px.box(df, x = 'Type' , y="value", labels={
-                     "value": "z score"
-                 })
+    df['Type'] = df['Type'].replace({"Sample": "sample", "Normal": "normal"})
+    fig = px.violin(df, x = 'Type' , y="value", points = "all", box = True, color = 'Type',
+                 labels={"value": "z score"})
+    #fig.add_trace(px.strip(df, x='Type', y='value', color='Type').data[0])
     return fig
 
 def plot_site_norm(df):
@@ -419,46 +419,47 @@ def plot_site_norm(df):
 
     fig = go.Figure([
         # STD zone
-        go.Scatter(
-            name='Upper normal',
-            x=df_n['variable'],
-            y=df_n['mean']+df_n['std'],
-            mode='lines',
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            showlegend=False
-        ),
-        go.Scatter(
-            name='Lower normal',
-            x=df_n['variable'],
-            y=df_n['mean']-df_n['std'],
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            mode='lines',
-            fillcolor='#66A4F3',
-            fill='tonexty',
-            showlegend=False
-        ),
-        go.Scatter(
-            name='Upper sample',
-            x=df_s['variable'],
-            y=df_s['mean']+df_s['std'],
-            mode='lines',
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            showlegend=False
-        ),
-        go.Scatter(
-            name='Lower sample',
-            x=df_s['variable'],
-            y=df_s['mean']-df_s['std'],
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            mode='lines',
-            fillcolor='#F36666',
-            fill='tonexty',
-            showlegend=False
-        ),
+        #go.Scatter(
+        #    name='Upper normal',
+        #    x=df_n['variable'],
+        #    y=df_n['mean']+df_n['std'],
+        #    mode='lines',
+        #    marker=dict(color="#444"),
+        #    line=dict(width=0),
+        #    showlegend=False
+        #),
+        #go.Scatter(
+        #    name='Lower normal',
+        #    x=df_n['variable'],
+        #    y=df_n['mean']-df_n['std'],
+        #    marker=dict(color="#444"),
+        #    line=dict(width=0),
+        #    mode='lines',
+        #   fillcolor='#66A4F3',
+        #    fill='tonexty',
+        #    showlegend=False
+        #),
+        #go.Scatter(
+        #    name='Upper sample',
+        #    x=df_s['variable'],
+        #    y=df_s['mean']+df_s['std'],
+        #    mode='lines',
+        #    marker=dict(color="#444"),
+        #    line=dict(width=0),
+        #    showlegend=False
+        #),
+        #go.Scatter(
+        #    name='Lower sample',
+        #    x=df_s['variable'],
+        #    y=df_s['mean']-df_s['std'],
+        #    marker=dict(color="#444"),
+        #    line=dict(width=0),
+        #    mode='lines',
+        #    fillcolor='#F36666',
+        #    fill='tonexty',
+        #    showlegend=False
+        #),
+
         go.Scatter(
             name='normal',
             x=df_n['variable'],
@@ -474,13 +475,10 @@ def plot_site_norm(df):
             line=dict(color='red'),
         )
     ])
-
-    fig.update_layout(
-        yaxis_title='z score',
-        xaxis_title='site',
-        hovermode="x"
-    )
+    fig.update_layout(yaxis_title='z score',
+        xaxis_title='site')
     return fig
+
 def plot_options(df):
     fig = go.Figure(data=[go.Table(
         header=dict(values=list(df.columns),
@@ -512,140 +510,150 @@ def plot_global_percent(df):
             height=300)
     return fig
 
-def custom_order_site(df, column):
-    df_m = df[df['Statistical'] == 'mean']
-    df_m = df_m.sort_values(by=['Sample','Normal'], ascending = False)
-    orden_sites = list(df_m[column])
-    df = df.set_index(column).loc[orden_sites].reset_index()
-    return df
-
 def make_merge_site(chrom, start):
     return chrom + ':' + str(start)
 
-def plot_site_table(df, status):
+def custom_order_site(df):
+    df_m = df[df['Type'] == 'Sample']
+    df_m = df_m.sort_values(by=['mean'], ascending = False)
+    orden_sites = list(df_m['Site'])
+    df = df.set_index('Site').loc[orden_sites].reset_index()
+    return df
+
+def custom_order_gene(df):
+    df_m = df[df['Type'] == 'Sample']
+    df_m = df_m.sort_values(by=['mean'], ascending = False)
+    orden_sites = list(df_m['Gene'])
+    df = df.set_index('Gene').loc[orden_sites].reset_index()
+    return df
+
+def plot_site_table(df, status, bed):
+    bed['Site'] = list(map(make_merge_site, bed['Chr'], bed['Start']))
+
+    def annot_gene(site_df):
+        lst = list(bed[bed['Site']==site_df]['Gene'])
+        if len(lst) > 1:
+            lst[0] = f'{lst[0]}-{lst[1]}'
+        else:
+            lst[0] = f'{lst[0]}'
+        return lst[0]
+
     if status == 'percentage':
         df['variable'] = list(map(make_merge_site, df['Chr'], df['Start']))
-        df = df[['ID', 'Type', 'variable', 'Met_perc']]
-        df.columns = ['ID', 'Type', 'variable', 'value']
-
+        df['Gene'] = list(map(annot_gene, df['variable']))
+        df = df[['ID', 'Type', 'variable', 'Gene', 'Met_perc']]
+        df.columns = ['ID', 'Type', 'variable', 'Gene', 'value']
+    else:
+        df['Gene'] = list(map(annot_gene, df['variable']))
     df = df.set_index('ID')
-    df = df.groupby(by=['variable', 'Type']).agg(['mean', 'std']).reset_index()
-    df.columns = ['site', 'Type', 'mean', 'std']
-    df = pd.melt(df, id_vars =['site', 'Type'], value_vars =['mean','std'])
-    df.columns = ['Site', 'Type', 'Statistical', 'value']
-    df = pd.pivot_table(df, index =['Site', 'Statistical'], columns =['Type']).reset_index()
-    df.columns = ['Site', 'Statistical', 'Normal', 'Sample']
-    df = df.sort_values(by=['Site','Statistical'], ascending = True)
-    df = custom_order_site(df, 'Site')
-    df = df.dropna()
+    df = df.groupby(by=['variable', 'Gene', 'Type',]).agg(['mean', 'std']).reset_index()
+    df.columns = ['Site', 'Gene', 'Type', 'mean', 'std']
+    df = custom_order_site(df); df = df.dropna()
 
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=list(df.columns),
-                    #fill_color='gray',
-                    align='left'),
-        cells=dict(values=[df['Site'], df['Statistical'], df['Normal'], df['Sample']],
-                   #fill_color='#E9E9E9',
-                   align='left', height=30))
-    ])
-    fig.update_layout(
-            height=300)
-    return fig
-
-def plot_site_table_samples(df):
-    df['variable'] = list(map(make_merge_site, df['Chr'], df['Start']))
-    df = df[['ID', 'Type', 'variable', 'Met_perc']]
-    df.columns = ['ID', 'Type', 'variable', 'value']
-    df = df.groupby(by=['variable', 'Type']).agg(['mean', 'std']).reset_index()
-    df = pd.melt(df, id_vars =[ ('variable',''),  ('Type','')], value_vars =[('value', 'mean'),('value', 'std')])
-    df.columns = ['Site', 'Type', 'x', 'Statistical', 'value']
-    df = pd.pivot_table(df, index =['Site', 'Statistical'], columns =['Type']).reset_index()
-    df.columns = ['Site', 'Statistical', 'Sample']
-    def custom_order_site(df, column):
-        df_m = df[df['Statistical'] == 'mean']
-        df_m = df_m.sort_values(by=['Sample'], ascending = False)
-        orden_sites = list(df_m[column])
-        df = df.set_index(column).loc[orden_sites].reset_index()
-        return df
-    df = custom_order_site(df, 'Site')
-
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=list(df.columns),
-                    #fill_color='gray',
-                    align='left'),
-        cells=dict(values=[df['Site'], df['Statistical'], df['Sample']],
-                   #fill_color='#E9E9E9',
-                   align='left', height=30))
-    ])
-    fig.update_layout(
-            height=300)
+    fig = go.Figure(go.Table(header=dict(values=list(df.columns), align="left"),
+                cells=dict(
+                    values=[df["Site"], df['Gene'],  df["Type"], df["mean"], df["std"]],
+                    align="left", height=30)))
+    fig.update_layout(updatemenus=[{
+            "buttons": [
+                {
+                    "label": c,
+                    "method": "update",
+                    "args": [
+                        { "cells": {
+                            "values": df.T.values
+                            if c == "All"
+                                else df.loc[df["Type"].eq(c)].T.values
+                            }
+                        }
+                    ],
+                }
+                for c in ["All"] + df["Type"].unique().tolist()
+            ]
+        }])
+    fig.update_layout(height=300)
     return fig
 
 def plot_table_mean_gene(df, status):
     if status == 'zscore':
-        df  = df.set_index('ID')
+        df = df[['variable', 'Type', 'value']]; df.columns = ['Gene', 'Type', 'value']
     else:
-        df  = df.set_index('Gene'); df = df.T
-    df.iloc[:, 1:] = df.iloc[:, 1:].astype(float)
-    df = df.groupby('Type').agg(['mean', 'std']).T
-    df = df.reset_index(); df.columns = ['Gene', 'Statistical', 'Normal', 'Sample']
-    df = custom_order_site(df, 'Gene')
+        df = df[['Gene','Met_perc', 'Type']]
 
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=list(df.columns),
-                    #fill_color='gray',
-                    align='left'),
-        cells=dict(values=[df['Gene'], df['Statistical'], df['Normal'], df['Sample']],
-                   #fill_color='#E9E9E9',
-                   align='left', height=30))
-    ])
-    fig.update_layout(
-            height=300)
+    df = df.groupby(['Gene','Type']).agg(['mean', 'std']).reset_index()
+    df.columns=['Gene', 'Type', 'mean', 'std']
+
+    df = custom_order_gene(df); df = df.dropna()
+
+    fig = go.Figure(go.Table(header=dict(values=list(df.columns), align="left"),
+                cells=dict(
+                    values=[df['Gene'],  df["Type"], df["mean"], df["std"]],
+                    align="left", height=30)))
+    fig.update_layout(updatemenus=[{
+            "buttons": [
+                {
+                    "label": c,
+                    "method": "update",
+                    "args": [
+                        { "cells": {
+                            "values": df.T.values
+                            if c == "All"
+                                else df.loc[df["Type"].eq(c)].T.values
+                            }
+                        }
+                    ],
+                }
+                for c in ["All"] + df["Type"].unique().tolist()
+            ]
+        }])
+    fig.update_layout(height=300)
+
     return fig
 
-def plot_table_mean_gene_samples(df):
-    df  = df.set_index('Gene'); df = df.T
-    df.iloc[:, 1:] = df.iloc[:, 1:].astype(float)
-    df = df.groupby('Type').agg(['mean', 'std']).T
-    df = df.reset_index(); df.columns = ['Gene', 'Statistical', 'Sample']
 
-    def custom_order_site(df, column):
-        df_m = df[df['Statistical'] == 'mean']
-        df_m = df_m.sort_values(by=['Sample'], ascending = False)
-        orden_sites = list(df_m[column])
-        df = df.set_index(column).loc[orden_sites].reset_index()
-        return df
-    df = custom_order_site(df, 'Gene')
+def plot_table_pca(df, bed):
+    bed['Site'] = list(map(make_merge_site, bed['Chr'], bed['Start']))
+    def annot_gene(site_df):
+        lst = list(bed[bed['Site']==site_df]['Gene'])
+        if len(lst) > 1:
+            lst[0] = f'{lst[0]}-{lst[1]}'
+        else:
+            lst[0] = f'{lst[0]}'
+        return lst[0]
 
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=list(df.columns),
-                    #fill_color='gray',
-                    align='left'),
-        cells=dict(values=[df['Gene'], df['Statistical'], df['Sample']],
-                   #fill_color='#E9E9E9',
-                   align='left', height=30))
-    ])
-    fig.update_layout(
-            height=300)
-    return fig
-
-def plot_table_pca(df):
+    df[['Site', 'Type']] = df['Type'].str.split('_', expand=True)
+    df['Gene'] = list(map(annot_gene, df['Site']))
+    df = df[['Site', 'Gene', 'Type', 'PCA1','PCA2']]
     df = df.sort_values(by=['PCA1', 'PCA2'], ascending = False)
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=list(['Type','PCA1', 'PCA2']),
-                    #fill_color='gray',
-                    align='left'),
-        cells=dict(values=[df['Type'], df['PCA1'], df['PCA2']],
-                   #fill_color='#E9E9E9',
-                   align='left', height=30))
-    ])
-    fig.update_layout(
-            height=300)
+
+    fig = go.Figure(go.Table(header=dict(values=list(df.columns), align="left"),
+                cells=dict(
+                    values=[df["Site"], df['Gene'],  df["Type"], df["PCA1"], df["PCA2"]],
+                    align="left", height=30)))
+    fig.update_layout(updatemenus=[{
+            "buttons": [
+                {
+                    "label": c,
+                    "method": "update",
+                    "args": [
+                        { "cells": {
+                            "values": df.T.values
+                            if c == "All"
+                                else df.loc[df["Type"].eq(c)].T.values
+                            }
+                        }
+                    ],
+                }
+                for c in ["All"] + df["Type"].unique().tolist()
+            ]
+        }])
+    fig.update_layout(height=300)
     return fig
 
 def plot_donut_cgi(df):
     df = pd.DataFrame(df['Type'].value_counts()).reset_index()
     df.columns = ['Type', 'Frequency']
     fig = go.Figure(data=[go.Pie(labels=['CpG island', 'CpG shore', 'CpG shelf', 'CpG inter'], values=df['Frequency'], hole=.3)])
-    fig.update_traces(marker=dict(colors=['blue', '#3efe00', 'red', '#00fec0']))
+    fig.update_traces(marker=dict(colors=['219518', '#955D14', '#1D9BD6', '#3D58AB']))
     fig.update_layout(height=400)
     return fig

@@ -31,13 +31,15 @@ Count = input_folder+'/CSV/count_targets.csv'
 NotLoc = input_folder+'/CSV/off_targets.csv'
 Oncoprint_All = input_folder+'/CSV/matrix_filtered_target.csv'
 Oncoprint_mean = input_folder+'/CSV/matrix_mean_gene.csv'
-bed = input_folder+ '/CSV/cgi_features.csv'
+cgi = input_folder+ '/CSV/cgi_features.csv'
 fastqc = input_folder + '/CSV/fastqc_raw_data.csv'
 OncoprintNorm = input_folder+'/CSV/matrix_filtered_target_normalized.csv'
 OncoprintMeanNorm = input_folder + '/CSV/matrix_mean_gene_normalized.csv'
 PCA_data = input_folder + '/CSV/pca_vectors.csv'
 boxplot_csv = input_folder + '/CSV/filtered_target_normalized.csv'
 filtered_target = input_folder + '/CSV/filtered_target.csv'
+bed_genes = input_folder + '/CSV/annotated_regions.csv'
+mean_gene_normalized = input_folder + '/CSV/mean_gene_normalized.csv'
 #=======================fastqc======================#
 df = pd.read_csv(fastqc)
 fig_fastqc = plot_fastqc(df)
@@ -47,7 +49,7 @@ df = pd.read_csv(depth)
 fig_depth = plot_depth(df)
 
 #========================All=========================#
-sites_bed = pd.read_csv(bed)
+sites_bed = pd.read_csv(cgi)
 df = pd.read_csv(Oncoprint_All)
 df = df.drop(['Unnamed: 2'], axis=1)
 df = df.drop(df.index[[0,1]])
@@ -106,34 +108,31 @@ df.columns = [ 'Parameter', 'Value']
 
 fig_table = plot_options(df)
 
-#==========================global==========================#
+#==========================table_site======================#
 if norm == 'True':
     df = pd.read_csv(filtered_target)
-    table_global = plot_site_table(df, 'percentage')
-else:
-    df = pd.read_csv(filtered_target)
-    table_global = plot_site_table_samples(df)
+    bed = pd.read_csv(bed_genes)
+    table_global = plot_site_table(df, 'percentage', bed)
 #==========================table_norm======================#
 if norm == 'True':
     df = pd.read_csv(boxplot_csv)
-    table_zscore = plot_site_table(df, 'zscore')
+    bed = pd.read_csv(bed_genes)
+    table_zscore = plot_site_table(df, 'zscore', bed)
 #======================mean_gene_table=====================#
 if norm == 'True':
-    df = pd.read_csv(Oncoprint_mean)
+    df = pd.read_csv(filtered_target)
     table_mean_gene = plot_table_mean_gene(df, 'methpercent')
-else:
-    df = pd.read_csv(Oncoprint_mean)
-    table_mean_gene = plot_table_mean_gene_samples(df)
 #===================mean_gene_table_norm===================#
 if norm == 'True':
-    df = pd.read_csv(OncoprintMeanNorm)
+    df = pd.read_csv(mean_gene_normalized)
     table_mean_gene_normalized = plot_table_mean_gene(df, 'zscore')
 #========================TablePCA==========================#
 if norm == 'True':
     df = pd.read_csv(PCA_data)
-    table_pca = plot_table_pca(df)
+    bed = pd.read_csv(bed_genes)
+    table_pca = plot_table_pca(df, bed)
 #=========================DonutCGI=========================#
-df = pd.read_csv(bed)
+df = pd.read_csv(cgi)
 figure_donut_cgi = plot_donut_cgi(df)
 #==========================HTML============================#
 
