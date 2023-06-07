@@ -156,7 +156,7 @@ def plot_all (sites_bed, df):
     #fig.update_xaxes(ticks="inside")
 
     fig.update_xaxes(title_text="ID", row=1, col=1)
-    fig.update_yaxes(title_text="site", row=1, col=1)
+    fig.update_yaxes(title_text="CpG site", row=1, col=1)
 
     fig.update_traces(showscale=False, row=1, col=2)
     #fig.update_traces(color_continuous_scale='RdBu_r', row=1, col=1)
@@ -231,8 +231,8 @@ def plot_norm(df):
     df = sortOnco(df)
 
     df = df.drop(['Chr', 'SpecificSite'], axis = 1)
-    df.rename(columns = {'index':'SiteCpG'}, inplace = True)
-    df = df.set_index('SiteCpG')
+    df.rename(columns = {'index':'CpG site'}, inplace = True)
+    df = df.set_index('CpG site')
 
     fig_norm_all = px.imshow(df, aspect="auto", color_continuous_scale='RdBu_r')
 
@@ -262,6 +262,9 @@ def plot_manhattan (df):
 
     df = sortOnco(df)
     manhattan = px.scatter(df, x="Site", y='Z score', color="Type", opacity=0.7)
+
+    manhattan.update_layout(yaxis_title='Z-score',
+        xaxis_title='CpG site')
 
     return manhattan
 
@@ -393,14 +396,14 @@ def plot_site_percent(df):
 
     fig.update_layout(
         yaxis_title='methylation %',
-        xaxis_title='site',
+        xaxis_title='CpG site',
         hovermode="x")
     return fig
 
 def boxplot_site(df):
     df['Type'] = df['Type'].replace({"Sample": "sample", "Normal": "normal"})
     fig = px.violin(df, x = 'Type' , y="value", points = "all", box = True, color = 'Type',
-                 labels={"value": "z score"})
+                 labels={"value": "Z-score"})
     #fig.add_trace(px.strip(df, x='Type', y='value', color='Type').data[0])
     return fig
 
@@ -475,8 +478,8 @@ def plot_site_norm(df):
             line=dict(color='red'),
         )
     ])
-    fig.update_layout(yaxis_title='z score',
-        xaxis_title='site')
+    fig.update_layout(yaxis_title='Z-score',
+        xaxis_title='CpG site')
     return fig
 
 def plot_options(df):
@@ -516,8 +519,8 @@ def make_merge_site(chrom, start):
 def custom_order_site(df):
     df_m = df[df['Type'] == 'Sample']
     df_m = df_m.sort_values(by=['mean'], ascending = False)
-    orden_sites = list(df_m['Site'])
-    df = df.set_index('Site').loc[orden_sites].reset_index()
+    orden_sites = list(df_m['CpG site'])
+    df = df.set_index('CpG site').loc[orden_sites].reset_index()
     return df
 
 def custom_order_gene(df):
@@ -547,12 +550,12 @@ def plot_site_table(df, status, bed):
         df['Gene'] = list(map(annot_gene, df['variable']))
     df = df.set_index('ID')
     df = df.groupby(by=['variable', 'Gene', 'Type',]).agg(['mean', 'std']).reset_index()
-    df.columns = ['Site', 'Gene', 'Type', 'mean', 'std']
+    df.columns = ['CpG site', 'Gene', 'Type', 'mean', 'std']
     df = custom_order_site(df); df = df.dropna()
 
     fig = go.Figure(go.Table(header=dict(values=list(df.columns), align="left"),
                 cells=dict(
-                    values=[df["Site"], df['Gene'],  df["Type"], df["mean"], df["std"]],
+                    values=[df["CpG site"], df['Gene'],  df["Type"], df["mean"], df["std"]],
                     align="left", height=30)))
     fig.update_layout(updatemenus=[{
             "buttons": [
@@ -621,14 +624,14 @@ def plot_table_pca(df, bed):
             lst[0] = f'{lst[0]}'
         return lst[0]
 
-    df[['Site', 'Type']] = df['Type'].str.split('_', expand=True)
-    df['Gene'] = list(map(annot_gene, df['Site']))
-    df = df[['Site', 'Gene', 'Type', 'PCA1','PCA2']]
+    df[['CpG site', 'Type']] = df['Type'].str.split('_', expand=True)
+    df['Gene'] = list(map(annot_gene, df['CpG site']))
+    df = df[['CpG site', 'Gene', 'Type', 'PCA1','PCA2']]
     df = df.sort_values(by=['PCA1', 'PCA2'], ascending = False)
 
     fig = go.Figure(go.Table(header=dict(values=list(df.columns), align="left"),
                 cells=dict(
-                    values=[df["Site"], df['Gene'],  df["Type"], df["PCA1"], df["PCA2"]],
+                    values=[df["CpG site"], df['Gene'],  df["Type"], df["PCA1"], df["PCA2"]],
                     align="left", height=30)))
     fig.update_layout(updatemenus=[{
             "buttons": [

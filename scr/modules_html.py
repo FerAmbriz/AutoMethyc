@@ -79,21 +79,40 @@ def html_css ():
 
 def html_navbar_complete ():
     html = '''
-    <body>
-        <ul class="vertical">
-            <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
-            <li><a href="#Base"> Base quality </a></li>
-            <li><a href="#Depth"> Depth </a></li>
-            <li><a href="#Samples" > Coverage </a></li>
-            <li><a href="#cgi" > CGI mapping </a></li>
-            <li><a href="#All"> Methylation percentage </a></li>
-            <li><a href="#Mean"> Mean methylation </a></li>
-            <li><a href="#all_norm"> Normalized methylation </a></li>
-            <li><a href="#Mean_norm"> Mean normalized </a></li>
-            <li><a href="#pca"> PCA </a></li>
-            <li><a href="#about"> About </a></li>
+    <ul class="vertical">
+        <li><a href="#Home"> AutoMethyc </a></li>
+        <li><a href="#Base"> Base quality </a></li>
+        <li><a href="#Depth"> Depth </a></li>
+        <li><a href="#Samples"> Coverage </a></li>
+        <li><a href="#cgi"> CGI mapping </a></li>
+        <li><a href="#All"> Methylation percentage </a></li>
+        <li><a href="#Mean"> Mean methylation </a></li>
+        <li><a href="#all_norm"> Normalized methylation </a></li>
+        <li><a href="#Mean_norm"> Mean normalized </a></li>
+        <li><a href="#pca"> PCA </a></li>
+        <li><a href="#about"> About </a></li>
         </ul>
-    </body>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            var items = document.querySelectorAll('.vertical li a');
+            var activeItem;
+            items.forEach(function(item) {
+                var section = document.querySelector(item.getAttribute('href'));
+                var sectionTop = section.offsetTop;
+                var sectionBottom = sectionTop + section.offsetHeight;
+                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+                    item.classList.add('active');
+                    activeItem = item;
+                 }
+            });
+            items.forEach(function(item) {
+                if (item !== activeItem) {
+                    item.classList.remove('active');
+                 }
+            });
+        });
+    </script>
     '''
     return html
 
@@ -118,13 +137,13 @@ def html_navbar_sNorm ():
 def html_AutoMethyc (command):
     html = f'''
     <div class="main">
-        <h1 id="Home"; style="margin-bottom: 5px;"> AutoMethyc </h1>
+    <div id="Home">
+        <h1 style="margin-bottom: 5px;"> AutoMethyc </h1>
         <hr style="margin-top: 0;">
         <div class="center">
             <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png?raw=true" width="110" height="100">
         </div>
-        AutoMethyc is an integrative pipeline to methylation analysis from raw paired-end sequences obtained from massive parallel bisulfite sequencing.
-    </div">
+        AutoMethyc is an integrative pipeline to methylation analysis from raw sequences obtained from massive parallel bisulfite sequencing.
     <h2 style="margin-bottom: 5px;"> Parameters </h2>
     <hr>
         Command used and global parameters:
@@ -134,38 +153,39 @@ def html_AutoMethyc (command):
 
 def html_base ():
     html = '''
-    <body>
-        <h2 id="Base"; style="margin-bottom: 5px;"> Base quality </h2>
+    </div>
+    <div id="Base">
+        <h2 style="margin-bottom: 5px;"> Base quality </h2>
         <hr style="margin-top: 0;">
         Logarithmic ratio of Phred Q quality scores to base call error probabilities.
-    </body>
     '''
     return html
 
 def html_depth ():
     html = '''
-    <body>
-        <h2 id="Depth"; style="margin-bottom: 5px;"> Depth </h2>
+    </div>
+    <div id="Depth">
+        <h2 style="margin-bottom: 5px;"> Depth </h2>
         <hr>
         Count of filtered (off-targets) and unfiltered (on-targets) sites according to the depth threshold established for greater certainty in the analysis.
-    </body>
     '''
     return html
 
 def html_coverage ():
     html = '''
-    <body>
-        <h2 id="Samples" ; style="margin-bottom: 5px;"> Coverage </h2>
+    </div>
+    <div id="Samples">
+        <h2 style="margin-bottom: 5px;"> Coverage </h2>
         <hr>
         Count of sites present in the regions of interest provided by BED file
-    </body>
     '''
     return html
 
 def html_cgi():
     html = '''
-    <body>
-        <h2 id="cgi"; style="margin-bottom: 5px;"> CGI mapping </h2>
+    </div>
+    <div id="cgi">
+        <h2 style="margin-bottom: 5px;"> CGI mapping </h2>
         <hr>
         Mapped regions and their classification considering the nearest CpG island
          <div class="row">
@@ -174,72 +194,72 @@ def html_cgi():
             </div>
             </ol>
         </div>
-    </body>
     '''
     return html
 def html_all():
     html = '''
-    <body>
+    </div>
+    <div id="All">
         <h2 id="All"; style="margin-bottom: 5px;"> Methylation percentage </h2>
         <hr>
         Methylation percentage considering the cytosines methylated and unmethylated for each site
-    </body>
     '''
     return html
 
 def html_mean_gene():
     html = '''
-    <body>
-        <h2 id="Mean"; style="margin-bottom: 5px;"> Mean methylation </h2>
+    </div>
+    <div id="Mean">
+        <h2 style="margin-bottom: 5px;"> Mean methylation </h2>
         <hr>
            Average percentage of methylation present in each gene of the sequenced region.
-    </body>
     '''
     return html
 
 def html_norm():
     html = '''
-    <body>
-        <h1 style="margin-bottom: 5px;"> Normalization </h1>
+    </div>
+    <div id="all_norm">
+        <h1 id ="all_norm"; style="margin-bottom: 5px;"> Normalization </h1>
         <hr>
             Normalization was performed considering the mean and standard deviation of the controls
-    </body>
     '''
     return html
 
 def html_mean_norm():
     html = '''
-    <body>
-        <h2 id="Mean_norm", style="margin-bottom: 5px;"> Mean normalized </h2>
+    </div>
+    <div id="Mean_norm">
+        <h2 style="margin-bottom: 5px;"> Mean normalized </h2>
         <hr>
             Mean normalization of each normalized site belonging to each gene
-    </body>
     '''
     return html
 
 def html_pca():
     html = '''
-    <body>
-        <h2 id="pca"; style="margin-bottom: 5px;"> PCA </h2>
+    </div>
+    <div id="pca">
+        <h2 style="margin-bottom: 5px;"> PCA </h2>
         <hr>
             Principal component analysis (PCA) applied to each site of the normals and samples. Each point represents a normalized site according to the corresponding group (normal or sample).
-    </body>
     '''
     return html
 
 def html_fooder():
     html= '''
-    <body>
-        <h3 id="about"; style="margin-bottom: 5px;"> Repository  </h4>
+    </div>
+    <div id=about>
+        <h3 style="margin-bottom: 5px;"> About  </h4>
         <hr>
-            This program is avalible in <td><a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a></td>
+        <p style="color: gray;"> Analysis produced by <a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a> - an integrative pipeline to methylation analysis </p>
          <div class="row">
             <div class="center">
                 <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/Escudo-UNAM.png?raw=true" width="65" height="75">
                 <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/LN_FESI.jpg?raw=true" width="75" height="80">
             </div>
         </div>
-    </body>
+    </div>
 </html>
     '''
     return html
