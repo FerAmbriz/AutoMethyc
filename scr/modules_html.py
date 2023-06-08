@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #import os
 #os.environ['OPENBLAS_NUM_THREADS'] = '1'
-
+import datetime
 
 def html_css ():
     html = '''
@@ -90,6 +90,7 @@ def html_navbar_complete ():
         <li><a href="#all_norm"> Normalized methylation </a></li>
         <li><a href="#Mean_norm"> Mean normalized </a></li>
         <li><a href="#pca"> PCA </a></li>
+        <li><a href="#snv"> Variant calling </a><li>
         <li><a href="#about"> About </a></li>
         </ul>
 
@@ -119,18 +120,37 @@ def html_navbar_complete ():
 
 def html_navbar_sNorm ():
     html = '''
-    <body>
-        <ul class="vertical">
-            <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
-            <li><a href="#Base"> Base quality </a></li>
-            <li><a href="#Depth"> Depth </a></li>
-            <li><a href="#Samples" > Coverage </a></li>
-            <li><a href="#cgi" > CGI mapping </a></li>
-            <li><a href="#All"> Methylation percentage </a></li>
-            <li><a href="#Mean"> Mean methylation </a></li>
-            <li><a href="#about"> About </a></li>
-        </ul>
-    </body>
+    <ul class="vertical">
+        <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
+        <li><a href="#Base"> Base quality </a></li>
+        <li><a href="#Depth"> Depth </a></li>
+        <li><a href="#Samples" > Coverage </a></li>
+        <li><a href="#cgi" > CGI mapping </a></li>
+        <li><a href="#All"> Methylation percentage </a></li>
+        <li><a href="#Mean"> Mean methylation </a></li>
+        <li><a href="#snv"> Variant calling </a><li>
+        <li><a href="#about"> About </a></li>
+    </ul>
+    <script>
+        window.addEventListener('scroll', function() {
+            var items = document.querySelectorAll('.vertical li a');
+            var activeItem;
+            items.forEach(function(item) {
+                var section = document.querySelector(item.getAttribute('href'));
+                var sectionTop = section.offsetTop;
+                var sectionBottom = sectionTop + section.offsetHeight;
+                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+                    item.classList.add('active');
+                    activeItem = item;
+                 }
+            });
+            items.forEach(function(item) {
+                if (item !== activeItem) {
+                    item.classList.remove('active');
+                 }
+            });
+        });
+    </script>
     '''
     return html
 
@@ -246,13 +266,24 @@ def html_pca():
     '''
     return html
 
+def html_snv():
+    html = '''
+    </div>
+    <div id="snv">
+        <h2 style="margin-bottom: 5px;"> Variant calling </h2>
+        <hr>
+        Variant call count
+    '''
+    return html
+date = datetime.datetime.now()
+date = date.strftime("%H:%M at %d/%m/%Y.")
 def html_fooder():
-    html= '''
+    html= f'''
     </div>
     <div id=about>
         <h3 style="margin-bottom: 5px;"> About  </h4>
         <hr>
-        <p style="color: gray;"> Analysis produced by <a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a> - an integrative pipeline to methylation analysis </p>
+        <p style="color: gray;"> Analysis produced by <a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a> - an integrative pipeline to methylation analysis. Data processed at {date}</p>
          <div class="row">
             <div class="center">
                 <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/Escudo-UNAM.png?raw=true" width="65" height="75">

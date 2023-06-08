@@ -40,6 +40,7 @@ boxplot_csv = input_folder + '/CSV/filtered_target_normalized.csv'
 filtered_target = input_folder + '/CSV/filtered_target.csv'
 bed_genes = input_folder + '/CSV/annotated_regions.csv'
 mean_gene_normalized = input_folder + '/CSV/mean_gene_normalized.csv'
+snv_count = input_folder + '/CSV/snv_count.csv'
 #=======================fastqc======================#
 df = pd.read_csv(fastqc)
 fig_fastqc = plot_fastqc(df)
@@ -134,6 +135,9 @@ if norm == 'True':
 #=========================DonutCGI=========================#
 df = pd.read_csv(cgi)
 figure_donut_cgi = plot_donut_cgi(df)
+#===========================SNV============================#
+df = pd.read_csv(snv_count)
+fig_count_snv = plot_count_snv(df)
 #==========================HTML============================#
 
 with open(Output + '/AutoMethyc_Report.html', 'w') as f:
@@ -173,6 +177,7 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(html_pca())
         f.write(table_pca.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
-
+    f.write(html_snv())
+    f.write(fig_count_snv.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_fooder())
 print ('======================== done html_report =======================')

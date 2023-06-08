@@ -660,3 +660,7 @@ def plot_donut_cgi(df):
     fig.update_traces(marker=dict(colors=['219518', '#955D14', '#1D9BD6', '#3D58AB']))
     fig.update_layout(height=400)
     return fig
+
+def plot_count_snv(df):
+    fig  = px.bar(df, x = 'ID', y = 'Count')
+    return fig
