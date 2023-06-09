@@ -283,7 +283,10 @@ def html_fooder():
     <div id=about>
         <h3 style="margin-bottom: 5px;"> About  </h4>
         <hr>
-        <p style="color: gray;"> Analysis produced by <a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a> - an integrative pipeline to methylation analysis. Data processed at {date}</p>
+            <p style="color: gray;">
+                Analysis produced by <a href="https://github.com/FerAmbriz/AutoMethyc"> AutoMethyc </a> - an integrative pipeline to methylation analysis.
+                <br> Data processed at {date}
+            </p>
          <div class="row">
             <div class="center">
                 <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/Escudo-UNAM.png?raw=true" width="65" height="75">
