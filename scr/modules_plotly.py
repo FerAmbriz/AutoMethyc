@@ -175,50 +175,16 @@ def plot_mean(df):
 
     return fig_mean
 
-def plot_count (df, df2):
-    up = max(df.ID)
-    rng = up-7
+def plot_offtarget(on_targets, off_targets):
+    on_targets.columns = ['ID' , 'Count']
+    on_targets['Status'] = ['on-target'] * len(on_targets)
 
-    for i in range(rng):
-        df = df.replace({i : '<'+str(rng)})
+    off_targets.columns = ['ID' , 'Count']
+    off_targets['Status'] = ['off-target'] * len(off_targets)
 
-    values = df['ID'].value_counts().to_list()
-    labels= df['ID'].value_counts()
-    labels = labels.index.values
+    df = pd.concat([on_targets, off_targets])
 
-    values2 = df2['Filter'].value_counts().to_list()
-    labels2= df2['Filter'].value_counts()
-    labels2=labels2.index.values
-
-    # donut pie chart 2 columns
-    fig_samples = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}]])
-
-    # Cobertura
-    fig_samples.add_trace(go.Pie(labels=labels, values=values, hole=.3, name="Coverage"),
-              1, 1)
-    # Profundiad
-    fig_samples.add_trace(go.Pie(labels=labels2, values=values2, hole=.3, name="Filtered"),
-              1, 2)
-
-    fig_samples.update_layout(
-        title_text="Statistics", template= "plotly",
-        # Add annotations in the center of the donut pies.
-        annotations=[dict(text='CVR', x=0.20, y=0.5, font_size=20, showarrow=False),
-                 dict(text='FTR', x=0.80, y=0.5, font_size=20, showarrow=False)])
-
-    return fig_samples
-
-def plot_offtarget(df):
-    df.columns = ['ID' , 'Count']
-    df['Status'] = ['on-target'] * len(df)
-
-#    df2 = pd.DataFrame(df2['ID'].value_counts()).reset_index()
-#    df2.columns = ['ID' , 'Count']
-#    df2['Status'] = ['off-target'] * len(df2)
-
-    #df = pd.concat([df, df2])
-
-    fig_chr = px.bar(df, x="ID", y="Count")
+    fig_chr = px.bar(df, x="ID", y="Count", color='Status')
 
     return fig_chr
 

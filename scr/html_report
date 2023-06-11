@@ -63,8 +63,9 @@ df = pd.read_csv(Oncoprint_mean)
 fig_mean = plot_mean(df)
 
 #=====================Off-target====================#
-df = pd.read_csv(Count)
-fig_oft = plot_offtarget(df)
+filtered = pd.read_csv(Count)
+merge = pd.read_csv(NotLoc)
+fig_oft = plot_offtarget(filtered, merge)
 
 #====================Norm all=======================#
 if norm == 'True':
@@ -110,18 +111,16 @@ df.columns = [ 'Parameter', 'Value']
 fig_table = plot_options(df)
 
 #==========================table_site======================#
-if norm == 'True':
-    df = pd.read_csv(filtered_target)
-    table_global = plot_site_table(df, 'percentage', 'None')
+df = pd.read_csv(filtered_target)
+table_global = plot_site_table(df, 'percentage', 'None')
 #==========================table_norm======================#
 if norm == 'True':
     df = pd.read_csv(boxplot_csv)
     bed = pd.read_csv(filtered_target)
     table_zscore = plot_site_table(df, 'zscore', bed)
 #======================mean_gene_table=====================#
-if norm == 'True':
-    df = pd.read_csv(filtered_target)
-    table_mean_gene = plot_table_mean_gene(df, 'methpercent')
+df = pd.read_csv(filtered_target)
+table_mean_gene = plot_table_mean_gene(df, 'methpercent')
 #===================mean_gene_table_norm===================#
 if norm == 'True':
     df = pd.read_csv(mean_gene_normalized)

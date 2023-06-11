@@ -80,7 +80,7 @@ def html_css ():
 def html_navbar_complete ():
     html = '''
     <ul class="vertical">
-        <li><a href="#Home"> AutoMethyc </a></li>
+        <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
         <li><a href="#Base"> Base quality </a></li>
         <li><a href="#Depth"> Depth </a></li>
         <li><a href="#Samples"> Coverage </a></li>
@@ -92,7 +92,7 @@ def html_navbar_complete ():
         <li><a href="#pca"> PCA </a></li>
         <li><a href="#snv"> Variant calling </a><li>
         <li><a href="#about"> About </a></li>
-        </ul>
+    </ul>
 
     <script>
         window.addEventListener('scroll', function() {

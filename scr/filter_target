@@ -41,23 +41,14 @@ df_filtrado.to_csv(OutputFilter+"/filtered_target.csv")
 
 ID = pd.DataFrame(ID)
 ID.to_csv(OutputFilter+"/count_targets.csv")
+print(ID)
 
 #-----------------------NotLoc--------------------------
-
-df_bd = pd.DataFrame()
-for ID in df.ID.unique():
-    df_id = df[df['ID'] == ID]
-    for c,s,e in zip(dfF.Chr, dfF.Start, dfF.End):
-        df_i = df_id[df_id['Chr']== c]
-        for site in range(s, e+1, 1):
-            if site not in list(df_i.Start):
-                db_i = dfF[dfF['Start'] == site]
-                db_i.insert(len(db_i), 'ID', ID)
-                df_bd = pd.concat([df_bd, db_i])
-
-df_NotLoc = df_bd.drop_duplicates(keep=False)
-
-df_NotLoc = df_NotLoc.set_index('ID')
+#ID count_filtered
+count_merge = pd.DataFrame(df['ID'].value_counts()); count_merge.columns = ['Frequencies']
+df_NotLoc = count_merge.join(ID)
+df_NotLoc['ID'] = df_NotLoc['Frequencies'] - df_NotLoc['ID']
+df_NotLoc = df_NotLoc[['ID']]
 
 print('off-targets: ')
 print(df_NotLoc)
