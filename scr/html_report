@@ -112,12 +112,11 @@ fig_table = plot_options(df)
 #==========================table_site======================#
 if norm == 'True':
     df = pd.read_csv(filtered_target)
-    bed = pd.read_csv(bed_genes)
-    table_global = plot_site_table(df, 'percentage', bed)
+    table_global = plot_site_table(df, 'percentage', 'None')
 #==========================table_norm======================#
 if norm == 'True':
     df = pd.read_csv(boxplot_csv)
-    bed = pd.read_csv(bed_genes)
+    bed = pd.read_csv(filtered_target)
     table_zscore = plot_site_table(df, 'zscore', bed)
 #======================mean_gene_table=====================#
 if norm == 'True':
@@ -130,7 +129,7 @@ if norm == 'True':
 #========================TablePCA==========================#
 if norm == 'True':
     df = pd.read_csv(PCA_data)
-    bed = pd.read_csv(bed_genes)
+    bed = pd.read_csv(filtered_target)
     table_pca = plot_table_pca(df, bed)
 #=========================DonutCGI=========================#
 df = pd.read_csv(cgi)

@@ -531,10 +531,8 @@ def custom_order_gene(df):
     return df
 
 def plot_site_table(df, status, bed):
-    bed['Site'] = list(map(make_merge_site, bed['Chr'], bed['Start']))
-
     def annot_gene(site_df):
-        lst = list(bed[bed['Site']==site_df]['Gene'])
+        lst = list(bed[bed['Site'] == site_df]['Gene'])
         if len(lst) > 1:
             lst[0] = f'{lst[0]}-{lst[1]}'
         else:
@@ -543,10 +541,10 @@ def plot_site_table(df, status, bed):
 
     if status == 'percentage':
         df['variable'] = list(map(make_merge_site, df['Chr'], df['Start']))
-        df['Gene'] = list(map(annot_gene, df['variable']))
         df = df[['ID', 'Type', 'variable', 'Gene', 'Met_perc']]
         df.columns = ['ID', 'Type', 'variable', 'Gene', 'value']
     else:
+        bed['Site'] = list(map(make_merge_site, bed['Chr'], bed['Start']))
         df['Gene'] = list(map(annot_gene, df['variable']))
     df = df.set_index('ID')
     df = df.groupby(by=['variable', 'Gene', 'Type',]).agg(['mean', 'std']).reset_index()
