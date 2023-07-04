@@ -16,9 +16,13 @@ lines = df.readlines()
 df = pd.DataFrame(lines)
 lenght = len(df)
 df = df[0].str.split('\t',expand=True)
-df.columns = df.iloc[12]
-df = df.drop(list(range(0,13,1)))
+# Revision de si es 12???
+df.columns = df.iloc[13]
+df = df.drop(list(range(0,14,1)))
+
 df = df.rename(columns = {'90th Percentile\n':'90th Percentile'})
+
+print(df)
 
 if contador % 2 == 0:
     contador = 2
