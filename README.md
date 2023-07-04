@@ -49,3 +49,10 @@ automethyc -i [fastq_folder] -o [Output_folder] -r [genome reference file] [opti
 ```
 ## Output
 The output is organized in 4 folders (Bismark, CSV, HTML, VCF). However, the explanation in more detail is found in the documentation to be able to carry an adequate interpretation of the results, but we provide a HTML report generated with the summary of the data in an interactive form, named `[Output]/HTML/AutoMethyc_Report.html`
+## Example
+```
+wget -O example.zip https://sourceforge.net/projects/automethycexample/files/latest/download
+unzip example.zip && cd example
+mkdir output
+automethyc_docker -i FastqNormals -n normals -r [hg19_reference_genome_file] -b BedGraph_chr2.csv -o output
+```
