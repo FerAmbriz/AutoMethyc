@@ -54,5 +54,5 @@ The output is organized in 4 folders (Bismark, CSV, HTML, VCF). However, the exp
 wget -O example.zip https://sourceforge.net/projects/automethycexample/files/latest/download
 unzip example.zip && cd example
 mkdir output
-automethyc_docker -i FastqNormals -n normals -r [hg19_reference_genome_file] -b BedGraph_chr2.csv -o output
+automethyc_docker -i FastqSamples -n FastqNormals -r [hg19_reference_genome_file] -b BedGraph_chr2.csv -o output
 ```
