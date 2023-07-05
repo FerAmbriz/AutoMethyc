@@ -28,12 +28,13 @@ mkdir $output/Bismark/$FolderOutput/html_reports
 
 #============================= Genome Conversion ============================#
 
-ref_bisulfito=$ref/Bisulfite_Genome
-if [ -d "$ref_bisulfito"  ]
+genome_bisulfito=$genome/Bisulfite_Genome
+if [ -d "$genome_bisulfito"  ]
 then 
 				echo 'starting with sample processing'
 else
-				bismark_genome_preparation $ref --parallel $(($thr/2))
+        echo 'starting with bismark_genome_preparation'
+				bismark_genome_preparation $genome --parallel $(($thr/2))
 fi
 
 #============================= Run pipeline ============================#
