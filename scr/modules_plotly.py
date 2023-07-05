@@ -500,7 +500,8 @@ def plot_site_table(df, status, bed):
     def annot_gene(site_df):
         lst = list(bed[bed['Site'] == site_df]['Gene'])
         if len(lst) > 1:
-            lst[0] = f'{lst[0]}-{lst[1]}'
+            if lst[0] != lst[1]:
+                lst[0] = f'{lst[0]}-{lst[1]}'
         else:
             lst[0] = f'{lst[0]}'
         return lst[0]
@@ -583,7 +584,8 @@ def plot_table_pca(df, bed):
     def annot_gene(site_df):
         lst = list(bed[bed['Site']==site_df]['Gene'])
         if len(lst) > 1:
-            lst[0] = f'{lst[0]}-{lst[1]}'
+            if lst[0] != lst[1]:
+                lst[0] = f'{lst[0]}-{lst[1]}'
         else:
             lst[0] = f'{lst[0]}'
         return lst[0]
