@@ -170,12 +170,14 @@ else
 
 		unpivot_matrix_normalized $output/CSV/matrix_filtered_target_normalized.csv $output/CSV $output/CSV/matrix_mean_gene_normalized.csv
 
-		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
-		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+		volcano $output/CSV/filtered_target_normalized.csv $output/CSV/
 
-		snv_count $output/VCF/normal $output/Bismark/normals normal
-		snv_count $output/VCF/sample $output/Bismark/samples sample
-		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/snv_count.csv $output/Bismark/samples/snv_count.csv > $output/CSV/snv_count.csv
+		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF/normal $thr
+		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF/sample $thr
+
+		snv_count $output/VCF/normal $output/VCF/normal normal
+		snv_count $output/VCF/sample $output/VCF/sample sample
+		awk '(NR == 1) || (FNR > 1)' $output/VCF/normal/snv_count.csv $output/VCF/sample/snv_count.csv > $output/CSV/snv_count.csv
 
 
 		html_report $output $output/HTML True $depth
@@ -219,6 +221,8 @@ else
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 		
 		unpivot_matrix_normalized $output/CSV/matrix_filtered_target_normalized.csv $output/CSV $output/CSV/matrix_mean_gene_normalized.csv
+
+		volcano $output/CSV/filtered_target_normalized.csv $output/CSV/
 
 		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF/normal $thr
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF/sample $thr
