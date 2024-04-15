@@ -1,13 +1,15 @@
 #!/bin/bash
 input=$1
 output=$2
+group=$3
+
 echo '======================= counting vcf lines ======================'
-echo 'ID,Count' >> ${output}/snv_count.csv
+echo 'ID,Count,group' >> ${output}/snv_count.csv
 for i in $input/*.vcf;
 do
   ID=${i%_mask*}; ID=${ID##*/};
   freq=$(cat $i | grep '#' -v | wc -l)
-  echo ''${ID}','${freq}'' >> ${output}/snv_count.csv
+  echo ''${ID}','${freq}','${group}'' >> ${output}/snv_count.csv
 done
 cat ${output}/snv_count.csv | head -5 | sed 's/,/ /'
 echo '========================== done snvcount ========================'

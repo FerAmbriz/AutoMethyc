@@ -80,7 +80,7 @@ if [ "$norm" = "False" ]; then
 
 		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
 
-		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth
+		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth sample
 
 		bindcov $output/Bismark/samples/bedGraph $output/CSV 'Sample'
 
@@ -98,7 +98,7 @@ if [ "$norm" = "False" ]; then
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
 
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
-		snv_count $output/VCF $output/CSV
+		snv_count $output/VCF $output/CSV sample
 
 		html_report $output $output/HTML False $depth
 	else
@@ -106,7 +106,7 @@ if [ "$norm" = "False" ]; then
 		
 		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
 
-		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth
+		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth sample
 
 		bindcov $output/Bismark/samples/bedGraph $output/CSV 'Sample'
 
@@ -124,19 +124,20 @@ if [ "$norm" = "False" ]; then
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
 
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
-		snv_count $output/VCF $output/CSV
+		snv_count $output/VCF $output/CSV sample
 
 		html_report $output $output/HTML False $depth
 	fi
 else
 	if [ "$filtro" = "False" ]; then
 		echo '==================== With normals and without filter ==================='
-		
-		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normals
-		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
+		mkdir $output/VCF/normal; mkdir $output/VCF/sample
 
-		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth
-		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth
+		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normal
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq sample
+
+		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth normals
+		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth samples
 
 		bindcov $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'		
 		bindcov $output/Bismark/samples/bedGraph $output/Bismark/samples 'Sample'
@@ -172,16 +173,21 @@ else
 		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
 
-		snv_count $output/VCF $output/CSV
+		snv_count $output/VCF/normal $output/Bismark/normals normal
+		snv_count $output/VCF/sample $output/Bismark/samples sample
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/snv_count.csv $output/Bismark/samples/snv_count.csv > $output/CSV/snv_count.csv
+
 
 		html_report $output $output/HTML True $depth
 	else
 		echo '==================== With normals and with filter ==================='
+		mkdir $output/VCF/normal; mkdir $output/VCF/sample
+
 		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normals
 		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
 	
-		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth
-		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth
+		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth normal
+		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth sample
 	
 		bindcov $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'
 		bindcov $output/Bismark/samples/bedGraph $output/Bismark/samples 'Sample'
@@ -214,10 +220,13 @@ else
 		
 		unpivot_matrix_normalized $output/CSV/matrix_filtered_target_normalized.csv $output/CSV $output/CSV/matrix_mean_gene_normalized.csv
 
-		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF $thr
-		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF/normal $thr
+		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF/sample $thr
 
-		snv_count $output/VCF $output/CSV
+		snv_count $output/VCF/normal $output/VCF/normal normal
+		snv_count $output/VCF/sample $output/VCF/sample sample
+		awk '(NR == 1) || (FNR > 1)' $output/VCF/normal/snv_count.csv $output/VCF/sample/snv_count.csv > $output/CSV/snv_count.csv
+
 
 		html_report $output $output/HTML True $depth
 	fi

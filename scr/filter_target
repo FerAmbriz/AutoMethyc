@@ -30,8 +30,7 @@ for c,s,ID in zip(df.Chr, df.Start, df.ID):
 df_bd['Gene'] = lst
 df_filtrado = df_bd
 
-ID = df_filtrado['ID'].value_counts()
-
+ID = df_filtrado[['ID', 'Type']].value_counts()
 df_filtrado = df_filtrado.set_index('ID')
 
 print('on-targets: ')
@@ -39,16 +38,16 @@ print(df_filtrado)
 
 df_filtrado.to_csv(OutputFilter+"/filtered_target.csv")
 
-ID = pd.DataFrame(ID)
+ID = pd.DataFrame(ID); ID.columns = ['count']
 ID.to_csv(OutputFilter+"/count_targets.csv")
 print(ID)
 
 #-----------------------NotLoc--------------------------
 #ID count_filtered
-count_merge = pd.DataFrame(df['ID'].value_counts()); count_merge.columns = ['Frequencies']
+count_merge = pd.DataFrame(df[['ID', 'Type']].value_counts()); count_merge.columns = ['Frequencies']
 df_NotLoc = count_merge.join(ID).reset_index()
 df_NotLoc['count'] = df_NotLoc['Frequencies'] - df_NotLoc['count']
-df_NotLoc = df_NotLoc[['ID', 'count']]
+df_NotLoc = df_NotLoc[['ID', 'Type', 'count']]
 
 print('off-targets: ')
 print(df_NotLoc)

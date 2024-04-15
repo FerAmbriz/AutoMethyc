@@ -1,18 +1,16 @@
 #!/bin/bash
 
-input=$1
-output=$2
-depth=$3
+input=$1; output=$2; depth=$3; group=$4
 
 gzip -d $input/*.gz
 
-echo 'filtered,unfiltered,depth_mean' > $output/count_depth_${depth}_pass.csv
+echo 'filtered,unfiltered,depth_mean,group' > $output/count_depth_${depth}_pass.csv
 echo '==================== filtering by depth ==================='
 
 for i in $input/*.cov;
 do
 	x=${i%_S*}; x=${x##*/}; prefix='one_mismatch.'; ID=${x/#$prefix}
-	echo $ID
-	read_depth $i $output $depth $ID
+	echo $ID $group
+	read_depth $i $output $depth $ID $group
 done
 echo '==================== done filter_depth ===================='

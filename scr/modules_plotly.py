@@ -11,6 +11,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import re
 from multiprocessing import Pool
+from scipy.spatial.distance import pdist, squareform
+from scipy.cluster.hierarchy import linkage, dendrogram
 
 def sortOnco (df):
     numero_chr = []
@@ -54,33 +56,46 @@ def plot_fastqc (df):
 
     return fig_fastqc
 
-def plot_depth (df):
+def plot_depth (df, status):
     longitud_inicial = len(df)
     longitud_final = longitud_inicial * 2
 
-    lst =[]
-    typ = []
-    ID = []
+    lst =[]; typ = []; ID = []; clase = []
 
-    for i, j, z in zip(df.filtered, df.unfiltered, df.ID):
-        lst.append(i)
-        typ.append('on-target')
-        lst.append(j)
-        typ.append('off-target')
-        lI = [z] * 2
-        ID = ID + lI
+    for i, j, z, c in zip(df.filtered, df.unfiltered, df.ID, df.group):
+        lst.append(i); typ.append('high-depth')
+        lst.append(j); typ.append('low-depth')
+        ID = ID + [z] * 2; clase = clase + [c] * 2
+
 
     while longitud_inicial < longitud_final:
         df.loc[len(df.index)] = ['NaN'] * len (df.columns)
         longitud_inicial = longitud_inicial + 1
 
-    df['Count'] = lst
-    df['Type'] = typ
-    df['ID'] = ID
+    df['Count'] = lst; df['Type'] = typ; df['ID'] = ID; df['Group'] = clase
 
-    fig_depth = px.bar(df, x="ID", y="Count", color="Type")
+    #fig_depth = px.bar(df, x="ID", y="Count", color="Type", facet_col="Group")
+    if status == 'True':
+        fig1 = px.bar(df[df['Group'] == 'normal'], x="ID", y="Count", color="Type",
+                  color_discrete_map={'high-depth': '#45B39D',
+                                      'low-depth': '#EC7063'
+                                      })
 
-    return fig_depth
+        fig2 = px.bar(df[df['Group'] == 'sample'], x="ID", y="Count", color="Type")
+
+        fig = make_subplots(rows=1, cols=2)
+
+        for trace in fig1['data']:
+            fig.add_trace(trace, row=1, col=1)
+
+        for trace in fig2['data']:
+            fig.add_trace(trace, row=1, col=2)
+
+        fig.update_xaxes(title_text="normal", row=1, col=1)
+        fig.update_xaxes(title_text="sample", row=1, col=2)
+    else:
+         fig = px.bar(df, x="ID", y="Count", color="Type")
+    return fig
 
 def discrete_colorscale(bvals, colors):
     if len(bvals) != len(colors)+1:
@@ -93,12 +108,45 @@ def discrete_colorscale(bvals, colors):
         dcolorscale.extend([[nvals[k], colors[k]], [nvals[k+1], colors[k]]])
     return dcolorscale
 
-def plot_all (sites_bed, df):
+def ordered_cluster_euclidean(df):
+    #================ rows ===================#
+    distancias = pdist(df.values, 'euclidean')
+    enlaces = linkage(distancias, method='average')
+    # Crear un dendrograma y obtener el orden de las hojas
+    dendro = dendrogram(enlaces)
+    orden_optimo = dendro['leaves']
+    # Ordenar las filas 
+    df_ordenado = df.iloc[orden_optimo, :]
+
+    #=============== columns =================#
+    df_transpuesto = df_ordenado.T
+
+    distancias = pdist(df_transpuesto.values, 'euclidean')
+    enlaces = linkage(distancias, method='average')
+    dendro = dendrogram(enlaces)
+    orden_optimo = dendro['leaves']
+
+    # Ordenar las columnas
+    df_transpuesto_ordenado = df_transpuesto.iloc[orden_optimo, :]
+    df_columnas_ordenadas = df_transpuesto_ordenado.T
+    return df_columnas_ordenadas
+
+def plot_all (sites_bed, df, group):
     df = sortOnco(df)
 
-    lst = []
-    site = []
-    for j in df.Start:
+    lst_merge = []
+    for i,j in zip(df.Chr, df.Start):
+        lst_merge.append(str(i) + ':' + str(j))
+
+    df['SiteCpG'] = lst_merge
+    df = df.set_index('SiteCpG')
+    start = list(df['Start'])
+    df = df.drop(['Chr', 'Start'], axis=1)
+    df.replace({'NaN':0, np.nan:0}, inplace = True); df = df.astype(float)
+    df = ordered_cluster_euclidean(df)
+
+    lst = []; site = []
+    for j in start:
         for i,k,c in zip(sites_bed.Site, sites_bed.Type, sites_bed.chrom):
             if int(j) == int(i):
                 lst.append(k)
@@ -109,15 +157,6 @@ def plot_all (sites_bed, df):
     lst = list(map(lambda x: x.replace('CpG shore', '1'), lst))
     lst = list(map(lambda x: x.replace('CpG shelf', '2'), lst))
     lst = list(map(lambda x: x.replace('CpG inter CGI', '3'), lst))
-
-    merge = []
-
-    for i,j in zip(df.Chr, df.Start):
-        merge.append(str(i) + ':' + str(j))
-
-    df['SiteCpG'] = merge
-    df = df.set_index('SiteCpG')
-    df = df.drop(['Chr', 'Start'], axis=1)
 
     df_annot = pd.DataFrame({'SiteCpG': site, 'Type':lst})
     df_annot = df_annot.set_index('SiteCpG')
@@ -140,25 +179,35 @@ def plot_all (sites_bed, df):
     #fig1 = px.imshow(df, labels=dict(x="ID"))
     arr = df.to_numpy()
     fig1 = go.Figure(data=go.Heatmap(
-                   z=arr, colorscale='RdBu',
+                   z=arr, colorscale='RdBu_r',
                    x=list(df.columns),
                    y=list(df.index.values) ))
 
     fig2 = go.Figure(data=[heatmap])
 
+    colorscale = [[0, '#1f77b4'], [1, '#d62728']]
+    fig3 = go.Figure(data=go.Heatmap(
+                   z= group.to_numpy().T,
+                   x= group.index,
+                   y=['Group'],
+                   hoverongaps = False, colorscale=colorscale))
+
     fig = make_subplots(
-        rows=1, cols=2,
-        horizontal_spacing=0.05,
-        column_widths=[0.9, 0.1], shared_yaxes=True)
+        rows=2, cols=2,
+        horizontal_spacing=0.05, vertical_spacing=0.05,
+        column_widths=[0.95, 0.05], row_heights =[0.9, 0.1], shared_yaxes=True, shared_xaxes = True)
 
     fig.add_trace(fig1.data[0], 1, 1)
     fig.add_trace(fig2.data[0], 1, 2)
+    fig.add_trace(fig3.data[0], 2, 1)
+
     #fig.update_xaxes(ticks="inside")
 
-    fig.update_xaxes(title_text="ID", row=1, col=1)
+    fig.update_xaxes(title_text="ID", row=2, col=1)
     fig.update_yaxes(title_text="CpG site", row=1, col=1)
 
     fig.update_traces(showscale=False, row=1, col=2)
+    fig.update_traces(showscale=False, row=2, col=1)
     #fig.update_traces(color_continuous_scale='RdBu_r', row=1, col=1)
     #print(fig.data)
     #fig[1,1].update_yaxes(title_text='site')
@@ -168,28 +217,78 @@ def plot_all (sites_bed, df):
 def plot_mean(df):
     df = df.rename(columns = {'ID':'Gene'})
     df = df.set_index('Gene')
-    df = df.drop(df.index[[0,1]])
 
-    fig_mean= px.imshow(df, aspect="auto",  color_continuous_scale='RdBu_r')
-    fig_mean.update_xaxes(title_text="ID")
+    group = pd.DataFrame(df.iloc[0])
+    group['Type'] = group['Type'].replace({'Normal':0, 'Sample':1})
 
-    return fig_mean
+    df = df.drop(df.index[[0]])
 
-def plot_offtarget(on_targets, off_targets):
-    on_targets.columns = ['ID' , 'Count']
+    df.replace({'NaN':0, np.nan:0}, inplace = True); df = df.astype(float)
+    df = ordered_cluster_euclidean(df)
+
+    arr = df.to_numpy()
+    fig_mean = go.Figure(data=go.Heatmap(
+                   z=arr, colorscale='RdBu_r',
+                   x=list(df.columns),
+                   y=list(df.index.values) ))
+
+    colorscale = [[0, '#1f77b4'], [1, '#d62728']]
+    fig_annot = go.Figure(data=go.Heatmap(
+                   z= group.to_numpy().T,
+                   x= group.index,
+                   y=['Group'],
+                   hoverongaps = False, colorscale=colorscale))
+
+
+    fig = make_subplots(
+        rows=2, cols=1, vertical_spacing=0.05,
+        row_heights =[0.9, 0.1], shared_xaxes = True)
+
+    fig.add_trace(fig_mean.data[0], 1, 1)
+    fig.add_trace(fig_annot.data[0], 2, 1)
+
+    fig.update_traces(showscale=False, row=2, col=1)
+    return fig
+
+def plot_offtarget(on_targets, off_targets, status):
+    on_targets.columns = ['ID' , 'Group', 'Count']
     on_targets['Status'] = ['on-target'] * len(on_targets)
 
-    off_targets.columns = ['ID' , 'Count']
+    off_targets.columns = ['ID' , 'Group', 'Count']
     off_targets['Status'] = ['off-target'] * len(off_targets)
 
     df = pd.concat([on_targets, off_targets])
+    df = df.replace({'Normal':'normal', 'Sample':'sample'})
+    if status == 'True':
+        fig1 = px.bar(df[df['Group'] == 'normal'], x="ID", y="Count", color="Status",
+                  color_discrete_map={'on-target': '#45B39D',
+                                      'off-target': '#EC7063'
+                                      })
 
-    fig_chr = px.bar(df, x="ID", y="Count", color='Status')
+        fig2 = px.bar(df[df['Group'] == 'sample'], x="ID", y="Count", color="Status")
+
+        fig_chr = make_subplots(rows=1, cols=2)
+
+        for trace in fig1['data']:
+            fig_chr.add_trace(trace, row=1, col=1)
+
+        for trace in fig2['data']:
+            fig_chr.add_trace(trace, row=1, col=2)
+
+        fig_chr.update_xaxes(title_text="normal", row=1, col=1)
+        fig_chr.update_xaxes(title_text="sample", row=1, col=2)
+
+    else:
+        fig_chr = px.bar(df, x="ID", y="Count", color='Status')
 
     return fig_chr
 
 def plot_norm(df):
     df = df.set_index('ID')
+
+    group = pd.DataFrame(df['Type'])
+    group['Type'] = group['Type'].replace({'Normal':0, 'Sample':1})
+
     df = df.drop(['Type'], axis=1)
     df = df.T.reset_index()
     df [['Chr', 'SpecificSite']] = df['index'].str.split(':',expand=True)
@@ -200,18 +299,68 @@ def plot_norm(df):
     df.rename(columns = {'index':'CpG site'}, inplace = True)
     df = df.set_index('CpG site')
 
-    fig_norm_all = px.imshow(df, aspect="auto", color_continuous_scale='RdBu_r')
+    df.replace({'NaN':0, np.nan:0, np.inf:0, -np.inf:0}, inplace = True); df = df.astype(float)
+    df = ordered_cluster_euclidean(df)
 
-    return fig_norm_all
+    arr = df.to_numpy()
+    fig_norm = go.Figure(data=go.Heatmap(
+                   z=arr, colorscale='RdBu_r',
+                   x=list(df.columns),
+                   y=list(df.index.values) ))
+
+    colorscale = [[0, '#1f77b4'], [1, '#d62728']]
+    fig_annot = go.Figure(data=go.Heatmap(
+                   z= group.to_numpy().T,
+                   x= group.index,
+                   y=['Group'],
+                   hoverongaps = False, colorscale=colorscale))
+
+
+    fig = make_subplots(
+        rows=2, cols=1, vertical_spacing=0.05,
+        row_heights =[0.9, 0.1], shared_xaxes = True)
+
+    fig.add_trace(fig_norm.data[0], 1, 1)
+    fig.add_trace(fig_annot.data[0], 2, 1)
+
+    fig.update_traces(showscale=False, row=2, col=1)
+
+    return fig
 
 def plot_mean_norm (df):
-    df = df.drop(['Type'], axis=1)
     df = df.set_index('ID')
+    group = pd.DataFrame(df['Type'])
+    group['Type'] = group['Type'].replace({'Normal':0, 'Sample':1})
 
-    fig_mean_norm= px.imshow(df.T, aspect="auto",  color_continuous_scale='RdBu_r')
-    fig_mean_norm.update_yaxes(title_text="Gene")
+    df = df.drop(['Type'], axis=1)
+    df = df.T
 
-    return fig_mean_norm
+    df.replace({'NaN':0, np.nan:0, np.inf:0, -np.inf:0}, inplace = True); df = df.astype(float)
+    df = ordered_cluster_euclidean(df)
+
+    arr = df.to_numpy()
+    fig_norm = go.Figure(data=go.Heatmap(
+                   z=arr, colorscale='RdBu_r',
+                   x=list(df.columns),
+                   y=list(df.index.values) ))
+
+    colorscale = [[0, '#1f77b4'], [1, '#d62728']]
+    fig_annot = go.Figure(data=go.Heatmap(
+                   z= group.to_numpy().T,
+                   x= group.index,
+                   y=['Group'],
+                   hoverongaps = False, colorscale=colorscale))
+
+    fig = make_subplots(
+        rows=2, cols=1, vertical_spacing=0.05,
+        row_heights =[0.9, 0.1], shared_xaxes = True)
+
+    fig.add_trace(fig_norm.data[0], 1, 1)
+    fig.add_trace(fig_annot.data[0], 2, 1)
+
+    fig.update_traces(showscale=False, row=2, col=1)
+
+    return fig
 
 def plot_manhattan (df):
     df = df.set_index('ID'); df = df.T
@@ -303,47 +452,6 @@ def plot_site_percent(df):
     df_n = df_final[df_final['Type'] == 'Normal']
 
     fig = go.Figure([
-        # STD zone
-        #go.Scatter(
-        #    name='Upper normal',
-        #    x=df_n['ID'],
-        #    y=df_n['mean']+df_n['std'],
-        #    mode='lines',
-        #    marker=dict(color="#444"),
-        #    line=dict(width=0),
-        #    showlegend=False
-        #),
-        #go.Scatter(
-        #    name='Lower normal',
-        #    x=df_n['ID'],
-        #    y=df_n['mean']-df_n['std'],
-        #    marker=dict(color="#444"),
-        #    line=dict(width=0),
-        #    mode='lines',
-        #    fillcolor='#66A4F3',
-        #    fill='tonexty',
-        #    showlegend=False
-        #),
-        #go.Scatter(
-        #    name='Upper sample',
-        #    x=df_s['ID'],
-        #    y=df_s['mean']+df_s['std'],
-        #    mode='lines',
-        #    marker=dict(color="#444"),
-        #    line=dict(width=0),
-        #    showlegend=False
-        #),
-        #go.Scatter(
-        #    name='Lower sample',
-        #    x=df_s['ID'],
-        #    y=df_s['mean']-df_s['std'],
-        #    marker=dict(color="#444"),
-        #    line=dict(width=0),
-        #    mode='lines',
-        #    fillcolor='#F36666',
-        #    fill='tonexty',
-        #    showlegend=False
-        #),
         go.Scatter(
             name='normal',
             x=df_n['ID'],
@@ -368,8 +476,8 @@ def plot_site_percent(df):
 
 def boxplot_site(df):
     df['Type'] = df['Type'].replace({"Sample": "sample", "Normal": "normal"})
-    fig = px.violin(df, x = 'Type' , y="value", points = "all", box = True, color = 'Type',
-                 labels={"value": "Z-score"})
+    fig = px.violin(df, x = 'Type' , y="Met_perc", points = "all", box = True, color = 'Type',
+                 labels={"Met_perc": "methylation %"})
     #fig.add_trace(px.strip(df, x='Type', y='value', color='Type').data[0])
     return fig
 
@@ -387,47 +495,6 @@ def plot_site_norm(df):
     df_n = df_final[df_final['Type'] == 'Normal']
 
     fig = go.Figure([
-        # STD zone
-        #go.Scatter(
-        #    name='Upper normal',
-        #    x=df_n['variable'],
-        #    y=df_n['mean']+df_n['std'],
-        #    mode='lines',
-        #    marker=dict(color="#444"),
-        #    line=dict(width=0),
-        #    showlegend=False
-        #),
-        #go.Scatter(
-        #    name='Lower normal',
-        #    x=df_n['variable'],
-        #    y=df_n['mean']-df_n['std'],
-        #    marker=dict(color="#444"),
-        #    line=dict(width=0),
-        #    mode='lines',
-        #   fillcolor='#66A4F3',
-        #    fill='tonexty',
-        #    showlegend=False
-        #),
-        #go.Scatter(
-        #    name='Upper sample',
-        #    x=df_s['variable'],
-        #    y=df_s['mean']+df_s['std'],
-        #    mode='lines',
-        #    marker=dict(color="#444"),
-        #    line=dict(width=0),
-        #    showlegend=False
-        #),
-        #go.Scatter(
-        #    name='Lower sample',
-        #    x=df_s['variable'],
-        #    y=df_s['mean']-df_s['std'],
-        #    marker=dict(color="#444"),
-        #    line=dict(width=0),
-        #    mode='lines',
-        #    fillcolor='#F36666',
-        #    fill='tonexty',
-        #    showlegend=False
-        #),
 
         go.Scatter(
             name='normal',
@@ -628,5 +695,5 @@ def plot_donut_cgi(df):
     return fig
 
 def plot_count_snv(df):
-    fig  = px.bar(df, x = 'ID', y = 'Count')
+    fig  = px.bar(df, x = 'ID', y = 'Count', color = 'group')
     return fig

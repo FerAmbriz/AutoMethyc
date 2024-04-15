@@ -9,6 +9,7 @@ inp = sys.argv[1]
 output = sys.argv[2]
 dep = sys.argv[3]
 ID = sys.argv[4]
+group = sys.argv[5]
 
 cov  = pd.read_csv(inp, sep='\t', header = None)
 
@@ -28,6 +29,7 @@ df_i = pd.DataFrame({'ID' : [ID],
                      'filtered': [filtered],
                      'depth_mean':[depth_mean],
                      'depth_std': [depth_std],
+                     'group': [group]
                      })
 
 db = pd.read_csv(output + '/count_depth_' + str(dep) + '_pass.csv')

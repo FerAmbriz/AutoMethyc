@@ -47,25 +47,26 @@ fig_fastqc = plot_fastqc(df)
 
 #=======================Depth======================#
 df = pd.read_csv(depth)
-fig_depth = plot_depth(df)
+fig_depth = plot_depth(df, norm)
 
 #========================All=========================#
 sites_bed = pd.read_csv(cgi)
 df = pd.read_csv(Oncoprint_All)
 df = df.drop(['Unnamed: 2'], axis=1)
+group = pd.DataFrame(df.iloc[0]).drop(['ID', 'Unnamed: 1'])
+group[0] = group[0].replace({'Normal':0, 'Sample':1})
 df = df.drop(df.index[[0,1]])
 df = df.rename(columns = {'Unnamed: 1':'Start', 'ID':'Chr'})
-
-fig_all = plot_all(sites_bed, df)
+fig_all = plot_all(sites_bed, df, group)
 
 #========================Mean=======================#
 df = pd.read_csv(Oncoprint_mean)
 fig_mean = plot_mean(df)
 
 #=====================Off-target====================#
-filtered = pd.read_csv(Count)
-merge = pd.read_csv(NotLoc)
-fig_oft = plot_offtarget(filtered, merge)
+on_targets = pd.read_csv(Count)
+off_targets = pd.read_csv(NotLoc)
+fig_oft = plot_offtarget(on_targets, off_targets, norm)
 
 #====================Norm all=======================#
 if norm == 'True':
@@ -93,7 +94,7 @@ fig_percent_site = plot_site_percent(df)
 
 #====================Boxplot=======================#
 if norm == 'True':
-    df = pd.read_csv(boxplot_csv)
+    df = pd.read_csv(filtered_target)
     fig_boxplot = boxplot_site(df)
 #======================NormSite=====================#
 if norm == 'True':
@@ -159,6 +160,8 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(table_global.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_all.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_percent_site.to_html(full_html=False, include_plotlyjs='cdn'))
+    if norm == 'True':
+        f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_mean_gene())
     f.write(table_mean_gene.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_mean.to_html(full_html=False, include_plotlyjs='cdn'))
@@ -168,7 +171,6 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(fig_norm.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_site_norm.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_manhattan.to_html(full_html=False, include_plotlyjs='cdn'))
-        f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(html_mean_norm())
         f.write(table_mean_gene_normalized.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_mean_norm.to_html(full_html=False, include_plotlyjs='cdn'))
