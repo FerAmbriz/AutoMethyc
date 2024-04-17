@@ -15,7 +15,7 @@ merge_filtrado = pd.read_csv(Input)
 
 merge_filtrado=merge_filtrado.drop(['End',  'Cyt_Met', 'Cyt_NoMet', 'Depth'], axis=1)
 
-df = merge_filtrado.pivot(index=['Chr','Start','Gene'], columns=['ID', 'Type'])
+df = merge_filtrado.pivot_table(index=['Chr','Start','Gene'], columns=['ID', 'Type'], aggfunc='mean')
 
 # Eliminar el multindice de las columnas
 df = df.droplevel(level=0, axis=1)

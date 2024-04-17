@@ -13,6 +13,7 @@ import re
 from multiprocessing import Pool
 from scipy.spatial.distance import pdist, squareform
 from scipy.cluster.hierarchy import linkage, dendrogram
+import math
 
 def sortOnco (df):
     numero_chr = []
@@ -382,6 +383,12 @@ def plot_manhattan (df):
         xaxis_title='CpG site')
 
     return manhattan
+
+def plot_volcano (df):
+    #volcano = px.scatter(df, x="average_zscore_sample", y='log10_p_value_bonferroni', opacity=0.7)
+    volcano = px.scatter(df, x="average_zscore_sample", y='log10_p_value', opacity=0.7)
+    return volcano
+
 
 def plot_pca(finalDf):
     # match columns

@@ -29,13 +29,15 @@ def calculate_normality(lst):
 
 # uso la normal porque en teoria es lo mismo
 lst_site = []; lst_wilk_normal = []; lst_wilk_sample = []; lst_values_normal = []; lst_values_sample = []
-lst_test = []; lst_average_zscore_sample = []
+lst_test = []; lst_average_zscore_sample = []; lst_p = []
 
 for i in z_score_normal['variable'].unique():
     lst_site.append(i)
 
     normal_i = list(z_score_normal[z_score_normal['variable'] == i]['value'])
+    normal_i = np.array(normal_i)[np.isfinite(normal_i)]
     sample_i = list(z_score_sample[z_score_sample['variable'] == i]['value'])
+    sample_i = np.array(sample_i)[np.isfinite(sample_i)]
 
     lst_values_normal.append(normal_i); lst_values_sample.append(sample_i)
     lst_average_zscore_sample.append(np.mean(sample_i))
@@ -51,28 +53,34 @@ for i in z_score_normal['variable'].unique():
 
     if (wilk_normal[0] == 'parametric') and (wilk_sample[0] == 'parametric'):
         t, p_value = stats.ttest_ind(normal_i, sample_i)
-        lst_test_i = ['t-student', t, p_value]
+        lst_test_i = ['t-student', t, p_value]; lst_p.append(p_value)
     elif (wilk_normal == 'NaN') or (wilk_sample == 'NaN'):
-        lst_test_i = 'NaN'
+        lst_test_i = 'NaN'; lst_p.append('NaN')
     else:
         u, p_value = stats.mannwhitneyu(normal_i, sample_i)
-        lst_test_i = ['wilcoxon', u, p_value]
+        lst_test_i = ['wilcoxon', u, p_value]; lst_p.append(p_value)
 
     lst_test.append(lst_test_i)
 
 df = pd.DataFrame({'Site':lst_site, 'values_normal': lst_values_normal,
                    'values_sample': lst_values_sample,
                    'average_zscore_sample': lst_average_zscore_sample,
-                   'wilcoxon_test_normal': lst_wilk_normal,
-                   'wilcoxon_test_sample': lst_wilk_sample,
-                   'test': lst_test
+                   'shapiro_test_normal': lst_wilk_normal,
+                   'shapiro_test_sample': lst_wilk_sample,
+                   'test': lst_test,
+                   'p_value': lst_p
                    })
 
-p_values  = df['test'].apply(lambda x: x[-1] if isinstance(x, list) and len(x) > 0 else np.nan)
-#p_values = [x for x in p_values if np.isfinite(x)]
-numero_de_pruebas = len(p_values)
 
-p_values = np.full(numero_de_pruebas, p_values)
+
+df = df[df['p_value'] != 'NaN']
+
+df['log10_p_value'] = list(map(math.log10, df['p_value'] ))
+df['log10_p_value'] = df['log10_p_value'] * -1
+
+
+numero_de_pruebas = len(df)
+p_values = np.full(numero_de_pruebas, df['p_value'])
 p_values_ajustados = multipletests(p_values, method='bonferroni')[1]
 
 df['p_value_bonferroni'] = p_values_ajustados
@@ -80,4 +88,4 @@ df['log10_p_value_bonferroni'] = list(map(math.log10, df['p_value_bonferroni'] )
 df['log10_p_value_bonferroni'] = df['log10_p_value_bonferroni'] * -1
 
 print(df)
-df.to_csv(output + '/volcano_plot_data.csv')
+df.to_csv(output + '/volcano_plot_data.csv', index = False)

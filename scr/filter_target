@@ -23,10 +23,12 @@ lst = []
 for c,s,ID in zip(df.Chr, df.Start, df.ID):
     dF_i = dfF[dfF['Chr'] == c]
     for sF,eF,Gene in zip(dF_i.Start, dF_i.End, dF_i.Gene):
-        if s in range(sF, eF+1, 1):
+        if sF <= s <= eF+1:
             db_i = df[(df['Start'] == s) & (df['ID'] == ID)]
+            print(db_i)
             lst.append(Gene)
             df_bd = pd.concat([df_bd, db_i])
+
 df_bd['Gene'] = lst
 df_filtrado = df_bd
 
