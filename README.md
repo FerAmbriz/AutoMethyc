@@ -3,16 +3,31 @@
   <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png" width="200px" height="auto">
 </p>
 
-AutoMethyc is an integrative pipeline to methylation analysis from raw paired-end sequences obtained from massive parallel bisulfite sequencing.
+AutoMethyc is an integrative pipeline to methylation analysis from massive parallel bisulfite sequencing. This pipeline provide and comparative approach and integrative analysis to identify level of methylation, porcentage and normalization with z-score, and detection of variants.
+
+IMAAGE
+
+## Requeriment
+
+To run Authometyc algorithms, you need:
+a) Fastq files (control and samples)
+b) Bed (optional)
+c) Reference genome (humans and other species)
 
 ## Install
-### Install with Docker
-We created a [docker container](https://hub.docker.com/r/ambrizbiotech/automethyc) with all the necessary dependencies to run the program in order to provide a portable and self-sufficient container. To install it you need to have [docker installed](https://docs.docker.com/engine/install/) and then download the docker image.
+
+Automethyc can be created in two forms. We recommend use docker 
+
+### Install with Docker (recommended)
+
+Pull the authometyc image in docker hub [docker container](https://hub.docker.com/r/ambrizbiotech/automethyc) which containt all dependices to run the algorithm. To install it you need to have [docker installed](https://docs.docker.com/engine/install/) and then download the docker image.
+
 ```
 docker pull ambrizbiotech/automethyc
 ```
 ### Local installation
-For this installation option is necessary to install all the dependencies detailed in greater detail in the [documentation](https://github.com/FerAmbriz/AutoMethyc/blob/master/Documentation.pdf)
+
+For this option, it is necessary to install all dependencies, see [documentation](https://github.com/FerAmbriz/AutoMethyc/blob/master/Documentation.pdf)
 
 Once the dependencies are installed, move the dependencies in the `scr` folder to the $PATH
 ```
@@ -20,9 +35,11 @@ git clone https://github.com/FerAmbriz/AutoMethyc.git
 cd AutoMethyc/scr
 sudo mv * /usr/bin/
 ```
+
 ## Usage
 ### Docker version
-In case you are using the version installed with docker, you have to mount the volume (-v) in the corresponding directory and run it in the background (-d) to avoid breaking the process in long execution times. For this, we provide an automount script with the possibility of using relative and absolute path
+
+Before run AutoMethyc, you need to have the fastq file and reference genome in a separete directory and mount the volume with the option (-v). The algorhitm is run in background (-d) to avoid breaking the process. For this, we provide an automount script with the possibility of using relative and absolute path
 ```
 automethyc_docker -i [fastq_folder] -o [Output_folder] -r [reference genome file] [optional arguments]
 ```
