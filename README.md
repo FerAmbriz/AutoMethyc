@@ -4,8 +4,8 @@
 </p>
 
 AutoMethyc is an integrative pipeline to methylation analysis from massive parallel bisulfite sequencing. This pipeline provide and comparative approach and integrative analysis from several algorhitms to detect level of methylation, detection of variants, hierarchical grouping and plots. The output of this algorithms are provided in csv file (raw data) and an interactive plots (html).
-html format and 
 
+Overview of the Authometyc
 
 workflow image
 
