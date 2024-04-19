@@ -10,33 +10,55 @@ def html_css ():
         <style>
             body{ margin:0; background:white; color:black; font-family: Arial;}
             .active {
-                background-color: #04AA6D;
+                background-color:#45B39D;
                 color: white;
                 }
 
             /* Vertical bar */
-            ul {
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-                width: 13%;
-                background-color: #1c1f27;
-                height: 100%; /* Full height */
-                position: fixed; /* Make it stick, even on scroll */
-                overflow: auto; /* Enable scrolling if the sidenav has too much content */
-                }
-            li a {
-                display: block;
-                color: #ffffff;
-                padding: 8px 16px;
-                text-decoration: none;
-                }
+          ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 13%;
+    background-color: #1c1f27;
+    height: 100%; /* Full height */
+    position: fixed; /* Make it stick, even on scroll */
+    overflow: auto; /* Enable scrolling if the sidenav has too much content */
+}
+li a {
+    display: block;
+    color: #ffffff;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 10px;
+}
+li a span {
+    display: block;
+    padding: 16px 0px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
 
-            /* Change the link color on hover */
-            li a:hover {
-            background-color: #04aa6d;
-            color: white;
-            }
+/* Change the link color on hover */
+li a span:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black;
+    border-radius: 10px;
+}
+
+li a span2 {
+    display: block;
+    padding: 10px 10px;
+    font-size: 17px;
+}
+
+/* Change the link color on hover */
+li a span2:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black;
+    border-radius: 10px;
+}
 
             .main{
             margin-left: 15%;
@@ -71,6 +93,16 @@ def html_css ():
               display: block;
               margin: auto;
             }
+            .vertical {display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribuye el espacio de manera uniforme entre los elementos */
+    height: 100%; /* Ocupa todo el espacio vertical disponible */
+}
+
+.vertical li:last-child {
+    margin-top: auto; /* Empuja el último elemento hacia abajo */
+}
+
         </style>
         <link rel="icon" href="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png?raw=true">
     </head>
@@ -80,18 +112,18 @@ def html_css ():
 def html_navbar_complete ():
     html = '''
     <ul class="vertical">
-        <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
-        <li><a href="#Base"> Base quality </a></li>
-        <li><a href="#Depth"> Depth </a></li>
-        <li><a href="#Samples"> Coverage </a></li>
-        <li><a href="#cgi"> CGI mapping </a></li>
-        <li><a href="#All"> Methylation percentage </a></li>
-        <li><a href="#Mean"> Mean methylation </a></li>
-        <li><a href="#all_norm"> Normalized methylation </a></li>
-        <li><a href="#Mean_norm"> Mean normalized </a></li>
-        <li><a href="#pca"> PCA </a></li>
-        <li><a href="#snv"> Variant calling </a><li>
-        <li><a href="#about"> About </a></li>
+        <li><a href="#Home" color:white><span> AutoMethyc </span></a></li>
+        <li><a href="#Base"><span2> Base quality </span2></a></li>
+        <li><a href="#Depth"><span2> Depth </span2></a></li>
+        <li><a href="#Samples"><span2> Coverage </span2></a></li>
+        <li><a href="#cgi"><span2> CGI mapping </span2></a></li>
+        <li><a href="#All"><span2> Methylation percentage </span2></a></li>
+        <li><a href="#Mean"><span2> Mean methylation </span2></a></li>
+        <li><a href="#all_norm"><span2> Normalized methylation </span2></a></li>
+        <li><a href="#Mean_norm"><span2> Mean normalized </span2></a></li>
+        <li><a href="#pca"><span2> PCA </span2></a></li>
+        <li><a href="#snv"><span2> Variant calling </span2></a><li>
+        <li><a href="#about" style="background-color:#45B39D; border-radius: 0"><span2 style="background-color:#1c1f27; border-radius:10px" onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.5)'; this.style.color='black';" onmouseout="this.style.backgroundColor='#1c1f27'; this.style.color='white';"> About </span2></a></li>
     </ul>
 
     <script>
