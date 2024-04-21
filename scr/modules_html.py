@@ -15,55 +15,71 @@ def html_css ():
                 }
 
             /* Vertical bar */
-          ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 13%;
-    background-color: #1c1f27;
-    height: 100%; /* Full height */
-    position: fixed; /* Make it stick, even on scroll */
-    overflow: auto; /* Enable scrolling if the sidenav has too much content */
-}
-li a {
-    display: block;
-    color: #ffffff;
-    padding: 8px 16px;
-    text-decoration: none;
-    border-radius: 10px;
-}
-li a span {
-    display: block;
-    padding: 16px 0px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: bold;
-}
+            ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                width: 13%;
+                background-color: #1c1f27;
+                height: 100%; /* Full height */
+                position: fixed; /* Make it stick, even on scroll */
+                overflow: auto; /* Enable scrolling if the sidenav has too much content */
+                }
 
-/* Change the link color on hover */
-li a span:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-    color: black;
-    border-radius: 10px;
-}
+            li a {
+                display: block;
+                color: #ffffff;
+                padding: 8px 16px;
+                text-decoration: none;
+                border-radius: 10px;
+                }
 
-li a span2 {
-    display: block;
-    padding: 10px 10px;
-    font-size: 17px;
-}
+            li a span {
+                display: block;
+                padding: 16px 0px;
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+                }
 
-/* Change the link color on hover */
-li a span2:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-    color: black;
-    border-radius: 10px;
-}
+            /* Change the link color on hover */
+            li a span:hover {
+                background-color: rgba(255, 255, 255, 0.5);
+                color: black;
+                border-radius: 10px;
+                }
+
+            li a span2 {
+                display: block;
+                padding: 10px 10px;
+                font-size: 17px;
+                }
+
+            /* Change the link color on hover */
+            li a span2:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: black;
+            border-radius: 10px;
+            }
+
+            li a span3 {
+                display: block;
+                padding: 10px 15px 10px 30px;
+                font-size: 15px;
+                }
+
+            li a span3:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: black;
+            border-radius: 10px;
+            }
+
+
 
             .main{
-            margin-left: 15%;
-            padding: 1px 16px;
-            height 500px;
+                margin-left: 15%;
+                padding: 1px 16px;
+                height 500px;
             }
 
             .fraction {
@@ -74,8 +90,8 @@ li a span2:hover {
                 }
 
             .fraction > span {
-            display: block;
-            padding-top: 0.15em;
+                display: block;
+                padding-top: 0.15em;
             }
 
             .fraction span.fdn {border-top: thin solid white;}
@@ -94,16 +110,27 @@ li a span2:hover {
               margin: auto;
             }
             .vertical {display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Distribuye el espacio de manera uniforme entre los elementos */
-    height: 100%; /* Ocupa todo el espacio vertical disponible */
+                flex-direction: column;
+                justify-content: space-between; /* Distribuye el espacio de manera uniforme entre los elementos */
+                height: 100%; /* Ocupa todo el espacio vertical disponible */
+                }
+
+            .vertical li:last-child {
+                margin-top: auto; /* Empuja el último elemento hacia abajo */
+            }
+
+.vertical li ul {
+    position: relative;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.5s ease-in-out;
+    min-width: 200px;
 }
 
-.vertical li:last-child {
-    margin-top: auto; /* Empuja el último elemento hacia abajo */
+.vertical li:hover ul {
+    height: auto;
 }
-
-        </style>
+             </style>
         <link rel="icon" href="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png?raw=true">
     </head>
     '''
@@ -112,13 +139,17 @@ li a span2:hover {
 def html_navbar_complete ():
     html = '''
     <ul class="vertical">
-        <li><a href="#Home" color:white><span> AutoMethyc </span></a></li>
+        <li><a href="#Home"><span> AutoMethyc </span></a></li>
         <li><a href="#Base"><span2> Base quality </span2></a></li>
         <li><a href="#Depth"><span2> Depth </span2></a></li>
-        <li><a href="#Samples"><span2> Coverage </span2></a></li>
-        <li><a href="#cgi"><span2> CGI mapping </span2></a></li>
-        <li><a href="#All"><span2> Methylation percentage </span2></a></li>
-        <li><a href="#Mean"><span2> Mean methylation </span2></a></li>
+        <li><a href="#Coverage"><span2> Coverage </span2></a></li>
+        <li><a href="#CGI"><span2> CGI mapping </span2></a></li>
+        <li>
+        <a href="#All"><span2> Methylation percentage </span2></a>
+        <ul>
+            <li><a href="#Mean"><span3> Mean methylation </span3></a></li>
+        </ul>
+        </li>
         <li><a href="#all_norm"><span2> Normalized methylation </span2></a></li>
         <li><a href="#Mean_norm"><span2> Mean normalized </span2></a></li>
         <li><a href="#pca"><span2> PCA </span2></a></li>
@@ -127,25 +158,54 @@ def html_navbar_complete ():
     </ul>
 
     <script>
-        window.addEventListener('scroll', function() {
-            var items = document.querySelectorAll('.vertical li a');
-            var activeItem;
-            items.forEach(function(item) {
-                var section = document.querySelector(item.getAttribute('href'));
-                var sectionTop = section.offsetTop;
-                var sectionBottom = sectionTop + section.offsetHeight;
-                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
-                    item.classList.add('active');
-                    activeItem = item;
-                 }
-            });
-            items.forEach(function(item) {
-                if (item !== activeItem) {
-                    item.classList.remove('active');
-                 }
-            });
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+    window.addEventListener('scroll', function() {
+    var items = document.querySelectorAll('.vertical li a');
+    var activeItem;
+    items.forEach(function(item) {
+        var section = document.querySelector(item.getAttribute('href'));
+        var sectionTop = section.offsetTop;
+        var sectionBottom = sectionTop + section.offsetHeight;
+        if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+            item.classList.add('active');
+            activeItem = item;
+            }
         });
-    </script>
+    items.forEach(function(item) {
+        if (item !== activeItem) {
+            item.classList.remove('active');
+            }
+        });
+    });
+
+    var items = document.querySelectorAll('.vertical li a');
+    window.addEventListener('hashchange', function() {
+    var items = document.querySelectorAll('.vertical li a');
+    var activeItem;
+    items.forEach(function(item) {
+        if (item.getAttribute('href') === location.hash) {
+            item.classList.add('active');
+            activeItem = item;
+            }
+        });
+    items.forEach(function(item) {
+        if (item !== activeItem) {
+            item.classList.remove('active');
+            }
+        });
+    });
+
+    $(document).ready(function(){
+    $('.vertical li').hover(
+        function(){
+            $('ul', this).stop().slideDown(200);
+        },
+        function(){
+            $('ul', this).stop().slideUp(200);
+        }
+    );
+});
+     </script>
     '''
     return html
 
@@ -156,8 +216,8 @@ def html_navbar_sNorm ():
         <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
         <li><a href="#Base"> Base quality </a></li>
         <li><a href="#Depth"> Depth </a></li>
-        <li><a href="#Samples" > Coverage </a></li>
-        <li><a href="#cgi" > CGI mapping </a></li>
+        <li><a href="#Coverage" > Coverage </a></li>
+        <li><a href="#CGI" > CGI mapping </a></li>
         <li><a href="#All"> Methylation percentage </a></li>
         <li><a href="#Mean"> Mean methylation </a></li>
         <li><a href="#snv"> Variant calling </a><li>
@@ -226,7 +286,7 @@ def html_depth ():
 def html_coverage ():
     html = '''
     </div>
-    <div id="Samples">
+    <div id="Coverage">
         <h2 style="margin-bottom: 5px;"> Coverage </h2>
         <hr>
         Count of sites present in the regions of interest provided by BED file
@@ -236,7 +296,7 @@ def html_coverage ():
 def html_cgi():
     html = '''
     </div>
-    <div id="cgi">
+    <div id="CGI">
         <h2 style="margin-bottom: 5px;"> CGI mapping </h2>
         <hr>
         Mapped regions and their classification considering the nearest CpG island
@@ -244,7 +304,6 @@ def html_cgi():
             <div class="c">
                 <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/IslaCpG.jpeg?raw=true" width="650" height="150">
             </div>
-            </ol>
         </div>
     '''
     return html
@@ -252,7 +311,7 @@ def html_all():
     html = '''
     </div>
     <div id="All">
-        <h2 id="All"; style="margin-bottom: 5px;"> Methylation percentage </h2>
+        <h2 style="margin-bottom: 5px;"> Methylation percentage </h2>
         <hr>
         Methylation percentage considering the cytosines methylated and unmethylated for each site
     '''
