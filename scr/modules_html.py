@@ -9,12 +9,7 @@ def html_css ():
     <head>
         <style>
             body{ margin:0; background:white; color:black; font-family: Arial;}
-            .active {
-                background-color:#45B39D;
-                color: white;
-                }
-
-            /* Vertical bar */
+               /* Vertical bar */
             ul {
                 list-style-type: none;
                 margin: 0;
@@ -64,7 +59,7 @@ def html_css ():
 
             li a span3 {
                 display: block;
-                padding: 10px 15px 10px 30px;
+                padding: 5px 15px 5px 15px;
                 font-size: 15px;
                 }
 
@@ -119,16 +114,37 @@ def html_css ():
                 margin-top: auto; /* Empuja el último elemento hacia abajo */
             }
 
+
 .vertical li ul {
     position: relative;
-    height: 0;
     overflow: hidden;
     transition: height 0.5s ease-in-out;
-    min-width: 200px;
+    min-width: 100%;
 }
 
+.vertical li:not(.active) ul {
+    height: 0px;
+}
+
+.vertical li.active ul,
 .vertical li:hover ul {
     height: auto;
+}
+
+.vertical li.active > a {
+    background-color: #45B39D;
+    color: white;
+    border-radius: 10px;
+}
+
+/* Color de los submenus */
+.vertical li.active ul {
+    opacity: 0.7;
+}
+
+.vertical li ul li.active a {
+    color: black;
+    background-color: white;
 }
              </style>
         <link rel="icon" href="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/AutoMethyc.png?raw=true">
@@ -147,7 +163,7 @@ def html_navbar_complete ():
         <li>
         <a href="#All"><span2> Methylation percentage </span2></a>
         <ul>
-            <li><a href="#Mean"><span3> Mean methylation </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#Mean"><span3> Mean methylation </span3></a></li>
         </ul>
         </li>
         <li><a href="#all_norm"><span2> Normalized methylation </span2></a></li>
@@ -159,53 +175,55 @@ def html_navbar_complete ():
 
     <script>
     src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-    window.addEventListener('scroll', function() {
-    var items = document.querySelectorAll('.vertical li a');
-    var activeItem;
+
+// Obtén todos los elementos 'li' dentro de '.vertical'
+let items = document.querySelectorAll('.vertical li a');
+let activeItem;
+
+function setActiveItem(item) {
+    // Remueve la clase 'active' de todos los elementos
+    items.forEach((item) => {
+        item.parentElement.classList.remove('active');
+        if (item.parentElement.parentElement.parentElement.tagName === 'LI') {
+            item.parentElement.parentElement.parentElement.classList.remove('active');
+        }
+    });
+
+    // Añade la clase 'active' al elemento seleccionado
+    item.parentElement.classList.add('active');
+    if (item.parentElement.parentElement.parentElement.tagName === 'LI') {
+        item.parentElement.parentElement.parentElement.classList.add('active');
+    }
+    activeItem = item;
+}
+
+// Añade un evento de escucha a cada elemento 'li'
+items.forEach((item) => {
+    item.addEventListener('click', function(event) {
+        event.stopPropagation();
+        setActiveItem(this);
+    });
+});
+
+window.addEventListener('scroll', function() {
     items.forEach(function(item) {
         var section = document.querySelector(item.getAttribute('href'));
         var sectionTop = section.offsetTop;
         var sectionBottom = sectionTop + section.offsetHeight;
         if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
-            item.classList.add('active');
-            activeItem = item;
-            }
-        });
-    items.forEach(function(item) {
-        if (item !== activeItem) {
-            item.classList.remove('active');
-            }
-        });
+            setActiveItem(item);
+        }
     });
+});
 
-    var items = document.querySelectorAll('.vertical li a');
-    window.addEventListener('hashchange', function() {
-    var items = document.querySelectorAll('.vertical li a');
-    var activeItem;
+window.addEventListener('hashchange', function() {
     items.forEach(function(item) {
         if (item.getAttribute('href') === location.hash) {
-            item.classList.add('active');
-            activeItem = item;
-            }
-        });
-    items.forEach(function(item) {
-        if (item !== activeItem) {
-            item.classList.remove('active');
-            }
-        });
-    });
-
-    $(document).ready(function(){
-    $('.vertical li').hover(
-        function(){
-            $('ul', this).stop().slideDown(200);
-        },
-        function(){
-            $('ul', this).stop().slideUp(200);
+            setActiveItem(item);
         }
-    );
+    });
 });
-     </script>
+    </script>
     '''
     return html
 
