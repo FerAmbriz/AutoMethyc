@@ -1,0 +1,149 @@
+
+body{ margin:0; background:white; color:black; font-family: Arial;}
+
+/* Vertical bar */
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 13%;
+  background-color: #1c1f27;
+  height: 100%; /* Full height */
+  position: fixed; /* Make it stick, even on scroll */
+  overflow: auto; /* Enable scrolling if the sidenav has too much content */
+}
+
+li a {
+  display: block;
+  color: #ffffff;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 10px;
+}
+
+            
+li a span {
+  display: block;
+  padding: 16px 0px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+ 
+/* Change the link color on hover */
+li a span:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: black;
+  border-radius: 10px;
+}
+
+li a span2 {
+  display: block;
+  padding: 10px 10px;
+  font-size: 17px;
+}
+
+            
+/* Change the link color on hover */
+li a span2:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: black;
+  border-radius: 10px;
+}
+
+li a span3 {
+  display: block;
+  padding: 5px 15px 5px 15px;
+  font-size: 15px;
+}
+
+li a span3:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: black;
+  border-radius: 10px;
+}
+
+
+.main{
+  margin-left: 15%;
+  padding: 1px 16px;
+  height 500px;
+}
+
+
+.fraction {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0.2em 0.4ex;
+  text-align: center;
+}
+
+            
+.fraction > span {
+  display: block;
+  padding-top: 0.15em; 
+}
+
+.fraction span.fdn {border-top: thin solid white;}
+.fraction span.bar {display: none;}
+
+.column {
+  float: left;
+}
+
+.center {
+  margin: auto;
+  width: 15%;
+}
+
+.c{
+  width: 50%;
+  display: block;
+  margin: auto;
+}
+
+.vertical {display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribuye el espacio de manera uniforme entre los elementos */
+  height: 100%; /* Ocupa todo el espacio vertical disponible */
+}
+
+.vertical li:last-child {
+  margin-top: auto; /* Empuja el último elemento hacia abajo */
+}
+
+
+.vertical li ul {
+  position: relative;
+  overflow: hidden;
+  transition: height 0.5s ease-in-out;
+  min-width: 100%;
+}
+
+
+.vertical li:not(.active) ul {
+  height: 0px;
+}
+
+
+.vertical li.active ul,
+.vertical li:hover ul {
+  height: auto;
+}
+
+.vertical li.active > a {
+  background-color: #45B39D;
+  color: white;
+  border-radius: 10px;
+}
+
+/* Color de los submenus */
+.vertical li.active ul {
+  opacity: 0.7;
+}
+
+.vertical li ul li.active a {
+  color: black;
+  background-color: white;
+}
