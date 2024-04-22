@@ -22,13 +22,24 @@ def html_navbar_complete ():
         <li><a href="#Coverage"><span2> Coverage </span2></a></li>
         <li><a href="#CGI"><span2> CGI mapping </span2></a></li>
         <li>
-        <a href="#All"><span2> Methylation percentage </span2></a>
+        <a href="#Percentage"><span2> Methylation percentage </span2></a>
         <ul>
-            <li style="padding-left: 30px;"><a href="#Mean"><span3> Mean methylation </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#Detailed"><span3> Detailed </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#MeanSite"><span3> Mean by site </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#MeanGene"><span3> Mean by gene </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#Global"><span3> Global </span3></a></li>
         </ul>
         </li>
-        <li><a href="#all_norm"><span2> Normalized methylation </span2></a></li>
-        <li><a href="#Mean_norm"><span2> Mean normalized </span2></a></li>
+        <li>
+        <a href="#Z-score"><span2> Normalized methylation </span2></a>
+        <ul>
+            <li style="padding-left: 30px;"><a href="#NormDetailed"><span3> Detailed normalization </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#NormManhattan"><span3> Normalization by sample and site </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#MeanSiteNorm"><span3>  Mean by site normalized </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#MeanGeneNorm"><span3> Mean by gene normalized </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#Volcano"><span3> Differential methylation </span3></a></li>
+        </ul>
+        </li>
         <li><a href="#pca"><span2> PCA </span2></a></li>
         <li><a href="#snv"><span2> Variant calling </span2></a><li>
         <li><a href="#about" style="background-color:#45B39D; border-radius: 0"><span2 style="background-color:#1c1f27; border-radius:10px" onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.5)'; this.style.color='black';" onmouseout="this.style.backgroundColor='#1c1f27'; this.style.color='white';"> About </span2></a></li>
@@ -48,32 +59,15 @@ def html_navbar_sNorm ():
         <li><a href="#Depth"> Depth </a></li>
         <li><a href="#Coverage" > Coverage </a></li>
         <li><a href="#CGI" > CGI mapping </a></li>
-        <li><a href="#All"> Methylation percentage </a></li>
+        <li><a href="#Percentage"> Methylation percentage </a></li>
         <li><a href="#Mean"> Mean methylation </a></li>
         <li><a href="#snv"> Variant calling </a><li>
         <li><a href="#about"> About </a></li>
     </ul>
-    <script>
-        window.addEventListener('scroll', function() {
-            var items = document.querySelectorAll('.vertical li a');
-            var activeItem;
-            items.forEach(function(item) {
-                var section = document.querySelector(item.getAttribute('href'));
-                var sectionTop = section.offsetTop;
-                var sectionBottom = sectionTop + section.offsetHeight;
-                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
-                    item.classList.add('active');
-                    activeItem = item;
-                 }
-            });
-            items.forEach(function(item) {
-                if (item !== activeItem) {
-                    item.classList.remove('active');
-                 }
-            });
-        });
-    </script>
-    '''
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/FerAmbriz/AutoMethyc/report/animations.js"></script>
+     '''
     return html
 
 def html_AutoMethyc (command):
@@ -140,40 +134,93 @@ def html_cgi():
 def html_all():
     html = '''
     </div>
-    <div id="All">
+    <div id="Percentage">
         <h2 style="margin-bottom: 5px;"> Methylation percentage </h2>
         <hr>
         Methylation percentage considering the cytosines methylated and unmethylated for each site
+    </div>
+    <div id="Detailed">
+        <h3 style="margin-bottom: 5px;"> Detailed </h3>
+        Methylation percentage of each CpG site per patient. The sidebar on the right indicates the site's ranking after mapping. The bottom bar shows whether they are samples or normals.
     '''
     return html
+
+def html_mean_site():
+    html = '''
+    </div>
+    <div id="MeanSite">
+        <h3 style="margin-bottom: 5px;"> Mean by site </h3>
+        Average per site show the difference of methylation percentage in the different sites.
+    '''
+    return html
+
 
 def html_mean_gene():
     html = '''
     </div>
-    <div id="Mean">
-        <h2 style="margin-bottom: 5px;"> Mean methylation </h2>
-        <hr>
+    <div id="MeanGene">
+        <h3 style="margin-bottom: 5px;"> Mean by gene </h3>
            Average percentage of methylation present in each gene of the sequenced region.
+    '''
+    return html
+
+def html_boxplot():
+    html = '''
+    </div>
+    <div id="Global">
+        <h3 style="margin-bottom: 5px;"> Global </h3>
+           Global distribution of methylation percentage
     '''
     return html
 
 def html_norm():
     html = '''
     </div>
-    <div id="all_norm">
-        <h1 id ="all_norm"; style="margin-bottom: 5px;"> Normalization </h1>
+    <div id="Z-score">
+        <h2 style="margin-bottom: 5px;"> Normalization </h1>
         <hr>
-            Normalization was performed considering the mean and standard deviation of the controls
+            Normalization was performed considering the mean and standard deviation of the controls using the Z-score
+    </div>
+    <div id="NormDetailed">
+        <h3 style="margin-bottom: 5px;"> Detailed normalization </h3>
     '''
     return html
 
-def html_mean_norm():
+def html_norm_manhattan():
     html = '''
     </div>
-    <div id="Mean_norm">
-        <h2 style="margin-bottom: 5px;"> Mean normalized </h2>
-        <hr>
-            Mean normalization of each normalized site belonging to each gene
+    <div id="NormManhattan">
+        <h3 style="margin-bottom: 5px;"> Normalization by sample and site </h3>
+        Z-score by sample and site
+        Graphical representation of z-score of each sample by site.
+    '''
+    return html
+
+def html_mean_site_norm():
+    html = '''
+    </div>
+    <div id="MeanSiteNorm">
+        <h3 style="margin-bottom: 5px;">  Mean by site normalized  </h3>
+        Mean normalization of each normalized site
+    '''
+    return html
+
+
+def html_mean_gene_norm():
+    html = '''
+    </div>
+    <div id="MeanGeneNorm">
+        <h3 style="margin-bottom: 5px;">  Mean by gene normalized  </h3>
+        Mean normalization of each normalized site belonging to each gene
+    '''
+    return html
+
+def html_volcano():
+    html = '''
+    </div>
+    <div id="Volcano">
+        <h3 style="margin-bottom: 5px;">  Differential methylation  </h3>
+        Differential methylation.
     '''
     return html
 
