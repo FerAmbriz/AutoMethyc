@@ -137,8 +137,9 @@ if norm == 'True':
 df = pd.read_csv(cgi)
 figure_donut_cgi = plot_donut_cgi(df)
 #=======================VolcanoPlot========================#
-df = pd.read_csv(volcano)
-fig_volcano = plot_volcano(df)
+if norm == 'True':
+    df = pd.read_csv(volcano)
+    fig_volcano = plot_volcano(df)
 #===========================SNV============================#
 df = pd.read_csv(snv_count)
 fig_count_snv = plot_count_snv(df)

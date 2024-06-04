@@ -50,25 +50,31 @@ def html_navbar_complete ():
      '''
     return html
 
-
 def html_navbar_sNorm ():
     html = '''
     <ul class="vertical">
-        <li><a href="#Home" style="background-color:#009DCF; color:white"> AutoMethyc </a></li>
-        <li><a href="#Base"> Base quality </a></li>
-        <li><a href="#Depth"> Depth </a></li>
-        <li><a href="#Coverage" > Coverage </a></li>
-        <li><a href="#CGI" > CGI mapping </a></li>
-        <li><a href="#Percentage"> Methylation percentage </a></li>
-        <li><a href="#Mean"> Mean methylation </a></li>
-        <li><a href="#snv"> Variant calling </a><li>
-        <li><a href="#about"> About </a></li>
+        <li><a href="#Home"><span> AutoMethyc </span></a></li>
+        <li><a href="#Base"><span2> Base quality </span2></a></li>
+        <li><a href="#Depth"><span2> Depth </span2></a></li>
+        <li><a href="#Coverage"><span2> Coverage </span2></a></li>
+        <li><a href="#CGI"><span2> CGI mapping </span2></a></li>
+        <li>
+        <a href="#Percentage"><span2> Methylation percentage </span2></a>
+        <ul>
+            <li style="padding-left: 30px;"><a href="#Detailed"><span3> Detailed </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#MeanSite"><span3> Mean by site </span3></a></li>
+            <li style="padding-left: 30px;"><a href="#MeanGene"><span3> Mean by gene </span3></a></li>
+        </ul>
+        </li>
+        <li><a href="#snv"><span2> Variant calling </span2></a><li>
+        <li><a href="#about" style="background-color:#45B39D; border-radius: 0"><span2 style="background-color:#1c1f27; border-radius:10px" onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.5)'; this.style.color='black';" onmouseout="this.style.backgroundColor='#1c1f27'; this.style.color='white';"> About </span2></a></li>
     </ul>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/FerAmbriz/AutoMethyc/report/animations.js"></script>
      '''
     return html
+
 
 def html_AutoMethyc (command):
     html = f'''
