@@ -133,8 +133,8 @@ else
 		echo '==================== With normals and without filter ==================='
 		mkdir $output/VCF/normal; mkdir $output/VCF/sample
 
-		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normal
-		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq sample
+		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normals
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
 
 		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth normals
 		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth samples
