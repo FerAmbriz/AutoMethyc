@@ -16,7 +16,7 @@ while [[ $# -gt 0 ]]; do
 	current_arg="$1"
 	case "$opt" in
 "-h"|"--help"      ) echo '''
-AutoMethyc version 0.0.5-beta
+AutoMethyc version 0.1-beta
 Usage
 	AutoMethyc [options]
 Options

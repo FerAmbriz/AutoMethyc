@@ -8,6 +8,7 @@ genome="hg19"
 depth=20
 quality=30
 read_fastq="Paired"
+run="False"
 #============================= Input Parameters ============================#
 while [[ $# -gt 0 ]]; do
 	opt="$1"
@@ -15,7 +16,7 @@ while [[ $# -gt 0 ]]; do
 	current_arg="$1"
 	case "$opt" in
 "-h"|"--help"      ) echo '''
-AutoMethyc version 0.0.5-beta
+AutoMethyc version 0.1-beta
 Usage
 	automethyc [options]
 Options
@@ -32,6 +33,7 @@ Optional arguments
 	-d --depth		Minimum depth to consider (default=20)
 	-q --quality		Minimum quality (default=30)
 	--read		Read type in fastq (default=Paired)
+	-rb --run_background	Run on background
 ''';  exit 1;;
 "-i"|"--input"      ) input="$1"; shift;;
 "-o"|"--output"      ) output="$1"; shift;;
@@ -42,6 +44,7 @@ Optional arguments
 "-g"|"--genome"       ) genome="$1"; shift;;
 "-q"|"--quality"       ) quality="$1"; shift;;
 "-d"|"--depth"       ) depth="$1"; shift;;
+"-rb"|"--run_background"       ) run="True"; shift;;
 "--read"       ) read_fastq="$1"; shift;;
 	esac
 done
@@ -66,4 +69,8 @@ pathway_val $ref ; ref=$var
 pathway_val $norm ; norm=$var
 pathway_val $filtro ; filtro=$var
 
-docker run -v /${dir_home}:/${dir_home} -d ambrizbiotech/automethyc automethyc -i $input -o $output -r $ref -n $norm -t $thr -b $filtro -g $genome -q $quality -d $depth
+if [ "$run" = "False" ]; then
+	docker run -v /${dir_home}:/${dir_home} -it ambrizbiotech/automethyc automethyc -i $input -o $output -r $ref -n $norm -t $thr -b $filtro -g $genome -q $quality -d $depth
+else
+	docker run -v /${dir_home}:/${dir_home} -d ambrizbiotech/automethyc automethyc -i $input -o $output -r $ref -n $norm -t $thr -b $filtro -g $genome -q $quality -d $depth
+fi
