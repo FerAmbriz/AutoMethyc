@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 RUN apt-get update && apt-get install -y --no-install-recommends wget python3 python3-pip samtools curl libssl-dev libxml2-dev \
   libcurl4-openssl-dev fastqc unzip figlet git git-lfs cutadapt r-base make gcc g++ zlib1g-dev \ 
   libfontconfig1-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev && pip install --break-system-packages --no-cache-dir pandas \ 
-  numpy plotly plotly-express scikit-learn tqdm IPython pysam requests multiqc tqdm && rm -rf /var/lib/apt/lists/* && ln -s /usr/bin/python3 /usr/bin/python
+  numpy plotly plotly-express scikit-learn tqdm IPython pysam requests multiqc tqdm matplotlib && rm -rf /var/lib/apt/lists/* && ln -s /usr/bin/python3 /usr/bin/python
 
 RUN R -e "install.packages(c('gsalib', 'ggplot2', 'reshape', 'gplots', 'tidyverse'))"
 
