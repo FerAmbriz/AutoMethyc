@@ -132,7 +132,7 @@ def html_cgi():
         Mapped regions and their classification considering the nearest CpG island
          <div class="row">
             <div class="c">
-                <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/IslaCpG.jpeg?raw=true" width="650" height="150">
+                <img src="https://github.com/FerAmbriz/AutoMethyc/blob/master/img/CpGIsland.png?raw=true" width="650" height="150">
             </div>
         </div>
     '''
