@@ -166,7 +166,7 @@ def plot_all (sites_bed, df, group):
     z = np.array([list(df_annot.Type)]).T
 
     bvals = [0, 1, 2, 3 ,4]
-    colors = ['#219518', '#955D14', '#1D9BD6', '#3D58AB']
+    colors = ['#D3EEEA', '#F0E2B6', '#49AAC9', '#3D58AB']
 
     x = list(range(len(list(df_annot['Type'].value_counts()))+1))
     dcolorsc = discrete_colorscale(x, colors[0:len(list(df_annot['Type'].value_counts()))])
