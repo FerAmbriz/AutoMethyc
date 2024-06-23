@@ -81,11 +81,12 @@ df['log10_p_value'] = df['log10_p_value'] * -1
 
 numero_de_pruebas = len(df)
 p_values = np.full(numero_de_pruebas, df['p_value'])
-p_values_ajustados = multipletests(p_values, method='bonferroni')[1]
 
-df['p_value_bonferroni'] = p_values_ajustados
-df['log10_p_value_bonferroni'] = list(map(math.log10, df['p_value_bonferroni'] ))
-df['log10_p_value_bonferroni'] = df['log10_p_value_bonferroni'] * -1
+if 0 not in p_values:
+    p_values_ajustados = multipletests(p_values, method='bonferroni')[1]
+    df['p_value_bonferroni'] = p_values_ajustados
+    df['log10_p_value_bonferroni'] = list(map(math.log10, df['p_value_bonferroni'] ))
+    df['log10_p_value_bonferroni'] = df['log10_p_value_bonferroni'] * -1
 
 print(df)
 df.to_csv(output + '/volcano_plot_data.csv', index = False)
