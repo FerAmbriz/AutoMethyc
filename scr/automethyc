@@ -77,55 +77,80 @@ mkdir $output/VCF
 if [ "$norm" = "False" ]; then
 	if [ "$filtro" = "False" ]; then
 		echo '================= Without normals and without filter ================='
-
+		echo "bismark_rounded start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
 
+		echo "filter_depth start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth sample
 
+		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bindcov $output/Bismark/samples/bedGraph $output/CSV 'Sample'
 
+		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $output/CSV/raw_data.csv $genome $output/CSV $thr
 
+		echo "filter_target start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		filter_target $output/CSV/raw_data.csv $output/CSV/annotated_regions.csv $output/CSV/
 
+		echo "matrix_builder start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt		
 		matrix_builder $output/CSV/filtered_target.csv $output/CSV/
 
+		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		multiqc $output/Bismark/samples/fastq_trimmed/*
 		mv multiqc* $output/HTML
 
+		echo "cgi_mapping start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 
+		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
 
+		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+
+		echo "snv_count start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		snv_count $output/VCF $output/CSV sample
 
+		echo "html_report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		html_report $output $output/HTML False $depth
 	else
 		echo '================= Without normals and with filter ====================='
-		
+
+		echo "bismark_rounded start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
 
+		echo "filter_depth start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth sample
 
+		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bindcov $output/Bismark/samples/bedGraph $output/CSV 'Sample'
 
+		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $filtro $genome $output/CSV $thr
 
+		echo "filter_target start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		filter_target $output/CSV/raw_data.csv $output/CSV/annotated_regions.csv $output/CSV
 
+		echo "matrix_builder start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		matrix_builder $output/CSV/filtered_target.csv $output/CSV
 
+		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		multiqc $output/Bismark/samples/fastq_trimmed/*
 		mv multiqc* $output/HTML
 
+		echo "cgi_mapping start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 
+		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
 
+		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+
+		echo "snv_count start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		snv_count $output/VCF $output/CSV sample
 
+		echo "html_report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		html_report $output $output/HTML False $depth
 	fi
 else
@@ -133,18 +158,23 @@ else
 		echo '==================== With normals and without filter ==================='
 		mkdir $output/VCF/normal; mkdir $output/VCF/sample
 
+		echo "bismark_rounded start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normals
 		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
 
+		echo "filter_depth start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth normals
 		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth samples
 
+		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bindcov $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'		
 		bindcov $output/Bismark/samples/bedGraph $output/Bismark/samples 'Sample'
 
+		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		fastqc_extract $output/Bismark/normals/fastq_trimmed $output/Bismark/normals
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/Bismark/samples
 
+		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		multiqc $output/Bismark/normals/fastq_trimmed/*
 		mv multiqc_report.html $output/HTML/multiqc_report_normals.html
 		mv multiqc_data $output/HTML/multiqc_data_normals
@@ -156,47 +186,62 @@ else
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/count_depth_${depth}_pass.csv $output/Bismark/samples/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/fastqc_raw_data.csv $output/Bismark/samples/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
 
+		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $output/CSV/raw_data.csv $genome $output/CSV $thr
 
+		echo "filter_target start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		filter_target $output/CSV/raw_data.csv $output/CSV/annotated_regions.csv $output/CSV
 
+		echo "matrix_builder start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		matrix_builder $output/CSV/filtered_target.csv $output/CSV
 
+		echo "matrix_normalizer start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		matrix_normalizer $output/CSV/matrix_filtered_target.csv $output/CSV/matrix_mean_gene.csv $output/CSV
 
+		echo "make_vectors_pca start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		make_vectors_pca $output/CSV/matrix_filtered_target_normalized.csv $output/CSV
 
+		echo "cgi_mapping start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 
+		echo "unpivot_matrix_normalized start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		unpivot_matrix_normalized $output/CSV/matrix_filtered_target_normalized.csv $output/CSV $output/CSV/matrix_mean_gene_normalized.csv
 
+		echo "volcano start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		volcano $output/CSV/filtered_target_normalized.csv $output/CSV/
 
+		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF/normal $thr
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF/sample $thr
 
+		echo "snv_count start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		snv_count $output/VCF/normal $output/VCF/normal normal
 		snv_count $output/VCF/sample $output/VCF/sample sample
 		awk '(NR == 1) || (FNR > 1)' $output/VCF/normal/snv_count.csv $output/VCF/sample/snv_count.csv > $output/CSV/snv_count.csv
 
-
+		echo "html_report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		html_report $output $output/HTML True $depth
 	else
 		echo '==================== With normals and with filter ==================='
 		mkdir $output/VCF/normal; mkdir $output/VCF/sample
 
+		echo "bismark_rounded start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normals
 		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
-	
+
+		echo "filter_depthg start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth normal
 		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth sample
-	
+
+		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bindcov $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'
 		bindcov $output/Bismark/samples/bedGraph $output/Bismark/samples 'Sample'
 
+		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		fastqc_extract $output/Bismark/normals/fastq_trimmed $output/Bismark/normals
 		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/Bismark/samples
 
+		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		multiqc $output/Bismark/normals/fastq_trimmed/*
 		mv multiqc_report.html $output/HTML/multiqc_report_normals.html
 		mv multiqc_data $output/HTML/multiqc_data_normals
@@ -208,37 +253,47 @@ else
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/count_depth_${depth}_pass.csv $output/Bismark/samples/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/fastqc_raw_data.csv $output/Bismark/samples/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
 
+		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $filtro $genome $output/CSV $thr
-		
+
+		echo "filter_target start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		filter_target $output/CSV/raw_data.csv $output/CSV/annotated_regions.csv $output/CSV
-		
+
+		echo "matrix_builder start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		matrix_builder $output/CSV/filtered_target.csv $output/CSV/
-	
+
+		echo "matrix_normalizer start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		matrix_normalizer $output/CSV/matrix_filtered_target.csv $output/CSV/matrix_mean_gene.csv $output/CSV
 
+		echo "make_vectors_pca start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		make_vectors_pca $output/CSV/matrix_filtered_target_normalized.csv $output/CSV
 
+		echo "cgi_mapping start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
-		
+
+		echo "unpivot_matrix_normalized start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		unpivot_matrix_normalized $output/CSV/matrix_filtered_target_normalized.csv $output/CSV $output/CSV/matrix_mean_gene_normalized.csv
 
+		echo "volcano start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		volcano $output/CSV/filtered_target_normalized.csv $output/CSV/
 
+		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF/normal $thr
 		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF/sample $thr
 
+		echo "snv_count start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		snv_count $output/VCF/normal $output/VCF/normal normal
 		snv_count $output/VCF/sample $output/VCF/sample sample
 		awk '(NR == 1) || (FNR > 1)' $output/VCF/normal/snv_count.csv $output/VCF/sample/snv_count.csv > $output/CSV/snv_count.csv
 
-
+		echo "html_report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		html_report $output $output/HTML True $depth
 	fi
 fi
 
 #Rscript /usr/bin/Oncoprint.R $output/OncoprintRellenado.csv $output/all_sites.png
 #Rscript /usr/bin/OncoprintPromedio.R $output/OncoprintPromedio.csv $output/mean.png
-
+echo "Global workflow done at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 end=`date +%s`
 runtime=$((end-start))
 echo 'run time = ' $runtime'(sec)'
