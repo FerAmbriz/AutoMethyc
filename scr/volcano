@@ -10,6 +10,7 @@ import math
 z_score = pd.read_csv(sys.argv[1])
 output = sys.argv[2]
 
+print(z_score)
 z_score_normal = z_score[z_score['Type'] == 'Normal']
 z_score_sample = z_score[z_score['Type'] == 'Sample']
 
@@ -72,7 +73,7 @@ df = pd.DataFrame({'Site':lst_site, 'values_normal': lst_values_normal,
                    })
 
 
-
+print(df)
 df = df[df['p_value'] != 'NaN']
 
 df['log10_p_value'] = list(map(math.log10, df['p_value'] ))
@@ -82,11 +83,13 @@ df['log10_p_value'] = df['log10_p_value'] * -1
 numero_de_pruebas = len(df)
 p_values = np.full(numero_de_pruebas, df['p_value'])
 
-if 0 not in p_values:
+try:
     p_values_ajustados = multipletests(p_values, method='bonferroni')[1]
     df['p_value_bonferroni'] = p_values_ajustados
-    df['log10_p_value_bonferroni'] = list(map(math.log10, df['p_value_bonferroni'] ))
+    df['log10_p_value_bonferroni'] = list(map(math.log10, df['p_value_bonferroni']))
     df['log10_p_value_bonferroni'] = df['log10_p_value_bonferroni'] * -1
+except ZeroDivisionError:
+    print("Error: ZeroDivisionError")
 
 print(df)
 df.to_csv(output + '/volcano_plot_data.csv', index = False)
