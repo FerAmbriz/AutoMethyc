@@ -28,6 +28,7 @@ fi
 mkdir $input_bam/tmp
 mkdir $input_bam/preprocessing
 
+echo "revelio start at: $(date +'%H:%M:%S')" >> $output/../../execution_time.txt
 for i in $input_bam/*.bam;
 do
   echo $i 
@@ -60,7 +61,7 @@ for (( i=0; i<${#arr[@]}; i=i+$threads));
 do
   contador=$i && termina=$(($i + $(($threads - 1))))
   extract_values
-
+  echo "HaplotypeCaller start at: $(date +'%H:%M:%S')" >> $output/../../execution_time.txt
   for j in ${arr2[@]};
   do
     ID=${j%_mask*}
