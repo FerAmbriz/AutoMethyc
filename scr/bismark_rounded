@@ -49,6 +49,7 @@ if [ "$paired" = "Paired" ]; then
                 FQ2=${array[$i+1]}
                 OUT=$output/tmp/02_fastq_trimmed
 
+		echo "trim_galore start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 trim_galore --quality $quality --gzip --paired --fastqc \
                         --illumina --output_dir ${OUT} \
                         --cores $thr ${FQ1} ${FQ2}
@@ -59,7 +60,7 @@ if [ "$paired" = "Paired" ]; then
                 FQ2=$output/tmp/02_fastq_trimmed/*val_2.fq.gz
                 OUT=$output/tmp/03_aligned
 
-
+		echo "bismark start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bismark --bowtie2 --parallel $(($thr/2)) --bam --fastq \
                         --output_dir ${OUT} \
                         --prefix ${PREFIX} \
@@ -71,6 +72,7 @@ if [ "$paired" = "Paired" ]; then
                 BAM_IN=$output/tmp/03_aligned/one_mismatch*pe.bam
                 OUT=$output/tmp/05_bismark_extractor/
 
+		echo "bismark_methylation_extractor start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bismark_methylation_extractor --paired-end \
                         --gzip \
                         --bedGraph \
@@ -84,10 +86,12 @@ if [ "$paired" = "Paired" ]; then
                 IN=$output/tmp/03_aligned/one_mismatch*pe.bam
                 OUT=$output/tmp/04_deduplicated
 
+		echo "bam2nuc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN} 
 
                 echo '===================== done bam2nuc ======================'
 
+		echo "bismark2report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
                         --splitting_report $output/tmp/05_bismark_extractor/one_mismatch*splitting_report.txt \
                         --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
@@ -114,6 +118,7 @@ else
 
                 OUT=$output/tmp/02_fastq_trimmed
 
+		echo "trim_galore start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 trim_galore --quality $quality --gzip --fastqc \
                         --illumina --output_dir ${OUT} \
                         --cores $thr ${FQ1}
@@ -123,6 +128,7 @@ else
                 FQ1=$output/tmp/02_fastq_trimmed/*_trimmed.fq.gz
                 OUT=$output/tmp/03_aligned
 
+		echo "bismark start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bismark --bowtie2 --parallel $(($thr/2)) --bam --fastq \
                         --output_dir ${OUT} \
                         --prefix ${PREFIX} \
@@ -134,6 +140,7 @@ else
                 BAM_IN=$output/tmp/03_aligned/one_mismatch*_bt2.bam
                 OUT=$output/tmp/05_bismark_extractor/
 
+		echo "bismark_methylation_extractor start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bismark_methylation_extractor --single-end \
                         --gzip \
                         --bedGraph \
@@ -147,10 +154,12 @@ else
                 IN=$output/tmp/03_aligned/one_mismatch*_bt2.bam
                 OUT=$output/tmp/04_deduplicated
 
+		echo "bam2nuc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN} 
 
                 echo '===================== done bam2nuc ====================='
 
+		echo "bismark2report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
                         --splitting_report $output/tmp/05_bismark_extractor/one_mismatch*splitting_report.txt \
                         --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
