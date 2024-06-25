@@ -16,9 +16,12 @@ lines = df.readlines()
 df = pd.DataFrame(lines)
 lenght = len(df)
 df = df[0].str.split('\t',expand=True)
+
 # Revision de si es 12 o 13???
-df.columns = df.iloc[12]
-df = df.drop(list(range(0,13,1)))
+cut = 12
+
+df.columns = df.iloc[cut-1]
+df = df.drop(list(range(0,cut,1)))
 
 df = df.rename(columns = {'90th Percentile\n':'90th Percentile'})
 
@@ -29,7 +32,6 @@ if contador % 2 == 0:
 else:
     contador = 1
 
-cut = 13
 for i in df['#Base']:
     if  i == '>>END_MODULE\n':
         break
