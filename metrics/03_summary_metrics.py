@@ -12,10 +12,10 @@ for o in onum:
         df.columns = ['Command', 'ram_mean', 'ram_std', 'execution']
         df.drop([0,1], inplace = True)
 
-        print(df)
+        #print(df)
         df['Group'] = 'Group_' + str(o) + '_rep_' + str(j)
         df_db = pd.concat([df_db, df])
-    print(df_db)
+    #print(df_db)
     df_db['ram_mean'] = list(map(float, df_db['ram_mean']))
     df_db['execution'] = list(map(float, df_db['execution']))
 

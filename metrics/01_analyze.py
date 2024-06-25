@@ -13,15 +13,14 @@ for o in onum:
         df = pd.read_csv(f'{path_metrics}/estadisticas_memoria_{o}_rep_{j}.txt', sep = '\t', header = None)
         df.drop([0], inplace = True)
         df = pd.DataFrame(df[0])
-        print(df)
-
         #reemplazar cualquier cantidad de espacios consecutivos (dos o más) con un solo espacio:
-        df[0] = df[0].str.replace(r'\s{2,}', ' ')
+        #df[0] = df[0].str.replace(r'\s{2,}', ' ')
+        df = df[0].str.split(expand=True)
+        print(df)
+        #df_0 = df[0].str.split(' ', expand=True)
+        #df_0.drop(1, inplace = True)
 
-        df_0 = df[0].str.split(' ', expand=True)
-        df_0.drop(1, inplace = True)
-
-        df = df_0[[0, 1, 8]]
+        df = df[[0, 1, 4]]
         df.columns = ['Date', 'Time','Memory']
 
         df = df[(df['Date'] != 'Average:') & (df['Date']!= 'End')]
@@ -32,7 +31,7 @@ for o in onum:
 
         #df['Date'] = df['Date'].apply(lambda x: x.replace(year=2024, month=6, day=24))
 
-        print(df)
+        print(df.head())
 
         df_2 = pd.read_csv(f'{path_execution_time}/output_{o}_rep_{j}/execution_time.txt', sep = '\t', header = None)
         df_2 = df_2[0].str.split('at: ', expand=True)
@@ -54,5 +53,11 @@ for o in onum:
 
         df_final = pd.DataFrame(lst)
         df_final.columns = ['Start', 'End', 'Second', 'Command', 'Memory']
+
+        #1GB 1024 * 1024 MB = 1048576
+        df_final = df_final[df_final['Memory']!= 'kbmemused']
+        df_final['Memory'] = list(map(float, df_final['Memory']))
+
+        df_final['Memory'] = df_final['Memory']/1048576
         print(df_final)
         df_final.to_csv(f'{path_metrics}/Match_Test_{o}_rep_{j}.tsv', sep = '\t', index = False)
