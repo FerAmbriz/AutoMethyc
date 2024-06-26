@@ -697,7 +697,7 @@ def plot_donut_cgi(df):
     df = pd.DataFrame(df['Type'].value_counts()).reset_index()
     df.columns = ['Type', 'Frequency']
     fig = go.Figure(data=[go.Pie(labels=['CpG island', 'CpG shore', 'CpG shelf', 'CpG inter'], values=df['Frequency'], hole=.3)])
-    fig.update_traces(marker=dict(colors=['219518', '#955D14', '#1D9BD6', '#3D58AB']))
+    fig.update_traces(marker=dict(colors=['#D3EEEA', '#F0E2B6', '#49AAC9', '#3D58AB']))
     fig.update_layout(height=400)
     return fig
 

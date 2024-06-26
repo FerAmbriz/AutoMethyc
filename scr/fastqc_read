@@ -20,8 +20,8 @@ df = df[0].str.split('\t',expand=True)
 # Revision de si es 12 o 13???
 cut = 12
 
-df.columns = df.iloc[cut-1]
-df = df.drop(list(range(0,cut,1)))
+df.columns = df.iloc[cut]
+df = df.drop(list(range(0,cut+1,1)))
 
 df = df.rename(columns = {'90th Percentile\n':'90th Percentile'})
 
