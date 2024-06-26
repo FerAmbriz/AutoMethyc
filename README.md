@@ -75,3 +75,4 @@ git clone https://github.com/FerAmbriz/AutoMethycTest.git
 cd AutoMethycTest && mkdir output
 automethyc_docker -i samples -n normals -r [hg19_reference_genome_file] -b BedGraph331.csv -o output
 ```
+The example output is in: [sourceforge]([https://hub.docker.com/r/ambrizbiotech/automethyc](https://sourceforge.net/projects/automethyc-test/files/AutoMethycOutputExample/) 
