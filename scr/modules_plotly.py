@@ -233,6 +233,7 @@ def plot_mean(df):
                    x=list(df.columns),
                    y=list(df.index.values) ))
 
+
     colorscale = [[0, '#1f77b4'], [1, '#d62728']]
     fig_annot = go.Figure(data=go.Heatmap(
                    z= group.to_numpy().T,
@@ -249,6 +250,11 @@ def plot_mean(df):
     fig.add_trace(fig_annot.data[0], 2, 1)
 
     fig.update_traces(showscale=False, row=2, col=1)
+
+    fig.update_xaxes(title_text="ID", row=2, col=1)
+    fig.update_yaxes(title_text="Gene", row=1, col=1)
+
+
     return fig
 
 def plot_offtarget(on_targets, off_targets, status):
@@ -325,6 +331,10 @@ def plot_norm(df):
 
     fig.update_traces(showscale=False, row=2, col=1)
 
+    fig.update_xaxes(title_text="ID", row=2, col=1)
+    fig.update_yaxes(title_text="CpG site", row=1, col=1)
+
+
     return fig
 
 def plot_mean_norm (df):
@@ -359,6 +369,9 @@ def plot_mean_norm (df):
     fig.add_trace(fig_annot.data[0], 2, 1)
 
     fig.update_traces(showscale=False, row=2, col=1)
+
+    fig.update_xaxes(title_text="ID", row=2, col=1)
+    fig.update_yaxes(title_text="Gene", row=1, col=1)
 
     return fig
 
