@@ -11,8 +11,8 @@ z_score = pd.read_csv(sys.argv[1])
 output = sys.argv[2]
 
 print(z_score)
-z_score_normal = z_score[z_score['Type'] == 'Normal']
-z_score_sample = z_score[z_score['Type'] == 'Sample']
+z_score_normal = z_score[z_score['Type'] == 'controls']
+z_score_sample = z_score[z_score['Type'] == 'cases']
 
 z_score_normal = z_score_normal[z_score_normal['variable'].isin(list(set(z_score_sample['variable'])))]
 z_score_sample = z_score_sample[z_score_sample['variable'].isin(list(set(z_score_normal['variable'])))]
@@ -63,11 +63,11 @@ for i in z_score_normal['variable'].unique():
 
     lst_test.append(lst_test_i)
 
-df = pd.DataFrame({'Site':lst_site, 'values_normal': lst_values_normal,
-                   'values_sample': lst_values_sample,
-                   'average_zscore_sample': lst_average_zscore_sample,
-                   'shapiro_test_normal': lst_wilk_normal,
-                   'shapiro_test_sample': lst_wilk_sample,
+df = pd.DataFrame({'Site':lst_site, 'values_controls': lst_values_normal,
+                   'values_cases': lst_values_sample,
+                   'average_zscore_cases': lst_average_zscore_sample,
+                   'shapiro_test_controls': lst_wilk_normal,
+                   'shapiro_test_cases': lst_wilk_sample,
                    'test': lst_test,
                    'p_value': lst_p
                    })

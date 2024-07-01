@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #============================= Defect parameters ============================#
 thr=4
 norm="False"
@@ -25,7 +24,7 @@ Options
 	-r --ref		reference genome file
 Optional arguments
 	-t --threads		Number of threads (default=4)
-	-n --normal		Folder with fastq of normals (default=False)
+	-n --normal		Folder with fastq of controls (default=False)
 	-g --genome		Genome used for request in UCSC (default=hg19)
 		other genomes:
 			{hg38, hg19, hg18, hg17, hg16, mm39, mm10, mm9, mm8, mm7}
@@ -76,15 +75,15 @@ mkdir $output/VCF
 
 if [ "$norm" = "False" ]; then
 	if [ "$filtro" = "False" ]; then
-		echo '================= Without normals and without filter ================='
+		echo '================= Without controls and without filter ================='
 		echo "bismark_rounded start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq cases
 
 		echo "filter_depth start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth sample
+		filter_depth $output/Bismark/cases/bedGraph $output/CSV $depth cases
 
 		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		bindcov $output/Bismark/samples/bedGraph $output/CSV 'Sample'
+		bindcov $output/Bismark/cases/bedGraph $output/CSV 'cases'
 
 		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $output/CSV/raw_data.csv $genome $output/CSV $thr
@@ -96,34 +95,34 @@ if [ "$norm" = "False" ]; then
 		matrix_builder $output/CSV/filtered_target.csv $output/CSV/
 
 		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		multiqc $output/Bismark/samples/fastq_trimmed/*
+		multiqc $output/Bismark/cases/fastq_trimmed/*
 		mv multiqc* $output/HTML
 
 		echo "cgi_mapping start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 
 		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
+		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/CSV
 
 		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+		revelio_haplotype $output/Bismark/cases/aligned $ref $output/VCF $thr
 
 		echo "snv_count start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		snv_count $output/VCF $output/CSV sample
+		snv_count $output/VCF $output/CSV cases
 
 		echo "html_report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		html_report $output $output/HTML False $depth
 	else
-		echo '================= Without normals and with filter ====================='
+		echo '================= Without controls and with filter ====================='
 
 		echo "bismark_rounded start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq cases
 
 		echo "filter_depth start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		filter_depth $output/Bismark/samples/bedGraph $output/CSV $depth sample
+		filter_depth $output/Bismark/cases/bedGraph $output/CSV $depth cases
 
 		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		bindcov $output/Bismark/samples/bedGraph $output/CSV 'Sample'
+		bindcov $output/Bismark/cases/bedGraph $output/CSV 'cases'
 
 		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $filtro $genome $output/CSV $thr
@@ -135,56 +134,56 @@ if [ "$norm" = "False" ]; then
 		matrix_builder $output/CSV/filtered_target.csv $output/CSV
 
 		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		multiqc $output/Bismark/samples/fastq_trimmed/*
+		multiqc $output/Bismark/cases/fastq_trimmed/*
 		mv multiqc* $output/HTML
 
 		echo "cgi_mapping start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 
 		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/CSV
+		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/CSV
 
 		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF $thr
+		revelio_haplotype $output/Bismark/cases/aligned $ref $output/VCF $thr
 
 		echo "snv_count start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		snv_count $output/VCF $output/CSV sample
+		snv_count $output/VCF $output/CSV cases
 
 		echo "html_report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		html_report $output $output/HTML False $depth
 	fi
 else
 	if [ "$filtro" = "False" ]; then
-		echo '==================== With normals and without filter ==================='
-		mkdir $output/VCF/normal; mkdir $output/VCF/sample
+		echo '==================== With controls and without filter ==================='
+		mkdir $output/VCF/controls; mkdir $output/VCF/cases
 
 		echo "bismark_rounded start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normals
-		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
+		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq controls
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq cases
 
 		echo "filter_depth start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth normals
-		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth samples
+		filter_depth $output/Bismark/controls/bedGraph $output/Bismark/controls $depth controls
+		filter_depth $output/Bismark/cases/bedGraph $output/Bismark/cases $depth cases
 
 		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		bindcov $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'		
-		bindcov $output/Bismark/samples/bedGraph $output/Bismark/samples 'Sample'
+		bindcov $output/Bismark/controls/bedGraph $output/Bismark/controls 'controls'		
+		bindcov $output/Bismark/cases/bedGraph $output/Bismark/cases 'cases'
 
 		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		fastqc_extract $output/Bismark/normals/fastq_trimmed $output/Bismark/normals
-		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/Bismark/samples
+		fastqc_extract $output/Bismark/controls/fastq_trimmed $output/Bismark/controls
+		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/Bismark/cases
 
 		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		multiqc $output/Bismark/normals/fastq_trimmed/*
-		mv multiqc_report.html $output/HTML/multiqc_report_normals.html
-		mv multiqc_data $output/HTML/multiqc_data_normals
-		multiqc $output/Bismark/samples/fastq_trimmed/*
-		mv multiqc_report.html $output/HTML/multiqc_report_samples.html
-		mv multiqc_data $output/HTML/multiqc_data_samples
+		multiqc $output/Bismark/controls/fastq_trimmed/*
+		mv multiqc_report.html $output/HTML/multiqc_report_controls.html
+		mv multiqc_data $output/HTML/multiqc_data_controls
+		multiqc $output/Bismark/cases/fastq_trimmed/*
+		mv multiqc_report.html $output/HTML/multiqc_report_cases.html
+		mv multiqc_data $output/HTML/multiqc_data_cases
 
-		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/raw_data.csv $output/Bismark/samples/raw_data.csv > $output/CSV/raw_data.csv
-		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/count_depth_${depth}_pass.csv $output/Bismark/samples/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
-		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/fastqc_raw_data.csv $output/Bismark/samples/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/raw_data.csv $output/Bismark/cases/raw_data.csv > $output/CSV/raw_data.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/count_depth_${depth}_pass.csv $output/Bismark/cases/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/fastqc_raw_data.csv $output/Bismark/cases/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
 
 		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $output/CSV/raw_data.csv $genome $output/CSV $thr
@@ -211,47 +210,47 @@ else
 		volcano $output/CSV/filtered_target_normalized.csv $output/CSV/
 
 		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF/normal $thr
-		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF/sample $thr
+		revelio_haplotype $output/Bismark/controls/aligned $ref $output/VCF/controls $thr
+		revelio_haplotype $output/Bismark/cases/aligned $ref $output/VCF/cases $thr
 
 		echo "snv_count start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		snv_count $output/VCF/normal $output/VCF/normal normal
-		snv_count $output/VCF/sample $output/VCF/sample sample
-		awk '(NR == 1) || (FNR > 1)' $output/VCF/normal/snv_count.csv $output/VCF/sample/snv_count.csv > $output/CSV/snv_count.csv
+		snv_count $output/VCF/controls $output/VCF/controls controls
+		snv_count $output/VCF/cases $output/VCF/cases cases
+		awk '(NR == 1) || (FNR > 1)' $output/VCF/controls/snv_count.csv $output/VCF/cases/snv_count.csv > $output/CSV/snv_count.csv
 
 		echo "html_report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		html_report $output $output/HTML True $depth
 	else
-		echo '==================== With normals and with filter ==================='
-		mkdir $output/VCF/normal; mkdir $output/VCF/sample
+		echo '==================== With controls and with filter ==================='
+		mkdir $output/VCF/controls; mkdir $output/VCF/cases
 
 		echo "bismark_rounded start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq normals
-		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq samples
+		bismark_rounded $norm $output $ref_folder $thr $quality $read_fastq controls
+		bismark_rounded $input $output $ref_folder $thr $quality $read_fastq cases
 
 		echo "filter_depthg start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		filter_depth $output/Bismark/normals/bedGraph $output/Bismark/normals $depth normal
-		filter_depth $output/Bismark/samples/bedGraph $output/Bismark/samples $depth sample
+		filter_depth $output/Bismark/controls/bedGraph $output/Bismark/controls $depth controls
+		filter_depth $output/Bismark/cases/bedGraph $output/Bismark/cases $depth cases
 
 		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		bindcov $output/Bismark/normals/bedGraph $output/Bismark/normals 'Normal'
-		bindcov $output/Bismark/samples/bedGraph $output/Bismark/samples 'Sample'
+		bindcov $output/Bismark/controls/bedGraph $output/Bismark/controls 'controls'
+		bindcov $output/Bismark/cases/bedGraph $output/Bismark/cases 'cases'
 
 		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		fastqc_extract $output/Bismark/normals/fastq_trimmed $output/Bismark/normals
-		fastqc_extract $output/Bismark/samples/fastq_trimmed $output/Bismark/samples
+		fastqc_extract $output/Bismark/controls/fastq_trimmed $output/Bismark/controls
+		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/Bismark/cases
 
 		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		multiqc $output/Bismark/normals/fastq_trimmed/*
-		mv multiqc_report.html $output/HTML/multiqc_report_normals.html
-		mv multiqc_data $output/HTML/multiqc_data_normals
-		multiqc $output/Bismark/samples/fastq_trimmed/*
-		mv multiqc_report.html $output/HTML/multiqc_report_samples.html
-		mv multiqc_data $output/HTML/multiqc_data_samples
+		multiqc $output/Bismark/controls/fastq_trimmed/*
+		mv multiqc_report.html $output/HTML/multiqc_report_controls.html
+		mv multiqc_data $output/HTML/multiqc_data_controls
+		multiqc $output/Bismark/cases/fastq_trimmed/*
+		mv multiqc_report.html $output/HTML/multiqc_report_cases.html
+		mv multiqc_data $output/HTML/multiqc_data_cases
 	
-		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/raw_data.csv $output/Bismark/samples/raw_data.csv > $output/CSV/raw_data.csv
-		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/count_depth_${depth}_pass.csv $output/Bismark/samples/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
-		awk '(NR == 1) || (FNR > 1)' $output/Bismark/normals/fastqc_raw_data.csv $output/Bismark/samples/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/raw_data.csv $output/Bismark/cases/raw_data.csv > $output/CSV/raw_data.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/count_depth_${depth}_pass.csv $output/Bismark/cases/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/fastqc_raw_data.csv $output/Bismark/cases/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
 
 		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $filtro $genome $output/CSV $thr
@@ -278,13 +277,13 @@ else
 		volcano $output/CSV/filtered_target_normalized.csv $output/CSV/
 
 		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		revelio_haplotype $output/Bismark/normals/aligned $ref $output/VCF/normal $thr
-		revelio_haplotype $output/Bismark/samples/aligned $ref $output/VCF/sample $thr
+		revelio_haplotype $output/Bismark/controls/aligned $ref $output/VCF/controls $thr
+		revelio_haplotype $output/Bismark/cases/aligned $ref $output/VCF/cases $thr
 
 		echo "snv_count start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		snv_count $output/VCF/normal $output/VCF/normal normal
-		snv_count $output/VCF/sample $output/VCF/sample sample
-		awk '(NR == 1) || (FNR > 1)' $output/VCF/normal/snv_count.csv $output/VCF/sample/snv_count.csv > $output/CSV/snv_count.csv
+		snv_count $output/VCF/controls $output/VCF/controls controls
+		snv_count $output/VCF/cases $output/VCF/cases cases
+		awk '(NR == 1) || (FNR > 1)' $output/VCF/controls/snv_count.csv $output/VCF/cases/snv_count.csv > $output/CSV/snv_count.csv
 
 		echo "html_report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		html_report $output $output/HTML True $depth

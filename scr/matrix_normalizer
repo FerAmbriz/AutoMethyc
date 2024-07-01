@@ -29,7 +29,7 @@ all_sites['Site'] = lst
 all_sites = all_sites.set_index('Site')
 
 df_controles = all_sites.T
-df_controles = df_controles[df_controles['Type'] == 'Normal']
+df_controles = df_controles[df_controles['Type'] == 'controls']
 df_controles = df_controles.drop(['Type', 'Chr'], axis=1)
 
 #Cambiar a valores numericos con lo que se va a hacer la media y std
@@ -99,7 +99,7 @@ onco_mean = onco_mean.set_index('ID')
 
 df_controles = onco_mean.T
 #print(df_controles)
-df_controles = df_controles[df_controles['Type'] == 'Normal']
+df_controles = df_controles[df_controles['Type'] == 'controls']
 df_controles = df_controles.drop(['Type'], axis=1)
 
 columns = df_controles.columns.values

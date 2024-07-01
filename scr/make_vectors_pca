@@ -22,10 +22,10 @@ df.replace(['inf', '-inf'], 0, inplace=True)
 df.replace([np.inf, -np.inf], 0, inplace=True)
 #print(df)
 # Separcion por grupos
-normals = df[df['Type'] == 'Normal']
+normals = df[df['Type'] == 'controls']
 normals = normals.set_index('Type')
 
-samples = df[df['Type'] == 'Sample']
+samples = df[df['Type'] == 'cases']
 samples = samples.set_index('Type')
 
 #indexado del df original 
@@ -36,19 +36,19 @@ columns = list(df.columns.values)
 # lista con el nombre de las columnas
 lst_normals = []
 for i in columns:
-    lst_normals.append(i+'_normal')
+    lst_normals.append(i+'_controls')
 
 lst_samples = []
 for i in columns:
-    lst_samples.append(i+'_sample')
+    lst_samples.append(i+'_cases')
 
 #union de ambas listas
 lst = lst_normals + lst_samples
 
 if min(len(normals), len(samples)) == len(samples):
-    min_df = 'samples'
+    min_df = 'controls'
 else:
-    min_df = 'normals'
+    min_df = 'cases'
 
 df_bd = pd.DataFrame(columns = lst)
 
@@ -60,7 +60,7 @@ for i in range(max(len(normals), len(samples))):
         row_i = n+s
         df_bd.loc[i]=row_i
     else:
-        if min_df == 'samples':
+        if min_df == 'cases':
             n = list(normals.iloc[i])
             s = ['NaN'] * len(lst_samples)
             row_i = n+s

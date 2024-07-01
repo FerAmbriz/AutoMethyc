@@ -77,12 +77,12 @@ def plot_depth (df, status):
 
     #fig_depth = px.bar(df, x="ID", y="Count", color="Type", facet_col="Group")
     if status == 'True':
-        fig1 = px.bar(df[df['Group'] == 'normal'], x="ID", y="Count", color="Type",
+        fig1 = px.bar(df[df['Group'] == 'controls'], x="ID", y="Count", color="Type",
                   color_discrete_map={'high-depth': '#45B39D',
                                       'low-depth': '#EC7063'
                                       })
 
-        fig2 = px.bar(df[df['Group'] == 'sample'], x="ID", y="Count", color="Type")
+        fig2 = px.bar(df[df['Group'] == 'cases'], x="ID", y="Count", color="Type")
 
         fig = make_subplots(rows=1, cols=2)
 
@@ -92,8 +92,8 @@ def plot_depth (df, status):
         for trace in fig2['data']:
             fig.add_trace(trace, row=1, col=2)
 
-        fig.update_xaxes(title_text="normal", row=1, col=1)
-        fig.update_xaxes(title_text="sample", row=1, col=2)
+        fig.update_xaxes(title_text="controls", row=1, col=1)
+        fig.update_xaxes(title_text="cases", row=1, col=2)
     else:
          fig = px.bar(df, x="ID", y="Count", color="Type")
     return fig
@@ -220,7 +220,7 @@ def plot_mean(df):
     df = df.set_index('Gene')
 
     group = pd.DataFrame(df.iloc[0])
-    group['Type'] = group['Type'].replace({'Normal':0, 'Sample':1})
+    group['Type'] = group['Type'].replace({'controls':0, 'cases':1})
 
     df = df.drop(df.index[[0]])
 
@@ -259,14 +259,13 @@ def plot_offtarget(on_targets, off_targets, status):
     off_targets['Status'] = ['off-target'] * len(off_targets)
 
     df = pd.concat([on_targets, off_targets])
-    df = df.replace({'Normal':'normal', 'Sample':'sample'})
     if status == 'True':
-        fig1 = px.bar(df[df['Group'] == 'normal'], x="ID", y="Count", color="Status",
+        fig1 = px.bar(df[df['Group'] == 'controls'], x="ID", y="Count", color="Status",
                   color_discrete_map={'on-target': '#45B39D',
                                       'off-target': '#EC7063'
                                       })
 
-        fig2 = px.bar(df[df['Group'] == 'sample'], x="ID", y="Count", color="Status")
+        fig2 = px.bar(df[df['Group'] == 'cases'], x="ID", y="Count", color="Status")
 
         fig_chr = make_subplots(rows=1, cols=2)
 
@@ -276,8 +275,8 @@ def plot_offtarget(on_targets, off_targets, status):
         for trace in fig2['data']:
             fig_chr.add_trace(trace, row=1, col=2)
 
-        fig_chr.update_xaxes(title_text="normal", row=1, col=1)
-        fig_chr.update_xaxes(title_text="sample", row=1, col=2)
+        fig_chr.update_xaxes(title_text="controls", row=1, col=1)
+        fig_chr.update_xaxes(title_text="cases", row=1, col=2)
 
     else:
         fig_chr = px.bar(df, x="ID", y="Count", color='Status')
@@ -288,7 +287,7 @@ def plot_norm(df):
     df = df.set_index('ID')
 
     group = pd.DataFrame(df['Type'])
-    group['Type'] = group['Type'].replace({'Normal':0, 'Sample':1})
+    group['Type'] = group['Type'].replace({'controls':0, 'cases':1})
 
     df = df.drop(['Type'], axis=1)
     df = df.T.reset_index()
@@ -331,7 +330,7 @@ def plot_norm(df):
 def plot_mean_norm (df):
     df = df.set_index('ID')
     group = pd.DataFrame(df['Type'])
-    group['Type'] = group['Type'].replace({'Normal':0, 'Sample':1})
+    group['Type'] = group['Type'].replace({'controls':0, 'cases':1})
 
     df = df.drop(['Type'], axis=1)
     df = df.T
@@ -368,8 +367,8 @@ def plot_manhattan (df):
     df = pd.DataFrame(df.stack()).reset_index()
     df.columns = ['Site', 'ID', 'Z score']
 
-    ID_normals = list(df[(df['Site']=='Type') & (df['Z score'] == 'Normal')] ['ID'])
-    match_ID = lambda ID: 'normal' if ID in ID_normals else 'sample'
+    ID_normals = list(df[(df['Site']=='Type') & (df['Z score'] == 'controls')] ['ID'])
+    match_ID = lambda ID: 'controls' if ID in ID_normals else 'cases'
 
     df = df.drop(range(0,len(df[df['Site']=='Type'])))
     df['Type'] = list(map (match_ID, df['ID']))
@@ -386,24 +385,24 @@ def plot_manhattan (df):
 
 def plot_volcano (df):
     #volcano = px.scatter(df, x="average_zscore_sample", y='log10_p_value_bonferroni', opacity=0.7)
-    volcano = px.scatter(df, x="average_zscore_sample", y='log10_p_value', opacity=0.7)
+    volcano = px.scatter(df, x="average_zscore_cases", y='log10_p_value', opacity=0.7)
     return volcano
 
 
 def plot_pca(finalDf):
     # match columns
     ptr_norm = list(finalDf.Type)
-    r = re.compile(".*normal")
+    r = re.compile(".*controls")
     ptr_norm_m = list(filter(r.match, ptr_norm))
 
     ptr_sample = list(finalDf.Type)
-    r = re.compile(".*sample")
+    r = re.compile(".*cases")
     ptr_sample_m = list(filter(r.match, ptr_sample))
 
     for i in ptr_norm_m:
-        finalDf['Type'] = finalDf['Type'].replace([i],'normal')
+        finalDf['Type'] = finalDf['Type'].replace([i],'controls')
     for i in ptr_sample:
-        finalDf['Type'] = finalDf['Type'].replace([i],'sample')
+        finalDf['Type'] = finalDf['Type'].replace([i],'cases')
 
     fig_pca = px.scatter(finalDf, x='PCA1', y='PCA2',
         color=finalDf['Type'], opacity=0.7,
@@ -455,19 +454,19 @@ def plot_site_percent(df):
     s.columns = ['std']
 
     df_final = pd.concat([m,s], axis=1).reset_index()
-    df_s = df_final[df_final['Type'] == 'Sample']
-    df_n = df_final[df_final['Type'] == 'Normal']
+    df_s = df_final[df_final['Type'] == 'cases']
+    df_n = df_final[df_final['Type'] == 'controls']
 
     fig = go.Figure([
         go.Scatter(
-            name='normal',
+            name='controls',
             x=df_n['ID'],
             y=df_n['mean'],
             mode='lines',
             line=dict(color='rgb(31, 119, 180)'),
         ),
         go.Scatter(
-            name='sample',
+            name='cases',
             x=df_s['ID'],
             y=df_s['mean'],
             mode='lines',
@@ -482,7 +481,6 @@ def plot_site_percent(df):
     return fig
 
 def boxplot_site(df):
-    df['Type'] = df['Type'].replace({"Sample": "sample", "Normal": "normal"})
     fig = px.violin(df, x = 'Type' , y="Met_perc", points = "all", box = True, color = 'Type',
                  labels={"Met_perc": "methylation %"})
     #fig.add_trace(px.strip(df, x='Type', y='value', color='Type').data[0])
@@ -498,20 +496,20 @@ def plot_site_norm(df):
 
     df_final = pd.concat([m,s], axis=1).reset_index()
 
-    df_s = df_final[df_final['Type'] == 'Sample']
-    df_n = df_final[df_final['Type'] == 'Normal']
+    df_s = df_final[df_final['Type'] == 'cases']
+    df_n = df_final[df_final['Type'] == 'controls']
 
     fig = go.Figure([
 
         go.Scatter(
-            name='normal',
+            name='controls',
             x=df_n['variable'],
             y=df_n['mean'],
             mode='lines',
             line=dict(color='rgb(31, 119, 180)'),
         ),
         go.Scatter(
-            name='sample',
+            name='cases',
             x=df_s['variable'],
             y=df_s['mean'],
             mode='lines',
@@ -557,14 +555,14 @@ def make_merge_site(chrom, start):
     return chrom + ':' + str(start)
 
 def custom_order_site(df):
-    df_m = df[df['Type'] == 'Sample']
+    df_m = df[df['Type'] == 'cases']
     df_m = df_m.sort_values(by=['mean'], ascending = False)
     orden_sites = list(df_m['CpG site'])
     df = df.set_index('CpG site').loc[orden_sites].reset_index()
     return df
 
 def custom_order_gene(df):
-    df_m = df[df['Type'] == 'Sample']
+    df_m = df[df['Type'] == 'cases']
     df_m = df_m.sort_values(by=['mean'], ascending = False)
     orden_sites = list(df_m['Gene'])
     df = df.set_index('Gene').loc[orden_sites].reset_index()
