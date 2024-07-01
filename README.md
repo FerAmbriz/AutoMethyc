@@ -73,6 +73,6 @@ The output is organized in 4 folders (Bismark, CSV, HTML, VCF). However, the exp
 ```
 git clone https://github.com/FerAmbriz/AutoMethycTest.git
 cd AutoMethycTest && mkdir output
-automethyc_docker -i samples -n normals -r [hg19_reference_genome_file] -b BedGraph331.csv -o output
+automethyc_docker -i cases -n controls -r [hg19_reference_genome_file] -b BedGraph331.csv -o output
 ```
 The example output is in: [sourceforge](https://sourceforge.net/projects/automethyc-test/files/AutoMethycOutputExample/)
