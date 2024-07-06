@@ -141,7 +141,7 @@ li a span3:hover {
 /* Color de los submenus */
 .vertical li.active ul {
   opacity: 0.7;
-  background-color: white;
+  /* background-color: white; */
 }
 
 .vertical li ul li.active a {
