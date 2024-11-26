@@ -14,13 +14,12 @@ output = sys.argv[2]
 print ('=================== calculating pca vectors ===================')
 
 df = pd.read_csv(input_df)
-#df = df.drop(df.index[[0,1]])
-#if 'ID' in list(df.columns):
 df = df.drop(['ID'], axis=1)
 df = df.fillna(0)
 df.replace(['inf', '-inf'], 0, inplace=True)
 df.replace([np.inf, -np.inf], 0, inplace=True)
-#print(df)
+
+
 # Separcion por grupos
 normals = df[df['Type'] == 'controls']
 normals = normals.set_index('Type')
@@ -54,22 +53,29 @@ df_bd = pd.DataFrame(columns = lst)
 
 # Construccion del df para input de PCA
 for i in range(max(len(normals), len(samples))):
-    if i < min(len(normals), len(samples)):
+    if i < len(normals) and i < len(samples):
         n = list(normals.iloc[i])
         s = list(samples.iloc[i])
-        row_i = n+s
-        df_bd.loc[i]=row_i
+        row_i = n + s
+        df_bd.loc[i] = row_i
     else:
         if min_df == 'cases':
-            n = list(normals.iloc[i])
+            if i < len(normals):
+                n = list(normals.iloc[i])
+            else:
+                n = ['NaN'] * len(lst_normals)
             s = ['NaN'] * len(lst_samples)
-            row_i = n+s
-            df_bd.loc[i]=row_i
+            row_i = n + s
+            df_bd.loc[i] = row_i
         else:
             n = ['NaN'] * len(lst_normals)
-            s = list(samples.iloc[i])
-            row_i = n+s
-            df_bd.loc[i]=row_i
+            if i < len(samples):
+                s = list(samples.iloc[i])
+            else:
+                s = ['NaN'] * len(lst_samples)
+            row_i = n + s
+            df_bd.loc[i] = row_i
+
 df_bd = df_bd.T
 df_bd.replace(['NaN'], 0, inplace=True)
 

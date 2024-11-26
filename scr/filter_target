@@ -12,25 +12,31 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 print ('==================== starting filtering ====================')
 #----------------------------Data------------------------------
-df = pd.read_csv(sys.argv[1])
+df = pd.read_csv(sys.argv[1], index_col=False)
 dfF = pd.read_csv(sys.argv[2])
 OutputFilter = sys.argv[3]
 
 print("Done read csv")
-#----------------------------InLoc------------------------------
-df_bd = pd.DataFrame()
-lst = []
-for c,s,ID in zip(df.Chr, df.Start, df.ID):
-    dF_i = dfF[dfF['Chr'] == c]
-    for sF,eF,Gene in zip(dF_i.Start, dF_i.End, dF_i.Gene):
-        if sF <= s <= eF+1:
-            db_i = df[(df['Start'] == s) & (df['ID'] == ID)]
-            print(db_i)
-            lst.append(Gene)
-            df_bd = pd.concat([df_bd, db_i])
+print(df)
+print(dfF)
 
-df_bd['Gene'] = lst
-df_filtrado = df_bd
+df['Start'] = df['Start'].apply(int) ;df['End'] = df['End'].apply(int)
+dfF['Start'] = dfF['Start'].apply(int) ;dfF['End'] = dfF['End'].apply(int)
+
+
+#----------------------------InLoc------------------------------
+df_filtrado = df[df.apply(lambda row: any((row['Chr'] == dfF['Chr']) & (row['Start'] >= dfF['Start']) & (row['Start'] <= dfF['End'])), axis=1)]
+
+# Añadir la columna del gen correspondiente
+def get_gene(row, df2):
+    genes = df2[(df2['Chr'] == row['Chr']) &
+                (df2['Start'] <= row['Start']) &
+                (df2['End'] >= row['Start'])]['Gene']
+    return genes.iloc[0] if not genes.empty else None
+
+df_filtrado['Gene'] = df_filtrado.apply(lambda row: get_gene(row, dfF), axis=1)
+
+print(df_filtrado)
 
 ID = df_filtrado[['ID', 'Type']].value_counts()
 df_filtrado = df_filtrado.set_index('ID')
