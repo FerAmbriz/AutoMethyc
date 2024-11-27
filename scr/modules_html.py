@@ -41,6 +41,7 @@ def html_navbar_complete ():
         </ul>
         </li>
         <li><a href="#pca"><span2> PCA </span2></a></li>
+        <li><a href="#roc"><span2> ROC </span2></a></li>
         <li><a href="#snv"><span2> Variant calling </span2></a><li>
         <li><a href="#about" style="background-color:#45B39D; border-radius: 0"><span2 style="background-color:#1c1f27; border-radius:10px" onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.5)'; this.style.color='black';" onmouseout="this.style.backgroundColor='#1c1f27'; this.style.color='white';"> About </span2></a></li>
     </ul>
@@ -237,6 +238,16 @@ def html_pca():
         <h2 style="margin-bottom: 5px;"> PCA </h2>
         <hr>
             Principal component analysis (PCA) applied to each site of the normals and samples. Each point represents a normalized site according to the corresponding group (normal or sample).
+    '''
+    return html
+
+def html_roc():
+    html = '''
+    </div>
+    <div id="roc">
+        <h2 style="margin-bottom: 5px;"> ROC </h2>
+        <hr>
+        ROC combinations
     '''
     return html
 

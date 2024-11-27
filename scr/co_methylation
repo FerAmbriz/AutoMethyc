@@ -1,0 +1,108 @@
+import sys
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+import itertools
+import statsmodels.api as sm
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.linear_model import LogisticRegression
+
+data = pd.read_csv(sys.argv[1])
+dfz = pd.read_csv(sys.argv[2])
+output = sys.argv[3]
+max_combinations = int(sys.argv[4])
+
+print('Matriz Z-score')
+print(data)
+
+print('Z-score large format')
+print(dfz)
+
+#================ Outliers ===========#
+def outliersf(df):
+    df = df[df['value']!= np.inf]
+    df1 = df[df['Type']=='controls']
+
+    Q1 = df1['value'].quantile (0.25)
+    Q3 = df1['value'].quantile (0.75)
+    IQR = Q3 - Q1
+
+    BI = Q1 - 1.5 * IQR
+    BS = Q3 + 1.5 * IQR
+
+    outliers = df[( df['value'] < BI ) | ( df['value'] > BS ) ]
+
+    sin_outliers = df[~df.index.isin(outliers.index)]
+    return outliers, sin_outliers
+
+outliers, sin_outliers = outliersf(dfz)
+print(outliers)
+
+x_count = pd.DataFrame(outliers['variable'].value_counts()).reset_index()
+x_count.columns = ['site', 'count']
+print(x_count)
+x_count.to_csv(f'{output}/outliers_count.csv', index = False)
+
+#==========Combinations=============#
+x_count = x_count.head(max_combinations)
+sites = list(x_count['site'])
+
+def process_combinations(lista, n):
+    combinaciones = list(itertools.combinations(lista, n))
+    data = []
+
+    for comb in combinaciones:
+        data.append({
+            'combination': '_'.join(comb),
+            'n_combinacion': n
+        })
+
+    return pd.DataFrame(data)
+print('asdfasd')
+print(x_count)
+df_dbg = pd.DataFrame()
+for i in range(2, len(x_count)):
+    df_dbg = pd.concat([df_dbg, process_combinations(sites, i)], ignore_index=True)
+
+#=========== Logistic regression =========#
+print('Preparing outlier combinations')
+print(df_dbg)
+
+lst_acc = []
+lst_val = []
+
+for i in df_dbg['combination']:
+    x = ['ID', 'Type'] + i.split('_')
+    data_i = data[x]
+
+    # Separar las características (X) y la etiqueta (y)
+    X = data_i.drop(columns=['ID', 'Type'])
+    y = data_i['Type']
+
+    # Codificar las etiquetas
+    label_encoder = LabelEncoder()
+    y_encoded = label_encoder.fit_transform(y)
+
+    # Dividir los datos en conjuntos de entrenamiento y prueba
+    X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
+
+    # Crear y entrenar el modelo de regresión logística
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X_train, y_train)
+
+    # Evaluar el modelo
+    train_accuracy = model.score(X_train, y_train)
+    test_accuracy = model.score(X_test, y_test)
+
+    # Añadir las precisiones a las listas
+    lst_acc.append(train_accuracy)
+    lst_val.append(test_accuracy)
+
+df_dbg['acc'] = lst_acc; df_dbg['val_acc'] = lst_val
+df_dbg = df_dbg.sort_values(by = ['val_acc', 'acc'], ascending = False).reset_index(drop=True)
+print(df_dbg)
+df_dbg.to_csv(f'{output}/logistic_regression_combination_outliers.csv', index = False)

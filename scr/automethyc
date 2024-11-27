@@ -7,6 +7,7 @@ genome="hg19"
 depth=20
 quality=30
 read_fastq="Paired"
+combinations=10
 #============================= Input Parameters ============================#
 arr=()
 while [[ $# -gt 0 ]]; do
@@ -31,6 +32,7 @@ Optional arguments
 	-b --bed		File with regions of interest (default=False)
 	-d --depth		Minimum depth to consider (default=20)
 	-q --quality		Minimum quality (default=30)
+	-c --combinations Number of outliers considered to combinations in the evaluation for logistic regression (default=10)
 	--read		Read type in fastq (default=Paired)
 ''';  exit 1;;
 "-i"|"--input"      ) input="$1"; arr+=( "-i" "$1"); shift;;
@@ -43,6 +45,7 @@ Optional arguments
 "-q"|"--quality"       ) quality="$1"; arr+=("-q" "$1"); shift;;
 "-d"|"--depth"       ) depth="$1"; arr+=("-d" "$1"); shift;;
 "--read"       ) read_fastq="$1"; arr+=("--read" "$1"); shift;;
+"-c"|"--combinations"       ) combinations="$1"; arr+=("-c" "$1"); shift;;
 	esac
 done
 ref_folder=${ref%/*}
@@ -61,8 +64,9 @@ echo 'genome		|' $genome
 echo 'depth		|' $depth
 echo 'quality		|' $quality
 echo 'read		|' $read_fastq
+echo 'combinations		|' $combination
 echo '#===================================================================#'
-echo -e " Automethyc ${arr[@]} \n input,$input \n output,$output \n reference,$ref \n bed,$filtro \n threads,$thr \n normal,$norm \n genome,$genome \n depth,$depth \n quaility,$quality \n" > $output/command_options.txt
+echo -e " Automethyc ${arr[@]} \n input,$input \n output,$output \n reference,$ref \n bed,$filtro \n threads,$thr \n normal,$norm \n genome,$genome \n depth,$depth \n quaility,$quality \n combinations,$combinations" > $output/command_options.txt
 
 #============================= Pipeline flow ============================#
 start=`date +%s`
@@ -208,6 +212,12 @@ else
 
 		echo "volcano start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		volcano $output/CSV/filtered_target_normalized.csv $output/CSV/
+		
+		echo "co_methylation start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		co_methylation $output/CSV/matrix_filtered_target_normalized.csv $output/CSV/filtered_target_normalized.csv $output/CSV/ $combinations
+
+		echo "CombiRoc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		Rscript /usr/bin/combi_roc.R $output/CSV
 
 		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		revelio_haplotype $output/Bismark/controls/aligned $ref $output/VCF/controls $thr
@@ -275,6 +285,12 @@ else
 
 		echo "volcano start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		volcano $output/CSV/filtered_target_normalized.csv $output/CSV/
+
+		echo "co_methylation start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		co_methylation $output/CSV/matrix_filtered_target_normalized.csv $output/CSV/filtered_target_normalized.csv $output/CSV/ $combinations
+
+		echo "CombiRoc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		Rscript /usr/bin/combi_roc.R $output/CSV
 
 		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		revelio_haplotype $output/Bismark/controls/aligned $ref $output/VCF/controls $thr

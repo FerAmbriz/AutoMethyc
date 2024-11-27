@@ -716,3 +716,24 @@ def plot_donut_cgi(df):
 def plot_count_snv(df):
     fig  = px.bar(df, x = 'ID', y = 'Count', color = 'group')
     return fig
+
+def plot_roc(df):
+    df['model'] = df['model'].replace(to_replace=r'^Combination.*',
+                                      value='all combinations', regex=True)
+
+    fig = px.line(df, x='X1.specificity', y='sensitivity',
+                  color='model', labels={ 'X1.specificity': '1 - Specificity',
+                                         'sensitivity': 'Sensitivity' })
+    return fig
+
+def table_roc(df):
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df.columns),
+                #fill_color='paleturquoise',
+                align='left'),
+    cells=dict(values=[df.model, df.AUC, df.SE, df.SP, df.CutOff, df.ACC, df.TN, df.TP, df.FN, df.FP, df.NPV, df.PPV],
+               #fill_color='lavender',
+               align='left', height = 30))
+                          ])
+    fig.update_layout(height=300)
+    return fig
