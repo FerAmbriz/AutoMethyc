@@ -389,7 +389,8 @@ def plot_manhattan (df):
     df [['Chr', 'SpecificSite']] = df['Site'].str.split(':',expand=True)
 
     df = sortOnco(df)
-    manhattan = px.scatter(df, x="Site", y='Z score', color="Type", opacity=0.7)
+    manhattan = px.scatter(df, x="Site", y='Z score', color="Type", opacity=0.7,
+                           color_discrete_map={ 'cases': 'red', 'controls': 'blue' })
 
     manhattan.update_layout(yaxis_title='Z-score',
         xaxis_title='CpG site')
