@@ -44,13 +44,33 @@ snv_count = input_folder + '/CSV/snv_count.csv'
 volcano = input_folder  + '/CSV/volcano_plot_data.csv'
 roc_data = input_folder  + '/CSV/roc_combined.csv'
 roc_metrics = input_folder + '/CSV/roc_metrics.csv'
+quality_metrics = input_folder + '/CSV/quality_alignment_metrics.csv'
+quality_trimming = input_folder + '/CSV/quality_trimming_metrics.csv'
+non_conversion = input_folder + '/CSV/non_conversion_metrics.csv'
 #=======================fastqc======================#
 df = pd.read_csv(fastqc)
+print(df)
 fig_fastqc = plot_fastqc(df)
 
-#=======================Depth======================#
+df = pd.read_csv(quality_trimming)
+print(df)
+fig_trimming = plot_trimming(df)
+
+#========================Depth========================#
 df = pd.read_csv(depth)
+print(df)
 fig_depth = plot_depth(df, norm)
+
+#=======================Alignment======================#
+df = pd.read_csv(quality_metrics)
+df['Mapping efficiency'] = df['Mapping efficiency'].str.replace('%', '').astype(float)
+print(df)
+fig_alignment = plot_alignment(df)
+
+#=======================non_conversion================#
+df = pd.read_csv(non_conversion)
+print(df)
+fig_non_conversion = plot_non_conversion(df)
 
 #========================All=========================#
 sites_bed = pd.read_csv(cgi)
@@ -60,56 +80,68 @@ group = pd.DataFrame(df.iloc[0]).drop(['ID', 'Unnamed: 1'])
 group[0] = group[0].replace({'controls':0, 'cases':1})
 df = df.drop(df.index[[0,1]])
 df = df.rename(columns = {'Unnamed: 1':'Start', 'ID':'Chr'})
+print(df)
 fig_all = plot_all(sites_bed, df, group)
 
 #========================Mean=======================#
 df = pd.read_csv(Oncoprint_mean)
+print(df)
 fig_mean = plot_mean(df)
 
 #=====================Off-target====================#
 on_targets = pd.read_csv(Count)
 off_targets = pd.read_csv(NotLoc)
+print(off_targets, on_targets)
 fig_oft = plot_offtarget(on_targets, off_targets, norm)
 
 #====================Norm all=======================#
 if norm == 'True':
     df = pd.read_csv(OncoprintNorm)
+    print(df)
     fig_norm = plot_norm(df)
 
 #====================Norm mean=====================#
 if norm == 'True':
     df = pd.read_csv(OncoprintMeanNorm)
+    print(df)
     fig_mean_norm = plot_mean_norm(df)
 
 #===================Mannhatan======================#
 if norm == 'True':
     df = pd.read_csv(OncoprintNorm)
+    print(df)
     fig_manhattan = plot_manhattan(df)
 
 #=====================PCA=========================#
 if norm == 'True':
     finalDf = pd.read_csv(PCA_data)
+    print(finalDf)
     fig_pca = plot_pca(finalDf)
 #=====================ROC=========================#
 if norm == 'True':
     roc_df = pd.read_csv(roc_data)
+    print(roc_data)
     fig_roc = plot_roc(roc_df)
 
     roc_metrics = pd.read_csv(roc_metrics)
     roc_metrics.rename(columns={'Unnamed: 0': 'model'}, inplace = True)
+    print(table_roc)
     table_roc = table_roc(roc_metrics)
 
 #====================SitePercent===================#
 df = pd.read_csv(Oncoprint_All)
+print(df)
 fig_percent_site = plot_site_percent(df)
 
 #====================Boxplot=======================#
 if norm == 'True':
     df = pd.read_csv(filtered_target)
+    print(df)
     fig_boxplot = boxplot_site(df)
 #======================NormSite=====================#
 if norm == 'True':
     df = pd.read_csv(boxplot_csv)
+    print(df)
     fig_site_norm = plot_site_norm(df)
 
 #======================Command======================#
@@ -119,38 +151,46 @@ with open(c) as f:
 df = pd.read_csv(c)
 df = df.reset_index()
 df.columns = [ 'Parameter', 'Value']
-
+print(df)
 fig_table = plot_options(df)
 
 #==========================table_site======================#
 df = pd.read_csv(filtered_target)
+print(df)
 table_global = plot_site_table(df, 'percentage', 'None')
 #==========================table_norm======================#
 if norm == 'True':
     df = pd.read_csv(boxplot_csv)
     bed = pd.read_csv(filtered_target)
+    print(df)
     table_zscore = plot_site_table(df, 'zscore', bed)
 #======================mean_gene_table=====================#
 df = pd.read_csv(filtered_target)
+print(df)
 table_mean_gene = plot_table_mean_gene(df, 'methpercent')
 #===================mean_gene_table_norm===================#
 if norm == 'True':
     df = pd.read_csv(mean_gene_normalized)
+    print(df)
     table_mean_gene_normalized = plot_table_mean_gene(df, 'zscore')
 #========================TablePCA==========================#
 if norm == 'True':
     df = pd.read_csv(PCA_data)
     bed = pd.read_csv(filtered_target)
+    print(df)
     table_pca = plot_table_pca(df, bed)
 #=========================DonutCGI=========================#
 df = pd.read_csv(cgi)
+print(df)
 figure_donut_cgi = plot_donut_cgi(df)
 #=======================VolcanoPlot========================#
 if norm == 'True':
     df = pd.read_csv(volcano)
+    print(df)
     fig_volcano = plot_volcano(df)
 #===========================SNV============================#
 df = pd.read_csv(snv_count)
+print(df)
 fig_count_snv = plot_count_snv(df)
 #==========================HTML============================#
 
@@ -163,8 +203,13 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
 
     f.write(html_AutoMethyc(command))
     f.write(fig_table.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_alignment())
+    f.write(fig_alignment.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_base())
     f.write(fig_fastqc.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(fig_trimming.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_non_conversion())
+    f.write(fig_non_conversion.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_depth())
     f.write(fig_depth.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(html_coverage())

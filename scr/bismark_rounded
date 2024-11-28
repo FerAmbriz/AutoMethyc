@@ -68,7 +68,30 @@ if [ "$paired" = "Paired" ]; then
                         -1 ${FQ1} -2 ${FQ2}
 
                 echo '===================== done bismark ====================='
-               
+
+                BAM_IN=$output/tmp/03_aligned/one_mismatch*pe.bam
+                OUT=$(ls ${BAM_IN})
+    echo "samtools sort start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+                samtools sort -n ${BAM_IN} -o ${OUT%.bam}_sorted.bam
+
+                echo '===================== done samtools ====================='
+
+                BAM_IN=${BAM_IN%.bam}_sorted.bam
+                OUT=$output/tmp/03_aligned
+    echo "filter_non_conversion start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+                filter_non_conversion ${BAM_IN}
+                
+                mv one_mismatch*filtered.bam ${OUT}
+
+                echo '=============== done filter non conversion =============='
+
+                BAM_IN=$output/tmp/03_aligned/one_mismatch*filtered.bam
+                OUT=$output/tmp/04_deduplicated
+    echo "deduplicate_bismark start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+                deduplicate_bismark ${BAM_IN} --output_dir ${OUT}
+
+                echo '=================== done deduplicate ===================='
+
                 BAM_IN=$output/tmp/03_aligned/one_mismatch*pe.bam
                 OUT=$output/tmp/05_bismark_extractor/
 
@@ -136,12 +159,35 @@ else
                         ${FQ1}
 
                 echo '===================== done bismark ====================='
- 
-                BAM_IN=$output/tmp/03_aligned/one_mismatch*_bt2.bam
+
+                BAM_IN=$output/tmp/03_aligned/one_mismatch*pe.bam
+                OUT=$(ls ${BAM_IN})
+    echo "samtools sort start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+                samtools sort -n ${BAM_IN} -o ${OUT%.bam}_sorted.bam
+
+                echo '===================== done samtools ====================='
+
+                BAM_IN=${BAM_IN%.bam}_sorted.bam
+                OUT=$output/tmp/03_aligned
+    echo "filter_non_conversion start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+                filter_non_conversion ${BAM_IN}
+                
+                mv one_mismatch*filtered.bam ${OUT}
+
+                echo '=============== done filter non conversion =============='
+
+                BAM_IN=$output/tmp/03_aligned/one_mismatch*filtered.bam
+                OUT=$output/tmp/04_deduplicated
+    echo "deduplicate_bismark start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+                deduplicate_bismark ${BAM_IN} --output_dir ${OUT}
+
+                echo '=================== done deduplicate ===================='
+
+                BAM_IN=$output/tmp/03_aligned/one_mismatch*pe.bam
                 OUT=$output/tmp/05_bismark_extractor/
 
 		echo "bismark_methylation_extractor start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-                bismark_methylation_extractor --single-end \
+                bismark_methylation_extractor --paired-end \
                         --gzip \
                         --bedGraph \
                         --parallel $(($thr/2)) \
@@ -151,13 +197,13 @@ else
 
                 echo '========== done bismark_methylation_extractor =========='
                
-                IN=$output/tmp/03_aligned/one_mismatch*_bt2.bam
+                IN=$output/tmp/03_aligned/one_mismatch*pe.bam
                 OUT=$output/tmp/04_deduplicated
 
 		echo "bam2nuc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bam2nuc --genome_folder ${genome} --dir ${OUT} ${IN} 
 
-                echo '===================== done bam2nuc ====================='
+                echo '===================== done bam2nuc ======================'
 
 		echo "bismark2report start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
                 bismark2report --alignment_report $output/tmp/03_aligned/one_mismatch*report.txt \
@@ -165,7 +211,7 @@ else
                         --mbias_report $output/tmp/05_bismark_extractor/one_mismatch*.M-bias.txt \
                         --nucleotide_report $output/tmp/04_deduplicated/one_mismatch*.nucleotide_stats.txt
 
-                echo '================= done bismark2report =================='
+                echo '================== done bismark2report =================='
 
                 mv $output/tmp/02_fastq_trimmed/* $output/Bismark/$FolderOutput/fastq_trimmed
                 mv $output/tmp/03_aligned/* $output/Bismark/$FolderOutput/aligned
@@ -176,6 +222,7 @@ else
                 mv  $output/tmp/05_bismark_extractor/*.bedGraph.gz $output/Bismark/$FolderOutput/bedGraph
                 mv  $output/tmp/05_bismark_extractor/*.bismark.cov.gz $output/Bismark/$FolderOutput/bedGraph  
                 mv *.html $output/Bismark/$FolderOutput/html_reports
+
         done
 fi
 rm -rf $output/tmp/

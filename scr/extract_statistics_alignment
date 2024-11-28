@@ -1,0 +1,152 @@
+#!/usr/bin/env python3
+
+import pandas as pd
+import os
+import sys
+
+input_folder_quality = sys.argv[1]
+input_folder_alignment = sys.argv[2]
+input_folder_duplicates = sys.argv[3]
+type_class = sys.argv[4]
+output = sys.argv[5]
+
+#================ quality ================#
+files = os.listdir(input_folder_quality)
+files = [f for f in files if f.endswith('.txt')]
+
+df_db = pd.DataFrame()
+for i in files:
+    x = '_1' if 'R1' in i else '_2'
+    ID = i.split('_S')[0] + x
+
+    with open(f'{input_folder_quality}/{i}', 'r') as file:
+        lines = file.readlines()
+
+    # Extraer la sección entre === Summary === y === Adapter 1 ===
+    summary_start = lines.index('=== Summary ===\n') + 1
+    adapter_start = lines.index('=== Adapter 1 ===\n')
+
+    summary_lines = lines[summary_start:adapter_start]
+
+    data = {
+        'ID':[],
+        'Metric': [],
+        'Value': []
+    }
+
+    for line in summary_lines:
+        if ':' in line:
+            metric, value = line.split(':', 1)
+            data['Metric'].append(metric.strip())
+            data['Value'].append(value.strip())
+            data['ID'].append(ID)
+
+    df = pd.DataFrame(data)
+    df_db = pd.concat([df_db, df])
+
+df_db['Type'] = type_class
+df_db = df_db.pivot(index=['ID', 'Type'], columns='Metric', values='Value')
+
+print('Quality trimming metrics')
+print(df_db)
+
+df_db.to_csv(f'{output}/quality_trimming_metrics.csv')
+
+#=============== Alignment =============#
+files = os.listdir(input_folder_alignment)
+files = [f for f in files if f.endswith('report.txt')]
+
+df_db = pd.DataFrame()
+for i in files:
+    ID = i.split('_S')[0].split('one_mismatch.')[1]
+
+    with open(f'{input_folder_alignment}/{i}', 'r') as file:
+        lines = file.readlines()
+
+    start_line = lines.index('Final Alignment report\n') + 2
+    end_line = lines.index('Number of sequence pairs with unique best (first) alignment came from the bowtie output:\n')
+
+    summary_lines = lines[start_line:end_line]
+
+    data = {
+        'ID':[],
+        'Metric': [],
+        'Value': []
+    }
+
+    for line in summary_lines:
+        if ':' in line:
+            metric, value = line.split(':', 1)
+            data['Metric'].append(metric.strip())
+            data['Value'].append(value.strip())
+            data['ID'].append(ID)
+
+    df = pd.DataFrame(data)
+    df_db = pd.concat([df_db, df])
+
+df_db['Type'] = type_class
+
+df_db = df_db.pivot(index=['ID', 'Type'], columns='Metric', values='Value')
+
+print('Quality alignment metrics')
+print(df_db)
+df_db.to_csv(f'{output}/quality_alignment_metrics.csv')
+
+#================ extract_non_conversion ================#
+files = os.listdir(input_folder_alignment)
+files = [f for f in files if f.endswith('_filtering.txt')]
+
+df_db = pd.DataFrame()
+for i in files:
+    ID = i.split('one_mismatch.')[1].split('_S')[0]
+
+    with open(f'{input_folder_alignment}/{i}', 'r') as file:
+        lines = file.readlines()
+
+    lst = []
+    for line in lines[:2]:
+        # Eliminar tabulaciones y saltos de línea
+        line = line.replace('\t', '').replace('\n', '')
+        # Separar por ':'
+        parts = line.split(':')
+        # Eliminar todo lo que sigue después de '>' en el primer valor
+        parts[0] = parts[0].split('>')[0]
+        lst.append(parts)
+
+    df = pd.DataFrame(lst, columns=['Metric', 'Value'])
+    df['ID'] = ID; df['Type'] = type_class
+
+    df_db = pd.concat([df_db, df])
+
+df_db = df_db.pivot(index=['ID', 'Type'], columns='Metric', values='Value')
+print(df_db)
+df_db.to_csv(f'{output}/non_conversion_metrics.csv')
+
+#================ extract_duplicates ================#
+files = os.listdir(input_folder_duplicates)
+files = [f for f in files if f.endswith('deduplication_report.txt')]
+
+df_db = pd.DataFrame()
+for i in files:
+    ID = i.split('one_mismatch.')[1].split('_S')[0]
+
+    with open(f'{input_folder_duplicates}/{i}', 'r') as file:
+        lines = file.readlines()
+
+    lst = []
+    for line in lines[1:3]:
+        # Eliminar tabulaciones y saltos de línea
+        line = line.replace('\t', '').replace('\n', '')
+        parts = line.split(':')
+
+        parts[0] = parts[0].split(' in ')[0]
+        lst.append(parts)
+
+    df = pd.DataFrame(lst, columns=['Metric', 'Value'])
+    df['ID'] = ID; df['Type'] = type_class
+
+    df_db = pd.concat([df_db, df])
+
+df_db = df_db.pivot(index=['ID', 'Type'], columns='Metric', values='Value')
+print(df_db)
+df_db.to_csv(f'{output}/duplicated_metrics.csv')

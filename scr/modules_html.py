@@ -17,7 +17,9 @@ def html_navbar_complete ():
     html = '''
     <ul class="vertical">
         <li><a href="#Home"><span> AutoMethyc </span></a></li>
+        <li><a href="#Alignment"><span2> Alignment quality </span2></a></li>
         <li><a href="#Base"><span2> Base quality </span2></a></li>
+        <li><a href="#Conversion"><span2> Non conversion BS-seq </span2></a></li>
         <li><a href="#Depth"><span2> Depth </span2></a></li>
         <li><a href="#Coverage"><span2> Coverage </span2></a></li>
         <li><a href="#CGI"><span2> CGI mapping </span2></a></li>
@@ -55,7 +57,9 @@ def html_navbar_sNorm ():
     html = '''
     <ul class="vertical">
         <li><a href="#Home"><span> AutoMethyc </span></a></li>
+        <li><a href="#Alignment"><span2> Alignment quality </span2></a></li>
         <li><a href="#Base"><span2> Base quality </span2></a></li>
+        <li><a href="#Conversion"><span2> Non conversion BS-seq </span2></a></li>
         <li><a href="#Depth"><span2> Depth </span2></a></li>
         <li><a href="#Coverage"><span2> Coverage </span2></a></li>
         <li><a href="#CGI"><span2> CGI mapping </span2></a></li>
@@ -94,6 +98,16 @@ def html_AutoMethyc (command):
     '''
     return html
 
+def html_alignment ():
+    html = '''
+    </div>
+    <div id="Alignment">
+        <h2 style="margin-bottom: 5px;"> Alignment quality </h2>
+        <hr style="margin-top: 0;">
+        Alignment quality metrics
+    '''
+    return html
+
 def html_base ():
     html = '''
     </div>
@@ -103,6 +117,17 @@ def html_base ():
         Logarithmic ratio of Phred Q quality scores to base call error probabilities.
     '''
     return html
+
+def html_non_conversion ():
+    html = '''
+    </div>
+    <div id="Conversion">
+        <h2 style="margin-bottom: 5px;"> Non conversion BS-seq </h2>
+        <hr style="margin-top: 0;">
+        Non conversion BS-seq. Values indicates percentages based on reads.
+    '''
+    return html
+
 
 def html_depth ():
     html = '''

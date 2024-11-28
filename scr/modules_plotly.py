@@ -390,7 +390,7 @@ def plot_manhattan (df):
 
     df = sortOnco(df)
     manhattan = px.scatter(df, x="Site", y='Z score', color="Type", opacity=0.7,
-                           color_discrete_map={ 'cases': 'red', 'controls': 'blue' })
+                           color_discrete_map={ 'cases': '#e74c3c', 'controls': '#3498db' })
 
     manhattan.update_layout(yaxis_title='Z-score',
         xaxis_title='CpG site')
@@ -736,4 +736,146 @@ def table_roc(df):
                align='left', height = 30))
                           ])
     fig.update_layout(height=300)
+    return fig
+
+def plot_alignment(df):
+    #print(df)
+    color_map = {
+        'controls': '#2980b9',
+        'cases': '#e74c3c'
+    }
+
+    df['color'] = df['Type'].map(color_map)
+
+    fig = make_subplots(rows=1, cols=1)
+
+    columns_to_plot = [col for col in df.columns if col not in ['ID', 'color', 'Type']]
+    for col in columns_to_plot:
+        fig.add_trace(
+            go.Bar(x=df['ID'], y=df[col], name=col, marker_color=df['color'], visible=False),
+            row=1, col=1
+        )
+
+    fig.add_trace(
+        go.Bar(x=df['ID'], y=df['Mapping efficiency'], name='Mapping efficiency', marker_color=df['color'], visible=True),
+        row=1, col=1
+    )
+
+    buttons = []
+    for i, col in enumerate(columns_to_plot):
+        visibility = [False] * (len(columns_to_plot) + 1)
+        visibility[i] = True
+        buttons.append(
+            dict(
+                args=[{"visible": visibility}],
+                label=col,
+                method="update"
+            )
+        )
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                type="dropdown",
+                direction="down",
+                buttons=buttons,
+                pad={"r": 10, "t": 10},
+                showactive=True,
+                x=0,
+                xanchor="left",
+                y=1.1,
+                yanchor="top"
+            ),
+        ]
+    )
+
+    return fig
+
+def plot_trimming(df):
+    df['Quality-trimmed (bp)'] = df['Quality-trimmed'].str.extract(r'([\d,]+)').replace(',', '', regex=True).astype(int)
+    df['Quality-trimmed (%)'] = df['Quality-trimmed'].str.extract(r'\((\d+\.\d+)%\)').astype(float)
+
+    fig = make_subplots(rows=1, cols=1)
+    color_map = {
+        'controls': '#2980b9',
+        'cases': '#e74c3c'
+    }
+
+    fig.add_trace(
+        go.Bar(x=df['ID'], y=df['Quality-trimmed (bp)'], name='Quality-trimmed (bp)', marker_color=df['Type'].map(color_map), visible=True),
+        row=1, col=1
+    )
+
+    fig.add_trace(
+        go.Bar(x=df['ID'], y=df['Quality-trimmed (%)'], name='Quality-trimmed (%)',
+               marker_color=df['Type'].map(color_map), visible=False),
+        row=1, col=1
+    )
+
+    def hex_to_rgba(hex_color, alpha):
+        hex_color = hex_color.lstrip('#')
+        r, g, b = int(hex_color[:2], 16), int(hex_color[2:4], 16), int(hex_color[4:], 16)
+        return f'rgba({r}, {g}, {b}, {alpha})'
+
+    # Gráficas de violin por categoría
+    violin_traces = []
+    for category, color in color_map.items():
+        violin_traces.append(
+            go.Violin(
+                x=df[df['Type'] == category]['Type'],
+                y=df[df['Type'] == category]['Quality-trimmed (%)'],
+                name=f'{category}',
+                box_visible=True,
+                meanline_visible=True,
+                points='all',
+                line_color=color,  # Borde del violin
+                fillcolor=hex_to_rgba(color, 0.5),  # Relleno con transparencia
+                visible=False
+            )
+        )
+
+    # Añadimos las trazas de violines a la figura
+    for trace in violin_traces:
+        fig.add_trace(trace, row=1, col=1)
+
+
+    buttons = [
+        dict(
+            args=[{"visible": [True, False]}],
+            label='Quality-trimmed (bp)',
+            method="update"
+        ),
+        dict(
+            args=[{"visible": [False, True]}],
+            label='Quality-trimmed (%)',
+            method="update"
+        ),
+        dict(
+            args=[{"visible": [False, False] + [True] * len(violin_traces)}],
+            label='Violin plot quality-trimmed (%)',
+            method="update"
+        )
+          ]
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                type="dropdown",
+                direction="down",
+                buttons=buttons,
+                pad={"r": 10, "t": 10},
+                showactive=True,
+                x=0,
+                xanchor="left",
+                y=1.1,
+                yanchor="top"
+            ),
+        ],
+    )
+    return fig
+
+def plot_non_conversion(df):
+    clean = lambda x:float(x.split(' (')[1].replace('%)', ''))
+    df['Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)'] = df['Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)'].apply(clean)
+    fig  = px.bar(df, x = 'ID', y = 'Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)', color = 'Type')
     return fig

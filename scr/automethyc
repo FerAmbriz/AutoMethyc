@@ -89,6 +89,12 @@ if [ "$norm" = "False" ]; then
 		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bindcov $output/Bismark/cases/bedGraph $output/CSV 'cases'
 
+		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/CSV
+
+		echo "extract_statistics_alignment start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		extract_statistics_alignment $output/Bismark/cases/fastq_trimmed $output/Bismark/cases/aligned $output/Bismark/cases/deduplicated cases $output/CSV
+
 		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $output/CSV/raw_data.csv $genome $output/CSV $thr
 
@@ -105,10 +111,7 @@ if [ "$norm" = "False" ]; then
 		echo "cgi_mapping start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 
-		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/CSV
-
-		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+			echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		revelio_haplotype $output/Bismark/cases/aligned $ref $output/VCF $thr
 
 		echo "snv_count start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
@@ -128,6 +131,12 @@ if [ "$norm" = "False" ]; then
 		echo "bindcov start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		bindcov $output/Bismark/cases/bedGraph $output/CSV 'cases'
 
+		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/CSV
+
+		echo "extract_statistics_alignment start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		extract_statistics_alignment $output/Bismark/cases/fastq_trimmed $output/Bismark/cases/aligned $output/Bismark/cases/deduplicated cases $output/CSV
+
 		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $filtro $genome $output/CSV $thr
 
@@ -144,8 +153,6 @@ if [ "$norm" = "False" ]; then
 		echo "cgi_mapping start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		cgi_mapping $output/CSV/matrix_filtered_target.csv $genome $output/CSV
 
-		echo "fastqc_extract start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
-		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/CSV
 
 		echo "revelio_haplotype start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		revelio_haplotype $output/Bismark/cases/aligned $ref $output/VCF $thr
@@ -177,6 +184,10 @@ else
 		fastqc_extract $output/Bismark/controls/fastq_trimmed $output/Bismark/controls
 		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/Bismark/cases
 
+		echo "extract_statistics_alignment start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		extract_statistics_alignment $output/Bismark/cases/fastq_trimmed $output/Bismark/cases/aligned $output/Bismark/cases/deduplicated cases $output/Bismark/cases
+		extract_statistics_alignment $output/Bismark/controls/fastq_trimmed $output/Bismark/controls/aligned $output/Bismark/controls/deduplicated controls $output/Bismark/controls
+
 		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		multiqc $output/Bismark/controls/fastq_trimmed/*
 		mv multiqc_report.html $output/HTML/multiqc_report_controls.html
@@ -188,6 +199,12 @@ else
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/raw_data.csv $output/Bismark/cases/raw_data.csv > $output/CSV/raw_data.csv
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/count_depth_${depth}_pass.csv $output/Bismark/cases/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/fastqc_raw_data.csv $output/Bismark/cases/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/quality_trimming_metrics.csv $output/Bismark/cases/quality_trimming_metrics.csv > $output/CSV/quality_trimming_metrics.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/quality_alignment_metrics.csv $output/Bismark/cases/quality_alignment_metrics.csv > $output/CSV/quality_alignment_metrics.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/non_conversion_metrics.csv $output/Bismark/cases/non_conversion_metrics.csv > $output/CSV/non_conversion_metrics.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/duplicated_metrics.csv $output/Bismark/cases/duplicated_metrics.csv > $output/CSV/duplicated_metrics.csv
+
+
 
 		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $output/CSV/raw_data.csv $genome $output/CSV $thr
@@ -250,6 +267,10 @@ else
 		fastqc_extract $output/Bismark/controls/fastq_trimmed $output/Bismark/controls
 		fastqc_extract $output/Bismark/cases/fastq_trimmed $output/Bismark/cases
 
+		echo "extract_statistics_alignment start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
+		extract_statistics_alignment $output/Bismark/cases/fastq_trimmed $output/Bismark/cases/aligned $output/Bismark/cases/deduplicated cases $output/Bismark/cases
+		extract_statistics_alignment $output/Bismark/controls/fastq_trimmed $output/Bismark/controls/aligned $output/Bismark/controls/deduplicated controls $output/Bismark/controls
+
 		echo "multiqc start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		multiqc $output/Bismark/controls/fastq_trimmed/*
 		mv multiqc_report.html $output/HTML/multiqc_report_controls.html
@@ -261,6 +282,10 @@ else
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/raw_data.csv $output/Bismark/cases/raw_data.csv > $output/CSV/raw_data.csv
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/count_depth_${depth}_pass.csv $output/Bismark/cases/count_depth_${depth}_pass.csv > $output/CSV/count_depth_${depth}_pass.csv
 		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/fastqc_raw_data.csv $output/Bismark/cases/fastqc_raw_data.csv > $output/CSV/fastqc_raw_data.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/quality_trimming_metrics.csv $output/Bismark/cases/quality_trimming_metrics.csv > $output/CSV/quality_trimming_metrics.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/quality_alignment_metrics.csv $output/Bismark/cases/quality_alignment_metrics.csv > $output/CSV/quality_alignment_metrics.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/non_conversion_metrics.csv $output/Bismark/cases/non_conversion_metrics.csv > $output/CSV/non_conversion_metrics.csv
+		awk '(NR == 1) || (FNR > 1)' $output/Bismark/controls/duplicated_metrics.csv $output/Bismark/cases/duplicated_metrics.csv > $output/CSV/duplicated_metrics.csv
 
 		echo "region_annotator start at: $(date +'%H:%M:%S')" >> $output/execution_time.txt
 		region_annotator $filtro $genome $output/CSV $thr
