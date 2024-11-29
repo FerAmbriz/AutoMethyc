@@ -17,29 +17,29 @@ def html_navbar_complete ():
     html = '''
     <ul class="vertical">
         <li><a href="#Home"><span> AutoMethyc </span></a></li>
-        <li><a href="#Alignment"><span2> Alignment quality </span2></a></li>
         <li><a href="#Base"><span2> Base quality </span2></a></li>
-        <li><a href="#Conversion"><span2> Non conversion BS-seq </span2></a></li>
+        <li><a href="#Conversion"><span2> Non-conversion BS </span2></a></li>
+        <li><a href="#Alignment"><span2> Alignment quality </span2></a></li>
         <li><a href="#Depth"><span2> Depth </span2></a></li>
         <li><a href="#Coverage"><span2> Coverage </span2></a></li>
         <li><a href="#CGI"><span2> CGI mapping </span2></a></li>
         <li>
-        <a href="#Percentage"><span2> Methylation percentage </span2></a>
+        <a href="#Percentage"><span2> Methylation % </span2></a>
         <ul>
-            <li style="padding-left: 30px;"><a href="#Detailed"><span3> Detailed </span3></a></li>
-            <li style="padding-left: 30px;"><a href="#MeanSite"><span3> Mean by site </span3></a></li>
-            <li style="padding-left: 30px;"><a href="#MeanGene"><span3> Mean by gene </span3></a></li>
-            <li style="padding-left: 30px;"><a href="#Global"><span3> Global </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#Detailed"><span3> Detailed </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#MeanSite"><span3> Mean by site </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#MeanGene"><span3> Mean by gene </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#Global"><span3> Global </span3></a></li>
         </ul>
         </li>
         <li>
-        <a href="#Z-score"><span2> Normalized methylation </span2></a>
+        <a href="#Z-score"><span2> Z-methylation </span2></a>
         <ul>
-            <li style="padding-left: 30px;"><a href="#NormDetailed"><span3> Detailed normalization </span3></a></li>
-            <li style="padding-left: 30px;"><a href="#NormManhattan"><span3> Normalization by sample and site </span3></a></li>
-            <li style="padding-left: 30px;"><a href="#MeanSiteNorm"><span3>  Mean by site normalized </span3></a></li>
-            <li style="padding-left: 30px;"><a href="#MeanGeneNorm"><span3> Mean by gene normalized </span3></a></li>
-            <li style="padding-left: 30px;"><a href="#Volcano"><span3> Differential methylation </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#NormDetailed"><span3> Detailed </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#NormManhattan"><span3> Global </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#MeanSiteNorm"><span3>  Mean by site </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#MeanGeneNorm"><span3> Mean by gene </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#Volcano"><span3> Differential </span3></a></li>
         </ul>
         </li>
         <li><a href="#pca"><span2> PCA </span2></a></li>
@@ -57,18 +57,18 @@ def html_navbar_sNorm ():
     html = '''
     <ul class="vertical">
         <li><a href="#Home"><span> AutoMethyc </span></a></li>
-        <li><a href="#Alignment"><span2> Alignment quality </span2></a></li>
         <li><a href="#Base"><span2> Base quality </span2></a></li>
-        <li><a href="#Conversion"><span2> Non conversion BS-seq </span2></a></li>
+        <li><a href="#Conversion"><span2> Non-conversion BS </span2></a></li>
+        <li><a href="#Alignment"><span2> Alignment quality </span2></a></li>
         <li><a href="#Depth"><span2> Depth </span2></a></li>
         <li><a href="#Coverage"><span2> Coverage </span2></a></li>
         <li><a href="#CGI"><span2> CGI mapping </span2></a></li>
         <li>
-        <a href="#Percentage"><span2> Methylation percentage </span2></a>
+        <a href="#Percentage"><span2> Methylation % </span2></a>
         <ul>
-            <li style="padding-left: 30px;"><a href="#Detailed"><span3> Detailed </span3></a></li>
-            <li style="padding-left: 30px;"><a href="#MeanSite"><span3> Mean by site </span3></a></li>
-            <li style="padding-left: 30px;"><a href="#MeanGene"><span3> Mean by gene </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#Detailed"><span3> Detailed </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#MeanSite"><span3> Mean by site </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#MeanGene"><span3> Mean by gene </span3></a></li>
         </ul>
         </li>
         <li><a href="#snv"><span2> Variant calling </span2></a><li>
@@ -122,9 +122,9 @@ def html_non_conversion ():
     html = '''
     </div>
     <div id="Conversion">
-        <h2 style="margin-bottom: 5px;"> Non conversion BS-seq </h2>
+        <h2 style="margin-bottom: 5px;"> Non conversion BS </h2>
         <hr style="margin-top: 0;">
-        Non conversion BS-seq. Values indicates percentages based on reads.
+        Non conversion bisulfite (BS). Values indicates percentages based on reads.
     '''
     return html
 

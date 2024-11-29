@@ -96,6 +96,8 @@ def plot_depth (df, status):
         fig.update_xaxes(title_text="cases", row=1, col=2)
     else:
          fig = px.bar(df, x="ID", y="Count", color="Type")
+    fig.update_layout( barcornerradius="30%", barmode = 'stack')
+
     return fig
 
 def discrete_colorscale(bvals, colors):
@@ -287,6 +289,8 @@ def plot_offtarget(on_targets, off_targets, status):
     else:
         fig_chr = px.bar(df, x="ID", y="Count", color='Status')
 
+    fig_chr.update_layout( barcornerradius="30%")
+    fig_chr.update_layout(barmode='stack')
     return fig_chr
 
 def plot_norm(df):
@@ -715,6 +719,7 @@ def plot_donut_cgi(df):
 
 def plot_count_snv(df):
     fig  = px.bar(df, x = 'ID', y = 'Count', color = 'group')
+    fig.update_layout( barcornerradius="30%")
     return fig
 
 def plot_roc(df):
@@ -724,6 +729,20 @@ def plot_roc(df):
     fig = px.line(df, x='X1.specificity', y='sensitivity',
                   color='model', labels={ 'X1.specificity': '1 - Specificity',
                                          'sensitivity': 'Sensitivity' })
+
+    # Añadir el área bajo la curva con transparencia y respetando el color de cada línea
+    #for model in df['model'].unique():
+    #    model_df = df[df['model'] == model]
+    #    color = px.colors.qualitative.Plotly[df['model'].unique().tolist().index(model)]
+    #    rgba_color = f'rgba({int(color[1:3], 16)}, {int(color[3:5], 16)}, {int(color[5:7], 16)}, 0.5)'
+    #    fig.add_trace(go.Scatter(
+    #        x=model_df['X1.specificity'],
+    #        y=model_df['sensitivity'],
+    #        fill='tozeroy',
+    #        mode='none',
+    #        fillcolor=rgba_color,
+    #        name=f'{model} (AUC)'
+    #    ))
     return fig
 
 def table_roc(df):
@@ -760,6 +779,8 @@ def plot_alignment(df):
         go.Bar(x=df['ID'], y=df['Mapping efficiency'], name='Mapping efficiency', marker_color=df['color'], visible=True),
         row=1, col=1
     )
+
+    fig.update_layout( barcornerradius="30%")
 
     buttons = []
     for i, col in enumerate(columns_to_plot):
@@ -802,9 +823,11 @@ def plot_trimming(df):
     }
 
     fig.add_trace(
-        go.Bar(x=df['ID'], y=df['Quality-trimmed (bp)'], name='Quality-trimmed (bp)', marker_color=df['Type'].map(color_map), visible=True),
+        go.Bar(x=df['ID'], y=df['Quality-trimmed (bp)'], name='Quality-trimmed (bp)',
+               marker_color=df['Type'].map(color_map), visible=True),
         row=1, col=1
     )
+    fig.update_layout( barcornerradius="30%")
 
     fig.add_trace(
         go.Bar(x=df['ID'], y=df['Quality-trimmed (%)'], name='Quality-trimmed (%)',
@@ -830,7 +853,8 @@ def plot_trimming(df):
                 points='all',
                 line_color=color,  # Borde del violin
                 fillcolor=hex_to_rgba(color, 0.5),  # Relleno con transparencia
-                visible=False
+                visible=False,
+                #showlegend=False
             )
         )
 
@@ -841,12 +865,12 @@ def plot_trimming(df):
 
     buttons = [
         dict(
-            args=[{"visible": [True, False]}],
+            args=[{"visible": [True, False, False, False]}],
             label='Quality-trimmed (bp)',
             method="update"
         ),
         dict(
-            args=[{"visible": [False, True]}],
+            args=[{"visible": [False, True, False, False]}],
             label='Quality-trimmed (%)',
             method="update"
         ),
@@ -878,4 +902,5 @@ def plot_non_conversion(df):
     clean = lambda x:float(x.split(' (')[1].replace('%)', ''))
     df['Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)'] = df['Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)'].apply(clean)
     fig  = px.bar(df, x = 'ID', y = 'Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)', color = 'Type')
+    fig.update_layout( barcornerradius="30%")
     return fig
