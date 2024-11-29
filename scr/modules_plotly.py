@@ -96,7 +96,7 @@ def plot_depth (df, status):
         fig.update_xaxes(title_text="cases", row=1, col=2)
     else:
          fig = px.bar(df, x="ID", y="Count", color="Type")
-    fig.update_layout( barcornerradius="30%", barmode = 'stack')
+    fig.update_layout( barcornerradius="30%", barmode = 'stack', height = 500)
 
     return fig
 
@@ -289,7 +289,7 @@ def plot_offtarget(on_targets, off_targets, status):
     else:
         fig_chr = px.bar(df, x="ID", y="Count", color='Status')
 
-    fig_chr.update_layout( barcornerradius="30%")
+    fig_chr.update_layout( barcornerradius="30%", height = 500)
     fig_chr.update_layout(barmode='stack')
     return fig_chr
 
@@ -425,7 +425,10 @@ def plot_pca(finalDf):
     fig_pca = px.scatter(finalDf, x='PCA1', y='PCA2',
         color=finalDf['Type'], opacity=0.7,
         labels={'0': 'PC 1', '1': 'PC 2'})
-
+    # Añadir la capa de densidad 
+    fig_density = px.density_contour(finalDf, x='PCA1', y='PCA2', color='Type')
+    for trace in fig_density.data:
+        fig_pca.add_trace(trace)
     return fig_pca
 
 def merge_site(chrom, site):
@@ -719,7 +722,7 @@ def plot_donut_cgi(df):
 
 def plot_count_snv(df):
     fig  = px.bar(df, x = 'ID', y = 'Count', color = 'group')
-    fig.update_layout( barcornerradius="30%")
+    fig.update_layout( barcornerradius="30%", height=500)
     return fig
 
 def plot_roc(df):
@@ -776,11 +779,12 @@ def plot_alignment(df):
         )
 
     fig.add_trace(
-        go.Bar(x=df['ID'], y=df['Mapping efficiency'], name='Mapping efficiency', marker_color=df['color'], visible=True),
+        go.Bar(x=df['ID'], y=df['Mapping efficiency'], name='Mapping efficiency',
+               marker_color=df['color'], visible=True),
         row=1, col=1
     )
 
-    fig.update_layout( barcornerradius="30%")
+    fig.update_layout( barcornerradius="30%", height = 500)
 
     buttons = []
     for i, col in enumerate(columns_to_plot):
@@ -804,13 +808,14 @@ def plot_alignment(df):
                 showactive=True,
                 x=0,
                 xanchor="left",
-                y=1.1,
+                y=1.2,
                 yanchor="top"
             ),
         ]
     )
 
     return fig
+
 
 def plot_trimming(df):
     df['Quality-trimmed (bp)'] = df['Quality-trimmed'].str.extract(r'([\d,]+)').replace(',', '', regex=True).astype(int)
@@ -827,7 +832,7 @@ def plot_trimming(df):
                marker_color=df['Type'].map(color_map), visible=True),
         row=1, col=1
     )
-    fig.update_layout( barcornerradius="30%")
+    fig.update_layout( barcornerradius="30%", height = 500)
 
     fig.add_trace(
         go.Bar(x=df['ID'], y=df['Quality-trimmed (%)'], name='Quality-trimmed (%)',
@@ -891,7 +896,7 @@ def plot_trimming(df):
                 showactive=True,
                 x=0,
                 xanchor="left",
-                y=1.1,
+                y=1.2,
                 yanchor="top"
             ),
         ],
@@ -902,5 +907,5 @@ def plot_non_conversion(df):
     clean = lambda x:float(x.split(' (')[1].replace('%)', ''))
     df['Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)'] = df['Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)'].apply(clean)
     fig  = px.bar(df, x = 'ID', y = 'Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)', color = 'Type')
-    fig.update_layout( barcornerradius="30%")
+    fig.update_layout( barcornerradius="30%", height = 500, yaxis_title='Sequences removed %')
     return fig
