@@ -14,6 +14,7 @@ from multiprocessing import Pool
 from scipy.spatial.distance import pdist, squareform
 from scipy.cluster.hierarchy import linkage, dendrogram
 import math
+import networkx as nx
 
 def sortOnco (df):
     numero_chr = []
@@ -732,20 +733,6 @@ def plot_roc(df):
     fig = px.line(df, x='X1.specificity', y='sensitivity',
                   color='model', labels={ 'X1.specificity': '1 - Specificity',
                                          'sensitivity': 'Sensitivity' })
-
-    # Añadir el área bajo la curva con transparencia y respetando el color de cada línea
-    #for model in df['model'].unique():
-    #    model_df = df[df['model'] == model]
-    #    color = px.colors.qualitative.Plotly[df['model'].unique().tolist().index(model)]
-    #    rgba_color = f'rgba({int(color[1:3], 16)}, {int(color[3:5], 16)}, {int(color[5:7], 16)}, 0.5)'
-    #    fig.add_trace(go.Scatter(
-    #        x=model_df['X1.specificity'],
-    #        y=model_df['sensitivity'],
-    #        fill='tozeroy',
-    #        mode='none',
-    #        fillcolor=rgba_color,
-    #        name=f'{model} (AUC)'
-    #    ))
     return fig
 
 def table_roc(df):
@@ -909,3 +896,218 @@ def plot_non_conversion(df):
     fig  = px.bar(df, x = 'ID', y = 'Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)', color = 'Type')
     fig.update_layout( barcornerradius="30%", height = 500, yaxis_title='Sequences removed %')
     return fig
+
+def make_plotly_graph(G, node_color=[], name=''):
+    pos = nx.spring_layout(G)
+
+    edge_trace = go.Scatter(
+        x=[],
+        y=[],
+        line=dict(width=0.5, color='#888'),
+        hoverinfo='none',
+        mode='lines',
+        name = name,
+        visible=False  # Hacer que los trazos no sean visibles por defecto
+    )
+
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_trace['x'] += (x0, x1, None)
+        edge_trace['y'] += (y0, y1, None)
+
+    # Crear las trazas de los nodos
+    if len(node_color) > 0:
+        node_trace = go.Scatter(
+            x=[],
+            y=[],
+            text=[],
+            mode='markers+text',
+            hoverinfo='text',
+            name = name,
+            marker=dict(size=10, color=node_color),
+            visible=False  # Hacer que los trazos no sean visibles por defecto
+        )
+    else:
+        node_trace = go.Scatter(
+            x=[],
+            y=[],
+            text=[],
+            mode='markers+text',
+            hoverinfo='text',
+            marker=dict(size=10),
+            name = name,
+            visible=False  # Hacer que los trazos no sean visibles por defecto
+        )
+
+    for node in G.nodes():
+        x, y = pos[node]
+        node_trace['x'] += (x,)
+        node_trace['y'] += (y,)
+        node_trace['text'] += (node,)
+
+    # Crear la figura
+    fig = go.Figure(data=[edge_trace, node_trace],
+                    layout=go.Layout(
+                        title='Red de Co-Metilación',
+                        titlefont_size=16,
+                        showlegend=False,
+                        hovermode='closest',
+                        margin=dict(b=20, l=5, r=5, t=40),
+                        annotations=[dict(
+                            text="",
+                            showarrow=False,
+                            xref="paper", yref="paper"
+                        )],
+                        xaxis=dict(showgrid=False, zeroline=False),
+                        yaxis=dict(showgrid=False, zeroline=False)
+                    ))
+
+    return fig
+
+def extract_graph_correlation_gene(df, gene):
+    df = df[(df['Unnamed: 2']== gene ) | (df['ID']=='Type')].T
+    df = df[df[0].isin(['controls', 'cases'])]
+
+    typ = df[0]
+
+    df.drop([0], axis = 1, inplace = True)
+    df = df.astype(float).T
+
+    correlation_matrix = df.corr()
+    G = nx.Graph()
+    # Añadir nodos y aristas basados en la correlación de metilación
+    for i in range(len(correlation_matrix)):
+        for j in range(i + 1, len(correlation_matrix)):
+            if correlation_matrix.iloc[i, j] > 0.8:  # Umbral de correlación
+                G.add_edge(correlation_matrix.index[i], correlation_matrix.columns[j], weight=correlation_matrix.iloc[i, j])
+
+    x = pd.DataFrame(typ)
+    color_map = { 'cases': 'red', 'controls': 'blue' }
+    color = list(x[0].map(color_map))
+    #degree_centrality = nx.degree_centrality(G)
+    #print(degree_centrality)
+    return G, color
+
+def plot_graph_conection(matrix_mean, matrix_filtered):
+    matrix_mean.drop([0], inplace = True)
+    matrix_mean.set_index(['Gene'], inplace = True)
+    matrix_mean = matrix_mean.astype(float).T
+
+    correlation_matrix = matrix_mean.corr()
+
+    G = nx.Graph()
+    # Añadir nodos y aristas basados en la correlación de metilación
+    for i in range(len(correlation_matrix)):
+        for j in range(i + 1, len(correlation_matrix)):
+            if correlation_matrix.iloc[i, j] > 0.5:  # Umbral de correlación
+                G.add_edge(correlation_matrix.index[i], correlation_matrix.columns[j], weight=correlation_matrix.iloc[i, j])
+
+    plot_global = make_plotly_graph (G, name = 'global')
+
+    fig = make_subplots(rows=1, cols=1)
+    fig.add_trace(plot_global.data[0], row=1, col=1)
+    fig.add_trace(plot_global.data[1],  row=1, col=1)
+
+    genes = matrix_filtered['Unnamed: 2'][2:].unique()
+    for i in genes:
+        G, color = extract_graph_correlation_gene(matrix_filtered, i)
+        plot_i = make_plotly_graph (G, color, i)
+
+        fig.add_trace(plot_i.data[0], row=1, col=1)
+        fig.add_trace(plot_i.data[1],  row=1, col=1)
+
+    # Ocultar las leyendas de los nombres de los trazos 
+    for trace in fig.data:
+        trace.showlegend = False
+
+    buttons = [
+        dict(
+            label='global',
+            method='update',
+            args=[{'visible': [True, True] + [False] * (len(genes)*2)}]
+        )]
+
+    for i in range(len(genes)):
+        visibility = [False] * (len(genes) + 1) * 2
+
+        visibility[(i+1) *2] = True
+        visibility[((i+1) *2) + 1] = True
+
+        buttons.append(dict(
+            label=genes[i],
+            method='update',
+            args=[{'visible': visibility}]
+        ))
+
+    # Añadir los botones a la figura como un menú desplegable
+    fig.update_layout(
+        updatemenus=[
+          dict(
+            type='dropdown',
+            direction='down',
+            buttons=buttons,
+            pad={'r': 10, 't': 10},
+            showactive=True,
+            x=0,
+            xanchor='left',
+            y=1.1,
+            yanchor='top'
+                )
+            ]
+        )
+
+    fig.update_traces(visible=True, selector=dict(name='global'))
+    return fig
+
+def plot_tsne(df):
+    clean = lambda x: x.split('_')[1]
+    df['Type'] = df['Type'].apply(clean)
+    fig = px.scatter(df, x = 'tSNE1', y = 'tSNE2', color = 'Type')
+
+    fig_density = px.density_contour(df, x='tSNE1', y='tSNE2', color='Type')
+    for trace in fig_density.data:
+        fig.add_trace(trace)
+    return fig
+
+def plot_table_tsne(df, bed):
+    bed['Site'] = list(map(make_merge_site, bed['Chr'], bed['Start']))
+    def annot_gene(site_df):
+        lst = list(bed[bed['Site']==site_df]['Gene'])
+        if len(lst) > 1:
+            if lst[0] != lst[1]:
+                lst[0] = f'{lst[0]}-{lst[1]}'
+        else:
+            lst[0] = f'{lst[0]}'
+        return lst[0]
+
+    df[['CpG site', 'Type']] = df['Type'].str.split('_', expand=True)
+    df['Gene'] = list(map(annot_gene, df['CpG site']))
+    df = df[['CpG site', 'Gene', 'Type', 'tSNE1','tSNE2']]
+    df = df.sort_values(by=['tSNE1', 'tSNE2'], ascending = False)
+
+    fig = go.Figure(go.Table(header=dict(values=list(df.columns), align="left"),
+                cells=dict(
+                    values=[df["CpG site"], df['Gene'],  df["Type"], df["tSNE1"], df["tSNE2"]],
+                    align="left", height=30)))
+    fig.update_layout(updatemenus=[{
+            "buttons": [
+                {
+                    "label": c,
+                    "method": "update",
+                    "args": [
+                        { "cells": {
+                            "values": df.T.values
+                            if c == "All"
+                                else df.loc[df["Type"].eq(c)].T.values
+                            }
+                        }
+                    ],
+                }
+                for c in ["All"] + df["Type"].unique().tolist()
+            ]
+        }])
+    fig.update_layout(height=300)
+    return fig
+
+

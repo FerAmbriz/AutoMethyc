@@ -47,6 +47,7 @@ roc_metrics = input_folder + '/CSV/roc_metrics.csv'
 quality_metrics = input_folder + '/CSV/quality_alignment_metrics.csv'
 quality_trimming = input_folder + '/CSV/quality_trimming_metrics.csv'
 non_conversion = input_folder + '/CSV/non_conversion_metrics.csv'
+tSNE_data = input_folder + '/CSV/tsne_vectors.csv'
 #=======================fastqc======================#
 df = pd.read_csv(fastqc)
 print(df)
@@ -106,6 +107,15 @@ if norm == 'True':
     print(df)
     fig_mean_norm = plot_mean_norm(df)
 
+#==================== Graph corr =====================#
+matrix_mean = pd.read_csv(Oncoprint_mean)
+print(matrix_mean)
+
+matrix_filtered = pd.read_csv(Oncoprint_All)
+print(matrix_filtered)
+
+fig_graph_correlation = plot_graph_conection(matrix_mean, matrix_filtered)
+
 #===================Mannhatan======================#
 if norm == 'True':
     df = pd.read_csv(OncoprintNorm)
@@ -117,6 +127,13 @@ if norm == 'True':
     finalDf = pd.read_csv(PCA_data)
     print(finalDf)
     fig_pca = plot_pca(finalDf)
+
+#=====================tSNE=========================#
+if norm == 'True':
+    df = pd.read_csv(tSNE_data)
+    print(df)
+    fig_tsne = plot_tsne(df)
+
 #=====================ROC=========================#
 if norm == 'True':
     roc_df = pd.read_csv(roc_data)
@@ -179,6 +196,13 @@ if norm == 'True':
     bed = pd.read_csv(filtered_target)
     print(df)
     table_pca = plot_table_pca(df, bed)
+#========================TabletSNE==========================#
+if norm == 'True':
+    df = pd.read_csv(tSNE_data)
+    bed = pd.read_csv(filtered_target)
+    print(df)
+    table_tsne = plot_table_tsne(df, bed)
+
 #=========================DonutCGI=========================#
 df = pd.read_csv(cgi)
 print(df)
@@ -224,6 +248,8 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
     f.write(html_mean_gene())
     f.write(table_mean_gene.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(fig_mean.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(html_graph())
+    f.write(fig_graph_correlation.to_html(full_html=False, include_plotlyjs='cdn'))
     if norm == 'True':
         f.write(html_boxplot())
         f.write(fig_boxplot.to_html(full_html=False, include_plotlyjs='cdn'))
@@ -242,6 +268,9 @@ with open(Output + '/AutoMethyc_Report.html', 'w') as f:
         f.write(html_pca())
         f.write(table_pca.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_pca.to_html(full_html=False, include_plotlyjs='cdn'))
+        f.write(html_tsne())
+        f.write(table_tsne.to_html(full_html=False, include_plotlyjs='cdn'))
+        f.write(fig_tsne.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(html_roc())
         f.write(table_roc.to_html(full_html=False, include_plotlyjs='cdn'))
         f.write(fig_roc.to_html(full_html=False, include_plotlyjs='cdn'))

@@ -29,6 +29,7 @@ def html_navbar_complete ():
             <li style="padding-left: 20px;"><a href="#Detailed"><span3> Detailed </span3></a></li>
             <li style="padding-left: 20px;"><a href="#MeanSite"><span3> Mean by site </span3></a></li>
             <li style="padding-left: 20px;"><a href="#MeanGene"><span3> Mean by gene </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#graph"><span3> Graph-corr </span3></a></li>
             <li style="padding-left: 20px;"><a href="#Global"><span3> Global </span3></a></li>
         </ul>
         </li>
@@ -42,7 +43,13 @@ def html_navbar_complete ():
             <li style="padding-left: 20px;"><a href="#Volcano"><span3> Differential </span3></a></li>
         </ul>
         </li>
-        <li><a href="#pca"><span2> PCA </span2></a></li>
+        <li>
+        <a href="#dimension"><span2> Dim-reduction </span2></a>
+        <ul>
+            <li style="padding-left: 20px;"><a href="#pca"><span3> PCA </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#tsne"><span3> tSNE </span3></a></li>
+        </ul>
+        </li>
         <li><a href="#roc"><span2> ROC </span2></a></li>
         <li><a href="#snv"><span2> Variant calling </span2></a><li>
         <li><a href="#about" style="background-color:#45B39D; border-radius: 0"><span2 style="background-color:#1c1f27; border-radius:10px" onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.5)'; this.style.color='black';" onmouseout="this.style.backgroundColor='#1c1f27'; this.style.color='white';"> About </span2></a></li>
@@ -69,6 +76,7 @@ def html_navbar_sNorm ():
             <li style="padding-left: 20px;"><a href="#Detailed"><span3> Detailed </span3></a></li>
             <li style="padding-left: 20px;"><a href="#MeanSite"><span3> Mean by site </span3></a></li>
             <li style="padding-left: 20px;"><a href="#MeanGene"><span3> Mean by gene </span3></a></li>
+            <li style="padding-left: 20px;"><a href="#graph"><span3> Graph-corr </span3></a></li>
         </ul>
         </li>
         <li><a href="#snv"><span2> Variant calling </span2></a><li>
@@ -259,10 +267,31 @@ def html_volcano():
 def html_pca():
     html = '''
     </div>
-    <div id="pca">
-        <h2 style="margin-bottom: 5px;"> PCA </h2>
+    <div id="dimension">
+        <h2 style="margin-bottom: 5px;"> Dimensionality reduction </h2>
         <hr>
-            Principal component analysis (PCA) applied to each site of the normals and samples. Each point represents a normalized site according to the corresponding group (normal or sample).
+    </div>
+    <div id="pca">
+        <h3 style="margin-bottom: 5px;">  PCA  </h3>
+        Principal component analysis (PCA) applied to each site of the normals and samples. Each point represents a normalized site according to the corresponding group (normal or sample).
+    '''
+    return html
+
+def html_tsne():
+    html = '''
+    </div>
+    <div id="tSNE">
+        <h3 style="margin-bottom: 5px;">  tSNE  </h3>
+            t-distributed stochastic neighbor embedding (t-SNE)
+    '''
+    return html
+
+def html_graph():
+    html = '''
+    </div>
+    <div id="graph">
+        <h3 style="margin-bottom: 5px;">  Graph correlation  </h3>
+            Principal conections of pearson correlation
     '''
     return html
 

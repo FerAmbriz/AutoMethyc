@@ -6,6 +6,9 @@ import pandas as pd
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.manifold import TSNE
+
 import sys
 
 input_df = sys.argv[1]
@@ -113,3 +116,110 @@ finalDf = funcPCA(df_bd)
 
 finalDf.to_csv(output+"/pca_vectors.csv", index = False)
 print ('==================== done make_vectors_pca ====================')
+print ('================== calculating tSNE vectors ===================')
+
+df = pd.read_csv(input_df)
+df = df.drop(['ID'], axis=1)
+df = df.fillna(0)
+df.replace(['inf', '-inf'], 0, inplace=True)
+df.replace([np.inf, -np.inf], 0, inplace=True)
+
+
+# Separcion por grupos
+normals = df[df['Type'] == 'controls']
+normals = normals.set_index('Type')
+
+samples = df[df['Type'] == 'cases']
+samples = samples.set_index('Type')
+
+#indexado del df original 
+df = df.set_index('Type')
+
+columns = list(df.columns.values)
+
+
+
+# lista con el nombre de las columnas
+lst_normals = []
+for i in columns:
+    lst_normals.append(i+'_controls')
+
+lst_samples = []
+for i in columns:
+    lst_samples.append(i+'_cases')
+
+#union de ambas listas
+lst = lst_normals + lst_samples
+
+if min(len(normals), len(samples)) == len(samples):
+    min_df = 'controls'
+else:
+    min_df = 'cases'
+
+df_bd = pd.DataFrame(columns = lst)
+
+# Construccion del df para input de PCA
+for i in range(max(len(normals), len(samples))):
+    if i < len(normals) and i < len(samples):
+        n = list(normals.iloc[i])
+        s = list(samples.iloc[i])
+        row_i = n + s
+        df_bd.loc[i] = row_i
+    else:
+        if min_df == 'cases':
+            if i < len(normals):
+                n = list(normals.iloc[i])
+            else:
+                n = ['NaN'] * len(lst_normals)
+            s = ['NaN'] * len(lst_samples)
+            row_i = n + s
+            df_bd.loc[i] = row_i
+        else:
+            n = ['NaN'] * len(lst_normals)
+            if i < len(samples):
+                s = list(samples.iloc[i])
+            else:
+                s = ['NaN'] * len(lst_samples)
+            row_i = n + s
+            df_bd.loc[i] = row_i
+
+df_bd = df_bd.T
+df_bd.replace(['NaN'], 0, inplace=True)
+
+print(df_bd)
+def funcTSNE(df):
+    df.replace(['inf', '-inf'], 0, inplace=True)
+    df.replace([np.inf, -np.inf], 0, inplace=True)
+
+    x = np.array(df)
+    x = x.astype(float)
+
+    # Normalizar los datos usando Min-Max
+    scaler = MinMaxScaler()
+    x = scaler.fit_transform(x)
+
+    # Añadir la columna 'Type' al dataframe
+    df['Type'] = lst
+
+    # Aplicar t-SNE
+    tsne = TSNE(n_components=2, random_state=0)
+    tsneComponents = tsne.fit_transform(x)
+
+    # Crear nombres para las nuevas columnas
+    dim = list(np.shape(tsneComponents))
+    dim = dim[1]
+
+    lst2 = []
+    for i in range(dim):
+        lst2.append('tSNE'+ str(i+1))
+
+    # Crear un nuevo dataframe con los componentes t-SNE
+    tsneDf = pd.DataFrame(data = tsneComponents, columns = lst2)
+    tsneDf['Type'] = lst
+
+    return tsneDf
+
+# Aplicar t-SNE
+finalDf = funcTSNE(df_bd)
+print(finalDf)
+finalDf.to_csv(output+"/tsne_vectors.csv", index = False)
