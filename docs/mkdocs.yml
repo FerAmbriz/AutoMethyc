@@ -2,4 +2,3 @@ site_name: AutoMethyc
 
 theme:
   name: readthedocs
-  highlightjs: true
