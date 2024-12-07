@@ -5,4 +5,4 @@ build:
     python: "3.8"
 
 mkdocs:
-  configuration: mkdocs.yml
+  configuration: docs/mkdocs.yml
