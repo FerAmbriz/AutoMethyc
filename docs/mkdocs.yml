@@ -1,3 +1,4 @@
 site_name: AutoMethyc
 
-theme: readthedocs
+theme:
+  name: readthedocs
