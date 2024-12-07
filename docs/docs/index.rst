@@ -1,3 +1,5 @@
+AutoMethyc documentation
+============
 AutoMethyc is a practical integrative analysis of methylation data from
 massive parallel bisulfite sequencing optimized for performance in
 massive data analysis.
@@ -230,9 +232,6 @@ phred score wich are found in: ‘CSV/fastqc_raw_data.csv’ using FASTQC.
 
 .. math:: Q=-10log_{10} P
 
-.. figure:: img/multiqc.png
-   :alt: Quality score across all bases
-   :width: 80.0%
 
    Quality score across all bases
 
@@ -350,11 +349,7 @@ The CGI region mapping makes a request to the UCSC genome browser
 [@karolchik2004ucsc] and classifies each site according to distance from
 the nearest CpG island.
 
-.. figure:: img/CpGIsland.pdf
-   :alt: CpG island
-   :width: 40.0%
 
-   CpG island
 
 The output of this mapping will be saved in: ‘CSV/cgi_features.csv’ with
 the information of the nearest CpG island and the mapped site.
@@ -441,11 +436,6 @@ normals provided, following equation 2.
 
 .. math:: Z_{ij} = \frac {x_{ij}-\overline{x_{j}}}{S_{j}}
 
-.. figure:: img/NormalDistribution.pdf
-   :alt: Normal distribution
-   :width: 50.0%
-
-   Normal distribution
 
 The normalization output will be saved in:
 ‘CSV/matrix_filtered_target_normalized.csv’
@@ -499,11 +489,7 @@ principal components, see the axes of greatest variation and see if
 there is a differential grouping between the samples and normals. The
 output is in ’CSV/pca_vectors.csv0
 
-.. figure:: img/PCAreduction.pdf
-   :alt: Dimensionality reduction by PCA
-   :width: 80.0%
 
-   Dimensionality reduction by PCA
 
 ROC
 ---
@@ -516,9 +502,6 @@ followed by the prediction evaluation using a logistic regression model.
 Finally, the ROC curve analysis is performed, evaluating the best
 combination.
 
-.. figure:: img/ROC.png
-   :alt: ROC curves of sites with better accuracy to classification
-   :width: 50.0%
 
    ROC curves of sites with better accuracy to classification
 
@@ -543,9 +526,6 @@ Differential methylation was made on the comparison of cases and
 controls, with a implementation of shapiro wilk test, and t-student or
 The Mann-Whitney U test in each site.
 
-.. figure:: img/newplot.png
-   :alt: Differential methylation
-   :width: 80.0%
 
    Differential methylation
 
@@ -554,10 +534,6 @@ HTML report
 
 For greater ease in the interpretation and visualization of general
 data, we compile the information obtained in an interactive HTML report.
-
-.. figure:: img/Screenshot_26-6-2024_192730_.jpeg
-   :alt: ‘HTML/AutoMethyc_Report.html’
-   :width: 80.0%
 
    ‘HTML/AutoMethyc_Report.html’
 
