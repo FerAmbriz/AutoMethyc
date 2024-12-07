@@ -1,13 +1,13 @@
 # AutoMethyc documentation
+AutoMethyc is a practical integrative analysis of methylation data from massive parallel bisulfite sequencing optimized for performance in massive data analysis.
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+## Installation
 
-## Commands
+We created a docker container with all the necessary dependencies to run the program in order to provide a portable and self-sufficient container. To install it, you need to have docker installed and then download the docker image.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+
+    docker pull ambrizbiotech/automethyc
+
 
 ## Project layout
 
