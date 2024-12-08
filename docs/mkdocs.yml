@@ -8,12 +8,14 @@ nav:
   - Installation:
       - docker: Installation/docker.md
       - local: Installation/local.md
-  - Usage: Usage/usage.md
+  - Usage: 
+      -usage: Usage/usage.md
   - Output:
       - quality: Output/quality_metrics.md
       - preprocessing: Output/preprocessing.md
       - methylation: Output/methylation_call.md
       - comparative: Output/comparative.md
-      - variant call: Output/variant_call.md
-      - html report: Output/html_report.md
-  - Step by step: Step-by-step/steps.md
+      - variant_call: Output/variant_call.md
+      - html_report: Output/html_report.md
+  - Step_by_step:
+      -steps: Step-by-step/steps.md
