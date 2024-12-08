@@ -1,5 +1,6 @@
 AutoMethyc documentation
-============
+========================
+
 AutoMethyc is a practical integrative analysis of methylation data from
 massive parallel bisulfite sequencing optimized for performance in
 massive data analysis.
@@ -35,85 +36,81 @@ Local installation requires installing all dependencies in $PATH
 
 **Dependencies**
 
-.. container:: multicols
+-  `Bowtie2
+   v2.4.5 <http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#building-from-source>`__
 
-   3
+-  `Samtools v1.15.1-12 <http://www.htslib.org/>`__
 
-   -  `Bowtie2
-      v2.4.5 <http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#building-from-source>`__
+-  `Bismark
+   v0.23.0 <https://www.bioinformatics.babraham.ac.uk/projects/bismark/>`__
 
-   -  `Samtools v1.15.1-12 <http://www.htslib.org/>`__
+-  `python v3.10.6 <https://www.python.org/>`__
 
-   -  `Bismark
-      v0.23.0 <https://www.bioinformatics.babraham.ac.uk/projects/bismark/>`__
+   -  `pandas v1.5.2 <https://pandas.pydata.org/>`__
 
-   -  `python v3.10.6 <https://www.python.org/>`__
+   -  `numpy v1.23.1 <https://numpy.org/>`__
 
-      -  `pandas v1.5.2 <https://pandas.pydata.org/>`__
+   -  `plotly v5.10.0 <https://plotly.com/python/>`__
 
-      -  `numpy v1.23.1 <https://numpy.org/>`__
+   -  `plotly-express
+      v0.4.1 <https://plotly.com/python/plotly-express/>`__
 
-      -  `plotly v5.10.0 <https://plotly.com/python/>`__
+   -  `scikit-learn
+      v1.1.2 <https://scikit-learn.org/stable/index.html>`__
 
-      -  `plotly-express
-         v0.4.1 <https://plotly.com/python/plotly-express/>`__
+   -  `tqdm v4.64.1 <https://pypi.org/project/tqdm/>`__
 
-      -  `scikit-learn
-         v1.1.2 <https://scikit-learn.org/stable/index.html>`__
+   -  `IPython v8.4.0 <https://ipython.org/>`__
 
-      -  `tqdm v4.64.1 <https://pypi.org/project/tqdm/>`__
+   -  `pysam
+      v0.19.1 <https://pysam.readthedocs.io/en/latest/api.html>`__
 
-      -  `IPython v8.4.0 <https://ipython.org/>`__
+-  `fastqc
+   v0.11.9 <https://www.bioinformatics.babraham.ac.uk/projects/fastqc/>`__
 
-      -  `pysam
-         v0.19.1 <https://pysam.readthedocs.io/en/latest/api.html>`__
+-  `TrimGalore v0.6.6 <https://github.com/FelixKrueger/TrimGalore>`__
 
-   -  `fastqc
-      v0.11.9 <https://www.bioinformatics.babraham.ac.uk/projects/fastqc/>`__
+-  `figlet v2.2.5 <http://www.figlet.org/>`__
 
-   -  `TrimGalore v0.6.6 <https://github.com/FelixKrueger/TrimGalore>`__
+-  `multiqc v1.13 <https://multiqc.info/>`__
 
-   -  `figlet v2.2.5 <http://www.figlet.org/>`__
+-  `git v2.34.1 <https://git-scm.com/>`__
 
-   -  `multiqc v1.13 <https://multiqc.info/>`__
+-  `wget v1.21.2 <https://www.gnu.org/software/wget/>`__
 
-   -  `git v2.34.1 <https://git-scm.com/>`__
+-  `curl v7.81.0 <https://curl.se/>`__
 
-   -  `wget v1.21.2 <https://www.gnu.org/software/wget/>`__
+-  UnZip v6.0
 
-   -  `curl v7.81.0 <https://curl.se/>`__
+-  `cutadapt v3.5 <https://curl.se/>`__
 
-   -  UnZip v6.0
+-  `java v11.0.18 <https://www.java.com/en/download/>`__
 
-   -  `cutadapt v3.5 <https://curl.se/>`__
+-  `gatk v4.3.0.0 <https://github.com/broadinstitute/gatk>`__
 
-   -  `java v11.0.18 <https://www.java.com/en/download/>`__
+-  `R v4.1.2 <https://www.r-project.org/>`__
 
-   -  `gatk v4.3.0.0 <https://github.com/broadinstitute/gatk>`__
+   -  `gsalib
+      v2.2.1 <https://www.rdocumentation.org/packages/gsalib/versions/2.2.1>`__
 
-   -  `R v4.1.2 <https://www.r-project.org/>`__
+   -  `ggplot2
+      v3.4.2 <https://www.rdocumentation.org/packages/ggplot2/versions/3.4.2>`__
 
-      -  `gsalib
-         v2.2.1 <https://www.rdocumentation.org/packages/gsalib/versions/2.2.1>`__
+   -  `reshape
+      v0.8.9 <https://www.rdocumentation.org/packages/reshape/versions/0.8.9>`__
 
-      -  `ggplot2
-         v3.4.2 <https://www.rdocumentation.org/packages/ggplot2/versions/3.4.2>`__
+   -  `gqplots
+      v3.1.3 <https://cran.r-project.org/web/packages/gplots/index.html>`__
 
-      -  `reshape
-         v0.8.9 <https://www.rdocumentation.org/packages/reshape/versions/0.8.9>`__
+   -  `tidyverse
+      v2.0.0 <https://www.rdocumentation.org/packages/tidyverse/versions/2.0.0>`__
 
-      -  `gqplots
-         v3.1.3 <https://cran.r-project.org/web/packages/gplots/index.html>`__
+   -  `pROC
+      v1.18.5 <https://cran.r-project.org/web/packages/pROC/index.html>`__
 
-      -  `tidyverse
-         v2.0.0 <https://www.rdocumentation.org/packages/tidyverse/versions/2.0.0>`__
+   -  `combiROC v 0.3.4 <http://combiroc.eu/>`__
 
-      -  `pROC
-         v1.18.5 <https://cran.r-project.org/web/packages/pROC/index.html>`__
-
-      -  `combiROC v 0.3.4 <http://combiroc.eu/>`__
-
-   -  `revelio <https://github.com/bio15anu/revelio.git>`__
+-  `revelio <https://github.com/bio15anu/revelio.git>`__
 
 And then move the files from the scr folder to the $PATH
 
@@ -169,32 +166,21 @@ sequencing products or regions of noninterest. The file format is comma
 separated values (CSV) with the chromosome, start and end, presenting
 different formats for greater versatility.
 
-.. table:: With gene
+===== ======== ========
+Chr   Start    End
+===== ======== ========
+chr10 89619506 89619580
+chr11 22647545 22647849
+===== ======== ========
 
-   ===== ======== ========
-   Chr   Start    End
-   ===== ======== ========
-   chr10 89619506 89619580
-   chr11 22647545 22647849
-   ===== ======== ========
+Or with gene
 
-.. table:: With gene
-
-   ===== ======== ========
-   Chr   Start    End
-   ===== ======== ========
-   chr17 41277106 41277106
-   chr17 41277115 41277115
-   ===== ======== ========
-
-.. table:: With gene
-
-   ===== ======== ======== =====
-   Chr   Start    End      Gene
-   ===== ======== ======== =====
-   chr10 89619506 89619580 KLLN
-   chr11 22647545 22647849 FANCF
-   ===== ======== ======== =====
+===== ======== ======== =====
+Chr   Start    End      Gene
+===== ======== ======== =====
+chr10 89619506 89619580 KLLN
+chr11 22647545 22647849 FANCF
+===== ======== ======== =====
 
 Example usage
 =============
@@ -231,9 +217,6 @@ Base call error probability on logarithmic scale is calculated using
 phred score wich are found in: ‘CSV/fastqc_raw_data.csv’ using FASTQC.
 
 .. math:: Q=-10log_{10} P
-
-
-   Quality score across all bases
 
 To improve this and remove low quality sequences trim galore is used
 using a default Q>30. The output is provided in
@@ -293,23 +276,21 @@ The output will be a file in ‘CSV/annotated_regions.csv’ containing the
 annotated regions or in which case a BED file has been provided with the
 specified gene it will simply save the BED file as well.
 
-.. table:: Considering the BED with genes
+==== ======== ======== ======== ====== ============
+Chr  Start    End      Gene     Strand AccessName
+==== ======== ======== ======== ====== ============
+chr7 6048904  6048904  AIMP2    +      NM_0013266\*
+chr3 37034316 37034316 EPM2AIP1 -      NM_014805.4
+==== ======== ======== ======== ====== ============
 
-   ==== ======== ======== ======== ====== ============
-   Chr  Start    End      Gene     Strand AccessName
-   ==== ======== ======== ======== ====== ============
-   chr7 6048904  6048904  AIMP2    +      NM_0013266\*
-   chr3 37034316 37034316 EPM2AIP1 -      NM_014805.4
-   ==== ======== ======== ======== ====== ============
+Considering the BED with genes
 
-.. table:: Considering the BED with genes
-
-   ===== ======== ======== =====
-   Chr   Start    End      Gene
-   ===== ======== ======== =====
-   chr10 89619506 89619580 KLLN
-   chr11 22647545 22647849 FANCF
-   ===== ======== ======== =====
+===== ======== ======== =====
+Chr   Start    End      Gene
+===== ======== ======== =====
+chr10 89619506 89619580 KLLN
+chr11 22647545 22647849 FANCF
+===== ======== ======== =====
 
 Filter target
 -------------
@@ -320,27 +301,27 @@ corresponding gene of each site previously annotated in
 ‘CSV/annotated_regions.csv’ will be added and saved as:
 ‘filtered_target.csv’
 
-.. table:: Format of ‘CSV/filtered_target.csv’
+Format of ‘CSV/filtered_target.csv’
 
-   +--------+-------+------+----------+----------+----------+---------+-----------+-------+------+
-   | ID     | Type  | Chr  | Start    | End      | Met_perc | Cyt_Met | Cyt_NoMet | Depth | Gene |
-   +========+=======+======+==========+==========+==========+=========+===========+=======+======+
-   | ISD202 | cases | chr3 | 37034307 | 37034307 | 100.0    | 2383    | 0         | 2383  | MLH1 |
-   +--------+-------+------+----------+----------+----------+---------+-----------+-------+------+
-   | ISD202 | cases | chr3 | 37034316 | 37034316 | 0.463548 | 11      | 2362      | 2373  | MLH1 |
-   +--------+-------+------+----------+----------+----------+---------+-----------+-------+------+
++-----+----+----+--------+--------+-------+------+--------+----+----+
+| ID  | Ty | C  | Start  | End    | Met   | Cyt  | Cyt    | D  | Ge |
+|     | pe | hr |        |        | _perc | _Met | _NoMet | ep | ne |
+|     |    |    |        |        |       |      |        | th |    |
++=====+====+====+========+========+=======+======+========+====+====+
+| ISD | c  | ch | 37     | 37     | 100.0 | 2383 | 0      | 23 | ML |
+| 202 | as | r3 | 034307 | 034307 |       |      |        | 83 | H1 |
+|     | es |    |        |        |       |      |        |    |    |
++-----+----+----+--------+--------+-------+------+--------+----+----+
+| ISD | c  | ch | 37     | 37     | 0.4   | 11   | 2362   | 23 | ML |
+| 202 | as | r3 | 034316 | 034316 | 63548 |      |        | 73 | H1 |
+|     | es |    |        |        |       |      |        |    |    |
++-----+----+----+--------+--------+-------+------+--------+----+----+
 
 In addition, a total count of the sites is made after filtering
 (targets)
 
-.. table:: Format of ’CSV/count_targets.csv
-
-   ====== ===
-   -      ID
-   ====== ===
-   ISD202 337
-   ISD203 283
-   ====== ===
+Format of ’CSV/count_targets.csv \| ID \| Value \| \|——–|——-\| \| ISD202
+\| 337 \| \| ISD203 \| 283 \|
 
 CGI mapping
 -----------
@@ -349,19 +330,20 @@ The CGI region mapping makes a request to the UCSC genome browser
 [@karolchik2004ucsc] and classifies each site according to distance from
 the nearest CpG island.
 
-
-
 The output of this mapping will be saved in: ‘CSV/cgi_features.csv’ with
-the information of the nearest CpG island and the mapped site.
+the information of the nearest CpG island and the mapped site. Format of
+‘CSV/cgi_features.csv’
 
-.. table:: Format of ‘CSV/cgi_features.csv’
-
-   ==== ===== ========== ======== === ======== ============= ==========
-   #bin chrom chromStart chromEnd ... Site     DistCpGIsland Type
-   ==== ===== ========== ======== === ======== ============= ==========
-   1268 chr10 89621772   89624128 ... 89619506 2266          CpG shelf
-   631  chr7  6048396    6049255  ... 6048968  -             CpG island
-   ==== ===== ========== ======== === ======== ============= ==========
++-----+-----+----------+--------+---+--------+------------+----------+
+| bin | ch  | ch       | ch     | … | Site   | Dis        | Type     |
+|     | rom | romStart | romEnd |   |        | tCpGIsland |          |
++=====+=====+==========+========+===+========+============+==========+
+| 1   | ch  | 89621772 | 89     | … | 89     | 2266       | CpG      |
+| 268 | r10 |          | 624128 |   | 619506 |            | shelf    |
++-----+-----+----------+--------+---+--------+------------+----------+
+| 631 | c   | 6048396  | 6      | … | 6      | -          | CpG      |
+|     | hr7 |          | 049255 |   | 048968 |            | island   |
++-----+-----+----------+--------+---+--------+------------+----------+
 
 Methylation percentage
 ----------------------
@@ -376,57 +358,58 @@ bowtie2[@langmead2019scaling] and samtools[@samtools] to finally call
 the percentage of methylation. Subsequently, filtering by depth (default
 depth>20) is performed to reduce sequencing errors, which are collected
 for a data summary in ‘CSV/count_depth_[depth (default=20)]_pass.csv’.
+Format of ’CSV/count_depth_[depth (default=20)]_pass.csv
 
-.. table:: Format of ’CSV/count_depth_[depth (default=20)]_pass.csv
-
-   ====== ========== ======== ========== =========
-   ID     unfiltered filtered depth_mean depth_std  
-   ====== ========== ======== ========== =========
-   ISD202 672        347      572.08     723.23447  
-   ISD203 490        225      709.924528 935.77306  
-   ====== ========== ======== ========== =========
+====== ========== ======== ========== =========
+ID     unfiltered filtered depth_mean depth_std
+====== ========== ======== ========== =========
+ISD202 672        347      572.08     723.23447
+ISD203 490        225      709.924528 935.77306
+====== ========== ======== ========== =========
 
 To simplify data analysis, we merge the COV files with the methylation
 percentages of each sample into a single file called:
 ‘CSV/raw_data.csv’, however, if you want to know more about the files
 generated in the ‘Bismark’ folder, we recommend reading their
-documentation.
+documentation. Format of ‘CSV/raw_data.csv’
 
-.. table:: Format of ‘CSV/raw_data.csv’
-
-   ====== ===== ==== ======== ======== ======== ======= ========= =====
-   ID     Type  Chr  Start    End      Met_perc Cyt_Met Cyt_NoMet Depth
-   ====== ===== ==== ======== ======== ======== ======= ========= =====
-   ISD202 cases chr3 37034307 37034307 100.0    2383    0         2383
-   ISD202 cases chr3 37034316 37034316 0.463548 11      2362      2373
-   ====== ===== ==== ======== ======== ======== ======= ========= =====
++------+-----+----+--------+--------+--------+-------+--------+-----+
+| ID   | T   | C  | Start  | End    | Me     | Cy    | Cyt    | De  |
+|      | ype | hr |        |        | t_perc | t_Met | _NoMet | pth |
++======+=====+====+========+========+========+=======+========+=====+
+| IS   | ca  | ch | 37     | 37     | 100.0  | 2383  | 0      | 2   |
+| D202 | ses | r3 | 034307 | 034307 |        |       |        | 383 |
++------+-----+----+--------+--------+--------+-------+--------+-----+
+| IS   | ca  | ch | 37     | 37     | 0.     | 11    | 2362   | 2   |
+| D202 | ses | r3 | 034316 | 034316 | 463548 |       |        | 373 |
++------+-----+----+--------+--------+--------+-------+--------+-----+
 
 Matrix construction
 -------------------
 
 From the filtered and annotated regions, a matrix of the regions is
-constructed to optimize the normalization of the data.
+constructed to optimize the normalization of the data. Format of
+‘CSV/matrix_filtered_target.csv’
 
-.. table:: Format of ‘CSV/matrix_filtered_target.csv’
+===== ======== ==== ======== ======== ======
+ID    -        -    ISD202   ISD203   ISD203
+===== ======== ==== ======== ======== ======
+Type  -        -    controls controls cases
+Chr   Start    Gene -        -        -
+chr10 89619506 KLLN 98.65    97.50    97.95
+chr10 89619510 KLLN 98.92    97.19    99.18
+===== ======== ==== ======== ======== ======
 
-   ===== ======== ==== ======== ======== ======
-   ID    -        -    ISD202   ISD203   ISD203
-   Type  -        -    controls controls cases
-   Chr   Start    Gene -        -        -
-   chr10 89619506 KLLN 98.65    97.50    97.95
-   chr10 89619510 KLLN 98.92    97.19    99.18
-   ===== ======== ==== ======== ======== ======
+Subsequently, the mean per gene is calculated in a matrix Format of
+‘CSV/matrix_mean_gene.csv’
 
-Subsequently, the mean per gene is calculated in a matrix
-
-.. table:: Format of ‘CSV/matrix_mean_gene.csv’
-
-   ==== ======== ======== ======
-   Gene ISD202   ISD203   ISD203
-   Type controls controls cases
-   KLLN 96.76    96.66    98.65
-   ATM  0.29     0.10     0.85
-   ==== ======== ======== ======
+==== ======== ======== ======
+Gene ISD202   ISD203   ISD203
+==== ======== ======== ======
+Type controls controls cases
+KLLN 96.76    96.66    98.65
+ATM  0.29     0.10     0.85
+==== ======== ======== ======
 
 Normalization
 -------------
@@ -436,50 +419,43 @@ normals provided, following equation 2.
 
 .. math:: Z_{ij} = \frac {x_{ij}-\overline{x_{j}}}{S_{j}}
 
+Format of ‘CSV/matrix_filtered_target_normalized.csv’
 
-The normalization output will be saved in:
-‘CSV/matrix_filtered_target_normalized.csv’
-
-.. table:: Format of ‘CSV/matrix_filtered_target_normalized.csv’
-
-   ====== ======== ============ ============= ===============
-   ID     Type     chr7:6048966 chr2:47596942 chr11:108093572
-   ====== ======== ============ ============= ===============
-   ISD202 controls -0.707107    -0.539522     0.723362
-   ISD203 cases    0.478456     3.377785      -0.707107
-   ====== ======== ============ ============= ===============
+====== ======== ============ ============= ===============
+ID     Type     chr7:6048966 chr2:47596942 chr11:108093572
+====== ======== ============ ============= ===============
+ISD202 controls -0.707107    -0.539522     0.723362
+ISD203 cases    0.478456     3.377785      -0.707107
+====== ======== ============ ============= ===============
 
 However, the long format of the normalized matrix is also performed in:
+Format of ‘CSV/filtered_target_normalized.csv’
 
-.. table:: Format of ‘CSV/filtered_target_normalized.csv’
-
-   ====== ======== ============ =========
-   ID     Type     variable     value
-   ====== ======== ============ =========
-   ISD202 controls chr7:6048966 -0.707107
-   ISD203 cases    chr7:6048966 0.478456
-   ====== ======== ============ =========
+====== ======== ============ =========
+ID     Type     variable     value
+====== ======== ============ =========
+ISD202 controls chr7:6048966 -0.707107
+ISD203 cases    chr7:6048966 0.478456
+====== ======== ============ =========
 
 Subsequently, the mean per gene is calculated in a matrix and the long
-format is also performed.
+format is also performed. ‘CSV/mean_gene_normalized.csv’
 
-.. table:: ‘CSV/mean_gene_normalized.csv’
+====== ======== ========= =========
+ID     Type     MSH2      BRIP1
+====== ======== ========= =========
+ISD202 controls -0.707107 -0.707107
+ISD203 cases    3.421513  3.421513
+====== ======== ========= =========
 
-   ====== ======== ======== =========
-   ID     Type     MSH2     BRIP1
-   ====== ======== ======== =========
-   ISD202 controls -.707107 -0.707107
-   ISD203 cases    3.421513 3.421513
-   ====== ======== ======== =========
+Format of ‘CSV/mean_gene_normalized.csv’
 
-.. table:: ‘CSV/mean_gene_normalized.csv’
-
-   ====== ======== ======== ========
-   ID     Type     variable value
-   ====== ======== ======== ========
-   ISD202 controls MSH2     0.707107
-   ISD203 cases    MSH2     3.421513
-   ====== ======== ======== ========
+====== ======== ======== ========
+ID     Type     variable value
+====== ======== ======== ========
+ISD202 controls MSH2     0.707107
+ISD203 cases    MSH2     3.421513
+====== ======== ======== ========
 
 PCA
 ---
@@ -488,8 +464,6 @@ To reduce the dimensionality of the data, we did an analysis of
 principal components, see the axes of greatest variation and see if
 there is a differential grouping between the samples and normals. The
 output is in ’CSV/pca_vectors.csv0
-
-
 
 ROC
 ---
@@ -501,9 +475,6 @@ between the sites with the highest number of outliers are performed,
 followed by the prediction evaluation using a logistic regression model.
 Finally, the ROC curve analysis is performed, evaluating the best
 combination.
-
-
-   ROC curves of sites with better accuracy to classification
 
 Variant calling in germline
 ---------------------------
@@ -526,16 +497,11 @@ Differential methylation was made on the comparison of cases and
 controls, with a implementation of shapiro wilk test, and t-student or
 The Mann-Whitney U test in each site.
 
-
-   Differential methylation
-
 HTML report
 -----------
 
 For greater ease in the interpretation and visualization of general
 data, we compile the information obtained in an interactive HTML report.
-
-   ‘HTML/AutoMethyc_Report.html’
 
 Step-by-Step Execution
 ======================
