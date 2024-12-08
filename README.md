@@ -7,8 +7,6 @@ AutoMethyc is an integrative pipeline to methylation analysis from massive paral
 
 Overview of the Authometyc
 
-workflow image
-
 
 ## Requeriment
 
@@ -30,7 +28,7 @@ docker pull ambrizbiotech/automethyc
 ```
 ### Local installation
 
-For this option, it is necessary to install all dependencies, see [documentation](https://github.com/FerAmbriz/AutoMethyc/blob/master/Documentation.pdf)
+For this option, it is necessary to install all dependencies, see [documentation](https://github.com/FerAmbriz/AutoMethyc/blob/master/Documentation.pdf) or in the [manual page](https://automethyc.readthedocs.io/en/latest/).
 
 Once the dependencies are installed, move the dependencies in the `scr` folder to the $PATH
 ```
