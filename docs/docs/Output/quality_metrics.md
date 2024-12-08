@@ -1,7 +1,3 @@
-# Output and interpretation
-
-The output is organized in 4 folders (Bismark, CSV, HTML, VCF).
-
 # Quality metrics
 ## ID Assignment
 
