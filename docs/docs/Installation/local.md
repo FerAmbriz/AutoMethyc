@@ -1,4 +1,4 @@
-## Local installation
+# Local installation
 
 Local installation requires installing all dependencies in \$PATH
 
