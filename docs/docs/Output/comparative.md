@@ -5,6 +5,12 @@ there is a differential grouping between the samples and normals. The
 output is in 'CSV/pca_vectors.csv0
 
 
+## Differential methylation
+
+Differential methylation was made on the comparison of cases and
+controls, with a implementation of shapiro wilk test, and t-student or
+The Mann-Whitney U test in each site.
+
 ## ROC
 
 For Receiver Operating Characteristic (ROC) analysis, the best
