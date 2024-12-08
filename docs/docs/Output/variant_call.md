@@ -1,4 +1,4 @@
-## Variant calling in germline
+# Variant calling in germline
 
 Regarding the variant calling, the bam generated with Bismark
 [@krueger2011] is ordered with samtools[@samtools], as well as the tags
