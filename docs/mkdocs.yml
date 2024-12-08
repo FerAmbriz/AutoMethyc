@@ -9,7 +9,7 @@ nav:
       - docker: Installation/docker.md
       - local: Installation/local.md
   - Usage: 
-      -usage: Usage/usage.md
+      - usage: Usage/usage.md
   - Output:
       - quality: Output/quality_metrics.md
       - preprocessing: Output/preprocessing.md
@@ -18,4 +18,4 @@ nav:
       - variant_call: Output/variant_call.md
       - html_report: Output/html_report.md
   - Step_by_step:
-      -steps: Step-by-step/steps.md
+      - steps: Step-by-step/steps.md
