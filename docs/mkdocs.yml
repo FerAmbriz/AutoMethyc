@@ -10,7 +10,6 @@ nav:
     - local: Installation/local.md
   - Usage: 
     - global: Usage/usage.md
-    - steps: Usage/steps.md
   - Output:
     - quality: Output/quality_metrics.md
     - preprocessing: Output/preprocessing.md
