@@ -1,3 +1,4 @@
+# Comparative
 ## PCA
 To reduce the dimensionality of the data, we did an analysis of
 principal components, see the axes of greatest variation and see if
