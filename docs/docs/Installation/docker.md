@@ -1,4 +1,4 @@
-## docker
+# docker
 We created a docker container with all the necessary dependencies to run
 the program in order to provide a portable and self-sufficient
 container. To install it, you need to have docker installed and then
