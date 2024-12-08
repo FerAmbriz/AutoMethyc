@@ -1,5 +1,5 @@
 # Usage
-
+## Command to run
 We provide a series of default values for simplicity when running with a
 single command where the only mandatory parameters are the directory
 path where all the files with FASTQ (\*.f\*), the genome reference file
