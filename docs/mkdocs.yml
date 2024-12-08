@@ -6,10 +6,12 @@ theme:
 nav:
   - Home: index.md
   - Installation:
+    -docker: Installation/docker.md
       - docker: Installation/docker.md
       - local: Installation/local.md
   - Usage: 
       - usage: Usage/usage.md
+      - steps: Step-by-step/steps.md
   - Output:
       - quality: Output/quality_metrics.md
       - preprocessing: Output/preprocessing.md
@@ -17,5 +19,3 @@ nav:
       - comparative: Output/comparative.md
       - variant_call: Output/variant_call.md
       - html_report: Output/html_report.md
-  - Step_by_step:
-      - steps: Step-by-step/steps.md
