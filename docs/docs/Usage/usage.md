@@ -57,7 +57,7 @@ Or with gene
 | chr11 | 22647545  | 22647849  | FANCF |
 
 
-# Example usage
+## Example usage
 
 In this trial, we conducted a comprehensive analysis of 10 samples (5
 cases and 5 controls) from these previously generated datasets. The raw
