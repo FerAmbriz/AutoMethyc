@@ -1,5 +1,5 @@
+# Methylation
 ## Methylation percentage
-
 To calculate the percentage of methylation, the conversion of the
 reference genome to bisulfite is carried out using
 Bismark[@krueger2011], followed by the use of Trim galore, which
