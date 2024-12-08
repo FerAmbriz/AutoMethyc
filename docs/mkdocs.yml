@@ -2,3 +2,8 @@ site_name: AutoMethyc
 
 theme:
   name: readthedocs
+
+nav:
+  - Home: index.md
+  - Installation:
+      - docker: Installation/docker.md
