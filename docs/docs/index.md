@@ -217,8 +217,6 @@ phred score wich are found in: 'CSV/fastqc_raw_data.csv' using FASTQC.
 
 $$Q=-10log_{10} P$$
 
-![Quality score across all bases](img/multiqc.png){width="80%"}
-
 To improve this and remove low quality sequences trim galore is used
 using a default Q\>30. The output is provided in
 'CSV/quality_trimming_metrics.csv'
@@ -318,7 +316,6 @@ The CGI region mapping makes a request to the UCSC genome browser
 [@karolchik2004ucsc] and classifies each site according to distance from
 the nearest CpG island.
 
-![CpG island](img/CpGIsland.pdf){width="40%"}
 
 The output of this mapping will be saved in: 'CSV/cgi_features.csv' with
 the information of the nearest CpG island and the mapped site.
@@ -396,7 +393,6 @@ Normalization is calculated from the mean and standard deviation of the
 normals provided, following equation 2.
 $$Z_{ij} = \frac {x_{ij}-\overline{x_{j}}}{S_{j}}$$
 
-![Normal distribution](img/NormalDistribution.pdf){width="50%"}
 
 The normalization output will be saved in:
 'CSV/matrix_filtered_target_normalized.csv'
@@ -441,7 +437,6 @@ principal components, see the axes of greatest variation and see if
 there is a differential grouping between the samples and normals. The
 output is in 'CSV/pca_vectors.csv0
 
-![Dimensionality reduction by PCA](img/PCAreduction.pdf){width="80%"}
 
 ## ROC
 
@@ -452,9 +447,6 @@ between the sites with the highest number of outliers are performed,
 followed by the prediction evaluation using a logistic regression model.
 Finally, the ROC curve analysis is performed, evaluating the best
 combination.
-
-![ROC curves of sites with better accuracy to
-classification](img/ROC.png){width="50%"}
 
 ## Variant calling in germline
 
@@ -475,14 +467,11 @@ Differential methylation was made on the comparison of cases and
 controls, with a implementation of shapiro wilk test, and t-student or
 The Mann-Whitney U test in each site.
 
-![Differential methylation](img/newplot.png){width="80%"}
 
 ## HTML report
 
 For greater ease in the interpretation and visualization of general
 data, we compile the information obtained in an interactive HTML report.
-
-!['HTML/AutoMethyc_Report.html'](img/Screenshot_26-6-2024_192730_.jpeg){width="80%"}
 
 # Step-by-Step Execution
 
