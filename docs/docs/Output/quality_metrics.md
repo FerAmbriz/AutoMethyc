@@ -2,6 +2,7 @@
 
 The output is organized in 4 folders (Bismark, CSV, HTML, VCF).
 
+# Quality metrics
 ## ID Assignment
 
 For greater data cleanliness, the ID assignment will be the file name
