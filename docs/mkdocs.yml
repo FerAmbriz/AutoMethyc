@@ -6,7 +6,7 @@ theme:
 nav:
   - Home: index.md
   - Installation:
-    -docker: Installation/docker.md
+    - docker: Installation/docker.md
       - docker: Installation/docker.md
       - local: Installation/local.md
   - Usage: 
