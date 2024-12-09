@@ -1,9 +1,6 @@
 # Comparative
 ## PCA
-To reduce the dimensionality of the data, we did an analysis of
-principal components, see the axes of greatest variation and see if
-there is a differential grouping between the samples and normals. The
-output is in 'CSV/pca_vectors.csv0
+To reduce data dimensionality, we performed a principal component analysis (PCA) to identify the axes of greatest variation and assess differential clustering between samples and normal controls. The results are provided in the file CSV/pca_vectors.csv.
 
 
 ## Differential methylation
