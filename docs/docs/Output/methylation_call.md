@@ -57,8 +57,8 @@ Format of 'CSV/matrix_mean_gene.csv'
 
 ## Normalization
 
-Normalization is calculated from the mean and standard deviation of the
-normals provided, following equation 2.
+Normalization is calculated from the mean and standard deviation of the normals provided, following the equation.
+
 $$Z_{ij} = \frac {x_{ij}-\overline{x_{j}}}{S_{j}}$$
 
 Format of 'CSV/matrix_filtered_target_normalized.csv'
