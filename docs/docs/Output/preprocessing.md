@@ -3,9 +3,10 @@
 ## Annotator
 
 Regions unique to the raw_data will be annotated for their relationship
-to their corresponding gene or regions specified in the BED file using a
+with their corresponding gene or regions specified in the BED file using a
 request to UCSC genome browser [@karolchik2004ucsc].Therefore it is
 important to specify the genome used (default=hg19) with '-g'.
+
 
 ``` {.python language="python" caption="Request UCSC"}
 session = requests.Session()
@@ -46,7 +47,7 @@ Considering the BED with genes
 ## Filter target
 
 Once the previously mentioned 'CSV/raw_data' is obtained, it will be
-filtered by the regions specified in the BED file o and the
+filtered by the regions specified in the BED file and the
 corresponding gene of each site previously annotated in
 'CSV/annotated_regions.csv' will be added and saved as:
 'filtered_target.csv'
