@@ -17,8 +17,7 @@ df = pd.DataFrame(lines)
 lenght = len(df)
 df = df[0].str.split('\t',expand=True)
 
-# Revision de si es 12 o 13???
-cut = 13
+cut = list(df[df[0].str.startswith('#Base')].index)[0]
 
 df.columns = df.iloc[cut]
 df = df.drop(list(range(0,cut+1,1)))

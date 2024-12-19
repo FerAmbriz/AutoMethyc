@@ -14,6 +14,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
 
 data = pd.read_csv(sys.argv[1])
+data = data.fillna(0)
+
 dfz = pd.read_csv(sys.argv[2])
 output = sys.argv[3]
 max_combinations = int(sys.argv[4])
@@ -26,6 +28,7 @@ print(dfz)
 
 #================ Outliers ===========#
 def outliersf(df):
+    df.fillna(0, inplace = True)
     df = df[df['value']!= np.inf]
     df1 = df[df['Type']=='controls']
 
@@ -64,7 +67,6 @@ def process_combinations(lista, n):
         })
 
     return pd.DataFrame(data)
-print('asdfasd')
 print(x_count)
 df_dbg = pd.DataFrame()
 for i in range(2, len(x_count)):

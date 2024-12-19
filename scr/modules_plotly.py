@@ -10,11 +10,13 @@ from IPython.display import HTML
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import re
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 from scipy.spatial.distance import pdist, squareform
 from scipy.cluster.hierarchy import linkage, dendrogram
 import math
 import networkx as nx
+from tqdm import tqdm
+
 
 def sortOnco (df):
     numero_chr = []
@@ -124,14 +126,17 @@ def ordered_cluster_euclidean(df):
 
     #=============== columns =================#
     df_transpuesto = df_ordenado.T
+    try:
+        distancias = pdist(df_transpuesto.values, 'euclidean')
+        enlaces = linkage(distancias, method='average')
+        dendro = dendrogram(enlaces)
+        orden_optimo = dendro['leaves']
 
-    distancias = pdist(df_transpuesto.values, 'euclidean')
-    enlaces = linkage(distancias, method='average')
-    dendro = dendrogram(enlaces)
-    orden_optimo = dendro['leaves']
+        # Ordenar las columnas
+        df_transpuesto_ordenado = df_transpuesto.iloc[orden_optimo, :]
+    except Exception as e:
+        df_transpuesto_ordenado = df_transpuesto
 
-    # Ordenar las columnas
-    df_transpuesto_ordenado = df_transpuesto.iloc[orden_optimo, :]
     df_columnas_ordenadas = df_transpuesto_ordenado.T
     return df_columnas_ordenadas
 
@@ -590,51 +595,60 @@ def custom_order_gene(df):
     df = df.set_index('Gene').loc[orden_sites].reset_index()
     return df
 
-def plot_site_table(df, status, bed):
-    def annot_gene(site_df):
-        lst = list(bed[bed['Site'] == site_df]['Gene'])
-        if len(lst) > 1:
-            if lst[0] != lst[1]:
-                lst[0] = f'{lst[0]}-{lst[1]}'
-        else:
-            lst[0] = f'{lst[0]}'
-        return lst[0]
 
+from multiprocessing import Pool
+import plotly.graph_objects as go
+
+def annot_gene(site_df, bed):
+    lst = list(bed[bed['Site'] == site_df]['Gene'])
+    if len(lst) > 1:
+        if lst[0] != lst[1]:
+            lst[0] = f'{lst[0]}-{lst[1]}'
+    else:
+        lst[0] = f'{lst[0]}'
+    return lst[0]
+
+def parallel_annot_gene(df, bed):
+    with Pool() as pool:
+        df['Gene'] = pool.starmap(annot_gene, [(site, bed) for site in df['variable']])
+    return df
+
+def plot_site_table(df, status, bed):
     if status == 'percentage':
         df['variable'] = list(map(make_merge_site, df['Chr'], df['Start']))
         df = df[['ID', 'Type', 'variable', 'Gene', 'Met_perc']]
         df.columns = ['ID', 'Type', 'variable', 'Gene', 'value']
     else:
         bed['Site'] = list(map(make_merge_site, bed['Chr'], bed['Start']))
-        df['Gene'] = list(map(annot_gene, df['variable']))
+        df = parallel_annot_gene(df, bed)
+
     df = df.set_index('ID')
-    df = df.groupby(by=['variable', 'Gene', 'Type',]).agg(['mean', 'std']).reset_index()
+    df = df.groupby(by=['variable', 'Gene', 'Type']).agg(['mean', 'std']).reset_index()
     df.columns = ['CpG site', 'Gene', 'Type', 'mean', 'std']
-    df = custom_order_site(df); df = df.dropna()
+    df = custom_order_site(df)
+    df = df.dropna()
 
     fig = go.Figure(go.Table(header=dict(values=list(df.columns), align="left"),
-                cells=dict(
-                    values=[df["CpG site"], df['Gene'],  df["Type"], df["mean"], df["std"]],
-                    align="left", height=30)))
+                             cells=dict(values=[df["CpG site"], df['Gene'], df["Type"], df["mean"], df["std"]],
+                                        align="left", height=30)))
     fig.update_layout(updatemenus=[{
-            "buttons": [
-                {
-                    "label": c,
-                    "method": "update",
-                    "args": [
-                        { "cells": {
-                            "values": df.T.values
-                            if c == "All"
-                                else df.loc[df["Type"].eq(c)].T.values
-                            }
-                        }
-                    ],
-                }
-                for c in ["All"] + df["Type"].unique().tolist()
-            ]
-        }])
+        "buttons": [
+            {
+                "label": c,
+                "method": "update",
+                "args": [
+                    {"cells": {
+                        "values": df.T.values if c == "All" else df.loc[df["Type"].eq(c)].T.values
+                    }}
+                ],
+            }
+            for c in ["All"] + df["Type"].unique().tolist()
+        ]
+    }])
     fig.update_layout(height=300)
     return fig
+
+
 
 def plot_table_mean_gene(df, status):
     if status == 'zscore':
@@ -892,10 +906,12 @@ def plot_trimming(df):
 
 def plot_non_conversion(df):
     clean = lambda x:float(x.split(' (')[1].replace('%)', ''))
-    df['Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)'] = df['Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)'].apply(clean)
-    fig  = px.bar(df, x = 'ID', y = 'Sequences removed because of apparent non-bisulfite conversion (at least 3 non-CG calls per read)', color = 'Type')
+    print(df.columns[3])
+    df[df.columns[3]] = df[df.columns[3]].apply(clean)
+    fig  = px.bar(df, x = 'ID', y = df.columns[3], color = 'Type')
     fig.update_layout( barcornerradius="30%", height = 500, yaxis_title='Sequences removed %')
     return fig
+
 
 def make_plotly_graph(G, node_color=[], name=''):
     pos = nx.spring_layout(G)
@@ -906,7 +922,7 @@ def make_plotly_graph(G, node_color=[], name=''):
         line=dict(width=0.5, color='#888'),
         hoverinfo='none',
         mode='lines',
-        name = name,
+        name=name,
         visible=False  # Hacer que los trazos no sean visibles por defecto
     )
 
@@ -916,29 +932,16 @@ def make_plotly_graph(G, node_color=[], name=''):
         edge_trace['x'] += (x0, x1, None)
         edge_trace['y'] += (y0, y1, None)
 
-    # Crear las trazas de los nodos
-    if len(node_color) > 0:
-        node_trace = go.Scatter(
-            x=[],
-            y=[],
-            text=[],
-            mode='markers+text',
-            hoverinfo='text',
-            name = name,
-            marker=dict(size=10, color=node_color),
-            visible=False  # Hacer que los trazos no sean visibles por defecto
-        )
-    else:
-        node_trace = go.Scatter(
-            x=[],
-            y=[],
-            text=[],
-            mode='markers+text',
-            hoverinfo='text',
-            marker=dict(size=10),
-            name = name,
-            visible=False  # Hacer que los trazos no sean visibles por defecto
-        )
+    node_trace = go.Scatter(
+        x=[],
+        y=[],
+        text=[],
+        mode='markers+text',
+        hoverinfo='text',
+        name=name,
+        marker=dict(size=10, color=node_color if node_color else 'blue'),
+        visible=False  # Hacer que los trazos no sean visibles por defecto
+    )
 
     for node in G.nodes():
         x, y = pos[node]
@@ -946,7 +949,6 @@ def make_plotly_graph(G, node_color=[], name=''):
         node_trace['y'] += (y,)
         node_trace['text'] += (node,)
 
-    # Crear la figura
     fig = go.Figure(data=[edge_trace, node_trace],
                     layout=go.Layout(
                         title='Red de Co-Metilación',
@@ -965,59 +967,73 @@ def make_plotly_graph(G, node_color=[], name=''):
 
     return fig
 
+
+
 def extract_graph_correlation_gene(df, gene):
-    df = df[(df['Unnamed: 2']== gene ) | (df['ID']=='Type')].T
+    df = df[(df['Unnamed: 2'] == gene) | (df['ID'] == 'Type')].T
     df = df[df[0].isin(['controls', 'cases'])]
 
     typ = df[0]
 
-    df.drop([0], axis = 1, inplace = True)
+    df.drop([0], axis=1, inplace=True)
     df = df.astype(float).T
 
     correlation_matrix = df.corr()
     G = nx.Graph()
-    # Añadir nodos y aristas basados en la correlación de metilación
-    for i in range(len(correlation_matrix)):
-        for j in range(i + 1, len(correlation_matrix)):
-            if correlation_matrix.iloc[i, j] > 0.8:  # Umbral de correlación
-                G.add_edge(correlation_matrix.index[i], correlation_matrix.columns[j], weight=correlation_matrix.iloc[i, j])
+    threshold = 0.7  # Umbral inicial de correlación
 
-    x = pd.DataFrame(typ)
-    color_map = { 'cases': 'red', 'controls': 'blue' }
-    color = list(x[0].map(color_map))
-    #degree_centrality = nx.degree_centrality(G)
-    #print(degree_centrality)
+    while True:
+        G.clear()
+        for i in range(len(correlation_matrix)):
+            for j in range(i + 1, len(correlation_matrix)):
+                if correlation_matrix.iloc[i, j] > threshold:
+                    G.add_edge(correlation_matrix.index[i], correlation_matrix.columns[j], weight=correlation_matrix.iloc[i, j])
+        if G.number_of_nodes() < 100 or threshold >= 1 - 0.01:
+            break
+        threshold += 0.01  # Ajuste del umbral
+
+    print(f"Nodes: {G.number_of_nodes()}. Edges: {G.number_of_edges()}")
+    print(f'Gene: {gene}. Treshold: {threshold}')
+
+    color_map = {'cases': 'red', 'controls': 'blue'}
+    color = list(pd.DataFrame(typ)[0].map(color_map))
+
     return G, color
 
-def plot_graph_conection(matrix_mean, matrix_filtered):
-    matrix_mean.drop([0], inplace = True)
-    matrix_mean.set_index(['Gene'], inplace = True)
+def process_gene(args):
+    gene, matrix_filtered = args
+    G, color = extract_graph_correlation_gene(matrix_filtered, gene)
+    return make_plotly_graph(G, color, gene)
+
+def plot_graph_conection(matrix_mean, matrix_filtered, output):
+    matrix_mean.drop([0], inplace=True)
+    matrix_mean.set_index(['Gene'], inplace=True)
     matrix_mean = matrix_mean.astype(float).T
 
     correlation_matrix = matrix_mean.corr()
 
     G = nx.Graph()
-    # Añadir nodos y aristas basados en la correlación de metilación
     for i in range(len(correlation_matrix)):
         for j in range(i + 1, len(correlation_matrix)):
-            if correlation_matrix.iloc[i, j] > 0.5:  # Umbral de correlación
+            if correlation_matrix.iloc[i, j] > 0.6:  # Umbral de correlación
                 G.add_edge(correlation_matrix.index[i], correlation_matrix.columns[j], weight=correlation_matrix.iloc[i, j])
 
-    plot_global = make_plotly_graph (G, name = 'global')
+    plot_global = make_plotly_graph(G, name='global')
 
+    print('Done graph gene correlation')
     fig = make_subplots(rows=1, cols=1)
     fig.add_trace(plot_global.data[0], row=1, col=1)
-    fig.add_trace(plot_global.data[1],  row=1, col=1)
+    fig.add_trace(plot_global.data[1], row=1, col=1)
 
     genes = matrix_filtered['Unnamed: 2'][2:].unique()
-    for i in genes:
-        G, color = extract_graph_correlation_gene(matrix_filtered, i)
-        plot_i = make_plotly_graph (G, color, i)
 
+    with Pool(cpu_count()) as pool:
+        results = list(tqdm(pool.imap(process_gene, [(gene, matrix_filtered) for gene in genes]), total=len(genes), desc="Processing genes"))
+
+    for plot_i in results:
         fig.add_trace(plot_i.data[0], row=1, col=1)
-        fig.add_trace(plot_i.data[1],  row=1, col=1)
+        fig.add_trace(plot_i.data[1], row=1, col=1)
 
-    # Ocultar las leyendas de los nombres de los trazos 
     for trace in fig.data:
         trace.showlegend = False
 
@@ -1025,14 +1041,14 @@ def plot_graph_conection(matrix_mean, matrix_filtered):
         dict(
             label='global',
             method='update',
-            args=[{'visible': [True, True] + [False] * (len(genes)*2)}]
-        )]
+            args=[{'visible': [True, True] + [False] * (len(genes) * 2)}]
+        )
+    ]
 
     for i in range(len(genes)):
         visibility = [False] * (len(genes) + 1) * 2
-
-        visibility[(i+1) *2] = True
-        visibility[((i+1) *2) + 1] = True
+        visibility[(i + 1) * 2] = True
+        visibility[((i + 1) * 2) + 1] = True
 
         buttons.append(dict(
             label=genes[i],
@@ -1040,25 +1056,26 @@ def plot_graph_conection(matrix_mean, matrix_filtered):
             args=[{'visible': visibility}]
         ))
 
-    # Añadir los botones a la figura como un menú desplegable
     fig.update_layout(
         updatemenus=[
-          dict(
-            type='dropdown',
-            direction='down',
-            buttons=buttons,
-            pad={'r': 10, 't': 10},
-            showactive=True,
-            x=0,
-            xanchor='left',
-            y=1.1,
-            yanchor='top'
-                )
-            ]
-        )
+            dict(
+                type='dropdown',
+                direction='down',
+                buttons=buttons,
+                pad={'r': 10, 't': 10},
+                showactive=True,
+                x=0,
+                xanchor='left',
+                y=1.1,
+                yanchor='top'
+            )
+        ]
+    )
 
     fig.update_traces(visible=True, selector=dict(name='global'))
     return fig
+
+#=======================================================
 
 def plot_tsne(df):
     clean = lambda x: x.split('_')[1]

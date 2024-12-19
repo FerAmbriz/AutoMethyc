@@ -8,10 +8,11 @@ input = args[1]
 #================== Data preparation ==============#
 df_combinations <-  read_csv(paste(input, '/logistic_regression_combination_outliers.csv', sep =''))
 df <-  read_csv(paste(input, '/filtered_target.csv', sep =''))
+df <- df %>% mutate_all(~replace_na(., 0))
 
 df <- df %>% mutate(Chr_Start = paste(Chr, Start, sep = ":"))
 
-print(df_combinations)
+print(head(df_combinations))
 combinations = df_combinations[1, 1]
 combinations = unlist(strsplit(as.character(combinations), "_"))
 
@@ -20,7 +21,7 @@ print('Selection ...')
 print(combinations)
 
 data_long <- df %>% filter(Chr_Start %in% combinations)
-print(data_long)
+print(head(data_long))
 
 #=============== combiroc ===============#
 data_long <- data_long[,c(1, 2, 4, 6)]
@@ -32,8 +33,10 @@ data_long <- data_long %>% mutate(Markers = paste0("cg", Markers))
 data <- data_long %>%
   pivot_wider(names_from = Markers, values_from = Values)
 
+#data$n_combinacion <- as.numeric(data$n_combinacion)
+
 print('Preparation')
-print(data)
+print(head(data))
 
 se_sp_custom <- function (data, combinations_table) 
 {
@@ -62,12 +65,15 @@ se_sp_custom <- function (data, combinations_table)
 
 tab <- combi(data, signalthr = 0, combithr = 1, case_class='cases')
 print('Description')
-print(tab)
+print(head(tab))
 
 print('ROC curves')
 combinations <- sub(".*:", "cg", combinations)
-print(combinations)
+print(head(combinations))
 
+data <- data %>% mutate_all(~replace_na(., 0))
+
+print(head(data))
 
 reports <-roc_reports(data, markers_table = tab, 
                       case_class = 'cases', single_markers = combinations, 
@@ -93,7 +99,7 @@ for (model_name in names(reports$Models)) {
 }
 
 print(head(roc_combined))
-print(metrics_roc)
+print(head(metrics_roc))
 
 write.csv(roc_combined, paste(input, "/roc_combined.csv", sep = ''), row.names = FALSE)
 write.csv(metrics_roc, paste(input, "/roc_metrics.csv", sep = ''))
