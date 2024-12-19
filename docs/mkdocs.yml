@@ -1,0 +1,23 @@
+site_name: AutoMethyc
+
+theme:
+  name: readthedocs
+
+nav:
+  - Home: index.md
+  - Installation:
+    - docker: Installation/docker.md
+    - local: Installation/local.md
+  - Usage: 
+    - global: Usage/usage.md
+    - steps: Usage/steps.md
+  - Output:
+    - quality: Output/quality_metrics.md
+    - preprocessing: Output/preprocessing.md
+    - methylation: Output/methylation_call.md
+    - comparative: Output/comparative.md
+    - variant_call: Output/variant_call.md
+    - html_report: Output/html_report.md
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML
