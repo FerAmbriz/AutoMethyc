@@ -20,11 +20,18 @@ z_score_sample = z_score_sample[z_score_sample['variable'].isin(list(set(z_score
 def calculate_normality(lst):
     lst = [x for x in lst if np.isfinite(x)]
     if len(lst) >= 3:
-        shapiro, p_value = stats.shapiro(lst)
-        if p_value <= 0.05:
-            return ['non-parametric', shapiro, p_value]
+        if len(lst) >= 50:
+            ks_stat, p_value = stats.kstest(lst, 'norm')
+            if p_value <= 0.05:
+                return ['non-parametric', ks_stat, p_value]
+            else:
+                return ['parametric', ks_stat, p_value]
         else:
-            return ['parametric', shapiro, p_value]
+            shapiro, p_value = stats.shapiro(lst)
+            if p_value <= 0.05:
+                return ['non-parametric', shapiro, p_value]
+            else:
+                return ['parametric', shapiro, p_value]
     else:
         return 'NaN'
 
